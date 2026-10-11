@@ -104,5 +104,9 @@ const graph = new StateGraph(AIBattleState)
   .compile();
 
 
-const result = await graph.invoke({problem:"Hello, how are you?",judge:{solution_1_score:0,solution_2_score:0,solution_1_reasoning:"",solution_2_reasoning:""}});
-console.log(result)
+export default async function(userMessage:string){
+
+  const result = await graph.invoke({problem:userMessage,judge:{solution_1_score:0,solution_2_score:0,solution_1_reasoning:"",solution_2_reasoning:""}});
+  return result
+
+}

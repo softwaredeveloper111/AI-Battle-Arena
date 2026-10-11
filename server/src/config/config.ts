@@ -25,12 +25,12 @@ if(!process.env.COHERE_API_KEY){
 }
 
 type CONFIG = {
-    NODE_ENV: string;
-    PORT: number;
-    LOG_LEVEL: string;
-    GEMINI_API_KEY: string;
-    MISTRAL_API_KEY: string;
-    COHERE_API_KEY: string;
+   readonly NODE_ENV: string;
+   readonly PORT: number;
+   readonly LOG_LEVEL: string;
+   readonly GEMINI_API_KEY: string;
+   readonly MISTRAL_API_KEY: string;
+   readonly COHERE_API_KEY: string;
 }
 
 

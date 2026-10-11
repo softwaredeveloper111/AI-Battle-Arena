@@ -1,6 +1,7 @@
 import { pinoHttp } from "pino-http";
 import logger from "./logger.js";
 
+
 const httpLogger = pinoHttp({
   logger,
 
@@ -14,12 +15,10 @@ const httpLogger = pinoHttp({
     `${req.method} ${req.url} ${res.statusCode} failed`,
 
   serializers: {
-    res(res) {
-      return {
-        statusCode: res.statusCode,
-      };
-    },
+  res(res) {
+    return { statusCode: res.statusCode };
   },
+},
 });
 
 export default httpLogger;

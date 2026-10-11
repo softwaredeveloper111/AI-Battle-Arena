@@ -9,8 +9,8 @@ const app = express();
  * application middlewares
  */
 app.use(express.static("public"));
-app.use(express.json({ limit: "50kb" }));
-app.use(express.urlencoded({ extended: true, limit: "10kb" }));
+app.use(express.json({ limit: "50kb" })); //Maximum request body size 50 KB allowed hai
+app.use(express.urlencoded({ extended: true, limit: "10kb" })); //Maximum request body size 10 KB allowed hai.
 
 app.use(httpLogger);
 

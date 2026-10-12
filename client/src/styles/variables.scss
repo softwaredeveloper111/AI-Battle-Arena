@@ -1,0 +1,160 @@
+﻿// =============================================================
+//  AI BATTLE ARENA â€” Theme tokens (black & gold)
+//  Har feature ka *.module.scss isi file ko `@use` karta hai.
+// =============================================================
+
+// ---------- Colors : Gold ----------
+$gold-50: #fff8db;
+$gold-100: #ffeb99;
+$gold-300: #ffd84d;
+$gold-400: #ffcc1a;
+$gold-500: #f5c400; // primary accent
+$gold-600: #d9a900;
+$gold-700: #a87f00;
+$gold-800: #6b5200;
+$gold-900: #3a2d05;
+
+$primary: $gold-500;
+$primary-hover: $gold-400;
+$on-primary: #121212;
+
+// ---------- Colors : Surfaces ----------
+$bg-base: #050505;
+$bg-app: #0a0a0a;
+$bg-sidebar: #0c0c0c;
+$bg-surface: #111111;
+$bg-surface-2: #161616;
+$bg-input: #141414;
+$bg-elevated: #1a1a1a;
+$bg-gold-tint: rgba(245, 196, 0, 0.08);
+$bg-gold-tint-strong: rgba(245, 196, 0, 0.16);
+$bg-user-bubble: #2a2416;
+
+// ---------- Colors : Borders ----------
+$border-subtle: #1f1f1f;
+$border-default: #2a2a2a;
+$border-strong: #3a3a3a;
+$border-gold: rgba(245, 196, 0, 0.55);
+$border-gold-soft: rgba(245, 196, 0, 0.28);
+$border-gold-faint: rgba(245, 196, 0, 0.14);
+
+// ---------- Colors : Text ----------
+$text-primary: #f5f5f5;
+$text-secondary: #b8b8b8;
+$text-muted: #8a8a8a;
+$text-faint: #5e5e5e;
+$text-gold: $gold-500;
+
+// ---------- Typography ----------
+$font-sans: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+$font-display: 'Rajdhani', 'Inter', sans-serif;
+
+$fs-2xs: 0.6875rem; // 11
+$fs-xs: 0.75rem; // 12
+$fs-sm: 0.8125rem; // 13
+$fs-md: 0.875rem; // 14
+$fs-base: 0.9375rem; // 15
+$fs-lg: 1.0625rem; // 17
+$fs-xl: 1.25rem; // 20
+$fs-2xl: 1.5rem; // 24
+$fs-3xl: 2rem; // 32
+$fs-4xl: 2.75rem; // 44
+
+$fw-regular: 400;
+$fw-medium: 500;
+$fw-semibold: 600;
+$fw-bold: 700;
+
+// ---------- Spacing ----------
+$sp-1: 4px;
+$sp-2: 8px;
+$sp-3: 12px;
+$sp-4: 16px;
+$sp-5: 20px;
+$sp-6: 24px;
+$sp-8: 32px;
+$sp-10: 40px;
+$sp-12: 48px;
+
+// ---------- Radius ----------
+$radius-sm: 6px;
+$radius-md: 8px;
+$radius-lg: 10px;
+$radius-xl: 14px;
+$radius-2xl: 18px;
+$radius-pill: 999px;
+
+// ---------- Shadows / Glows ----------
+$glow-gold-sm: 0 0 0 1px rgba(245, 196, 0, 0.25), 0 0 12px rgba(245, 196, 0, 0.12);
+$glow-gold-md: 0 0 0 1px rgba(245, 196, 0, 0.45), 0 0 22px rgba(245, 196, 0, 0.18);
+$glow-gold-lg: 0 0 40px rgba(245, 196, 0, 0.25);
+$shadow-panel: 0 20px 60px rgba(0, 0, 0, 0.55);
+
+// ---------- Layout ----------
+$sidebar-width: 272px;
+$topbar-height: 54px;
+$content-max: 760px;
+$control-h: 44px;
+
+// ---------- Motion ----------
+$ease: cubic-bezier(0.4, 0, 0.2, 1);
+$dur-fast: 0.15s;
+$dur: 0.25s;
+
+// ---------- Breakpoints ----------
+$bp-sm: 600px;
+$bp-md: 900px;
+$bp-lg: 1200px;
+
+// =============================================================
+//  Mixins
+// =============================================================
+@mixin respond($bp) {
+  @media (max-width: $bp) {
+    @content;
+  }
+}
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+@mixin focus-ring {
+  outline: none;
+  border-color: $border-gold;
+  box-shadow: $glow-gold-sm;
+}
+
+// Gold outlined, softly-tinted panel (cards, active items)
+@mixin gold-panel($radius: $radius-lg) {
+  background: linear-gradient(180deg, rgba(245, 196, 0, 0.07), rgba(245, 196, 0, 0.02));
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius;
+}
+
+// Decorative dot-grid pattern (used in corners of the mockups)
+@mixin dot-grid($color: rgba(245, 196, 0, 0.35), $size: 10px) {
+  background-image: radial-gradient($color 1px, transparent 1.2px);
+  background-size: $size $size;
+}
+
+@mixin scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: $border-strong transparent;
+  &::-webkit-scrollbar {
+    width: 6px;
+  }
+  &::-webkit-scrollbar-thumb {
+    background: $border-strong;
+    border-radius: $radius-pill;
+  }
+}
+
+@mixin brand-text {
+  font-family: $font-display;
+  font-weight: $fw-bold;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}

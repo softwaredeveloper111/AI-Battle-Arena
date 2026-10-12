@@ -1,0 +1,117 @@
+@use '../../../styles/variables' as *;
+
+.wrap {
+  position: relative;
+  padding: $sp-3 $sp-4 $sp-4;
+  border-top: 1px solid $border-gold-faint;
+  background: linear-gradient(180deg, transparent, rgba(245, 196, 0, 0.02));
+}
+
+.composer {
+  position: relative;
+  padding: $sp-2 $sp-3 $sp-2;
+  border: 1px solid $border-gold;
+  border-radius: $radius-lg;
+  background:
+    radial-gradient(ellipse at 50% 120%, rgba(245, 196, 0, 0.08), transparent 60%),
+    linear-gradient(180deg, rgba(40, 32, 8, 0.75), rgba(22, 18, 6, 0.85));
+  box-shadow: inset 0 0 20px rgba(245, 196, 0, 0.05), 0 0 24px rgba(245, 196, 0, 0.06);
+  transition: box-shadow $dur $ease;
+
+  // halftone texture in the middle of the bar
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    @include dot-grid(rgba(245, 196, 0, 0.12), 6px);
+    mask-image: radial-gradient(ellipse 30% 60% at 50% 75%, #000, transparent);
+  }
+
+  &:focus-within {
+    box-shadow: $glow-gold-md;
+  }
+}
+
+.input {
+  position: relative;
+  width: 100%;
+  resize: none;
+  min-height: 26px;
+  padding: 2px $sp-1 $sp-2;
+  font-size: $fs-md;
+  color: $text-primary;
+  background: transparent;
+  border: none;
+  outline: none;
+}
+
+.actions {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $sp-2;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.squareBtn {
+  @include flex-center;
+  width: 36px;
+  height: 36px;
+  color: $text-secondary;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: rgba(10, 10, 10, 0.6);
+  transition: color $dur-fast $ease, border-color $dur-fast $ease;
+
+  &:hover {
+    color: $text-primary;
+    border-color: $border-gold-soft;
+  }
+}
+
+.modeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: $sp-2;
+  height: 36px;
+  padding: 0 $sp-4;
+  font-size: $fs-sm;
+  color: $text-primary;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: rgba(10, 10, 10, 0.6);
+  transition: border-color $dur-fast $ease;
+
+  svg {
+    color: $text-secondary;
+  }
+
+  svg:first-child {
+    color: $primary;
+  }
+
+  &:hover {
+    border-color: $border-gold-soft;
+  }
+}
+
+.sendBtn {
+  @include flex-center;
+  width: 36px;
+  height: 36px;
+  color: $on-primary;
+  border-radius: $radius-md;
+  background: linear-gradient(180deg, $gold-400, $gold-500);
+  box-shadow: 0 0 16px rgba(245, 196, 0, 0.3);
+  transition: transform $dur-fast $ease, box-shadow $dur $ease;
+
+  &:hover {
+    box-shadow: 0 0 24px rgba(245, 196, 0, 0.5);
+    transform: translateY(-1px);
+  }
+}

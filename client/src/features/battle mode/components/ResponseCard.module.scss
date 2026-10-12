@@ -1,0 +1,58 @@
+@use '../../../styles/variables' as *;
+
+.card {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-md;
+  background: $bg-surface;
+  overflow: hidden;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  padding: $sp-2 $sp-4;
+  border-bottom: 1px solid $border-gold-soft;
+  background: linear-gradient(90deg, rgba(245, 196, 0, 0.16), rgba(245, 196, 0, 0.05));
+
+  h3 {
+    flex: 1;
+    font-size: $fs-md;
+    font-weight: $fw-semibold;
+    color: $primary;
+  }
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: $primary;
+  box-shadow: 0 0 8px rgba(245, 196, 0, 0.6);
+}
+
+.copy {
+  display: flex;
+  color: $text-secondary;
+  transition: color $dur-fast $ease;
+
+  &:hover {
+    color: $primary;
+  }
+}
+
+.body {
+  padding: $sp-3 $sp-4 $sp-4;
+
+  p {
+    font-size: $fs-sm;
+    line-height: 1.55;
+    color: $text-primary;
+
+    & + p {
+      margin-top: $sp-3;
+    }
+  }
+}

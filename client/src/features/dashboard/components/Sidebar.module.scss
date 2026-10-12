@@ -1,0 +1,250 @@
+@use '../../../styles/variables' as *;
+
+.sidebar {
+  position: relative;
+  width: $sidebar-width;
+  flex-shrink: 0;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: $sp-4 $sp-3 0;
+  background: $bg-sidebar;
+  border-right: 1px solid $border-gold-faint;
+  overflow: hidden;
+
+  @include respond($bp-md) {
+    display: none;
+  }
+}
+
+/* decorative textures */
+.dotsTop,
+.dotsMid {
+  position: absolute;
+  pointer-events: none;
+  @include dot-grid(rgba(245, 196, 0, 0.28), 8px);
+}
+
+.dotsTop {
+  top: 112px;
+  right: 0;
+  width: 70px;
+  height: 60px;
+  mask-image: linear-gradient(270deg, #000, transparent);
+}
+
+.dotsMid {
+  bottom: 140px;
+  right: 0;
+  width: 120px;
+  height: 120px;
+  mask-image: radial-gradient(circle at 100% 70%, #000 10%, transparent 70%);
+}
+
+.pixels {
+  position: absolute;
+  right: 6px;
+  bottom: 128px;
+  opacity: 0.45;
+  transform: scaleY(-1);
+}
+
+.top {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 $sp-1 0 $sp-1;
+  margin-bottom: $sp-4;
+}
+
+.iconBtn {
+  @include flex-center;
+  width: 32px;
+  height: 32px;
+  color: $text-secondary;
+  border-radius: $radius-sm;
+  transition: background $dur-fast $ease, color $dur-fast $ease;
+
+  &:hover {
+    background: $bg-elevated;
+    color: $text-primary;
+  }
+}
+
+.newChat {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  height: 46px;
+  padding: 0 $sp-3;
+  font-size: $fs-md;
+  font-weight: $fw-semibold;
+  color: $text-primary;
+  border: 1px solid $border-gold;
+  border-radius: $radius-md;
+  background: linear-gradient(180deg, rgba(245, 196, 0, 0.18), rgba(245, 196, 0, 0.06));
+  box-shadow: inset 0 0 18px rgba(245, 196, 0, 0.1);
+  transition: box-shadow $dur $ease;
+
+  svg {
+    color: $primary;
+  }
+
+  &:hover {
+    box-shadow: $glow-gold-md;
+  }
+}
+
+.search {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  height: 40px;
+  margin-top: $sp-3;
+  padding: 0 $sp-3;
+  font-size: $fs-sm;
+  color: $text-primary;
+  border-radius: $radius-md;
+  transition: background $dur-fast $ease;
+
+  svg {
+    color: $text-secondary;
+  }
+
+  &:hover {
+    background: $bg-surface-2;
+  }
+}
+
+.history {
+  position: relative;
+  flex: 1;
+  overflow-y: auto;
+  margin: 0 (-$sp-1);
+  padding: 0 $sp-1 $sp-4;
+}
+
+.group {
+  margin-bottom: $sp-4;
+}
+
+.groupLabel {
+  padding: $sp-1 $sp-2 $sp-2;
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+  color: $text-secondary;
+}
+
+.item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  height: 38px;
+  padding: 0 $sp-3;
+  margin-bottom: 2px;
+  font-size: $fs-xs;
+  color: $text-primary;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  transition: background $dur-fast $ease, border-color $dur-fast $ease;
+
+  svg {
+    flex-shrink: 0;
+    color: $text-secondary;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    background: $bg-surface-2;
+  }
+}
+
+.active {
+  @include gold-panel($radius-md);
+  border-color: $border-gold;
+  background: linear-gradient(90deg, rgba(245, 196, 0, 0.22), rgba(245, 196, 0, 0.08));
+
+  svg {
+    color: $primary;
+  }
+
+  &:hover {
+    background: linear-gradient(90deg, rgba(245, 196, 0, 0.26), rgba(245, 196, 0, 0.1));
+  }
+}
+
+.account {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  padding: $sp-4 $sp-1;
+  margin: 0 (-$sp-3);
+  padding-left: $sp-4;
+  padding-right: $sp-2;
+  border-top: 1px solid $border-gold-faint;
+  background: $bg-sidebar;
+}
+
+.avatar {
+  @include flex-center;
+  width: 34px;
+  height: 34px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(180deg, $gold-400, $gold-600);
+  color: $on-primary;
+  font-weight: $fw-semibold;
+  font-size: $fs-md;
+}
+
+.userInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+
+  strong {
+    font-size: $fs-sm;
+    font-weight: $fw-semibold;
+  }
+
+  span {
+    font-size: 0.625rem;
+    color: $text-muted;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+.footer {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  padding: $sp-3 $sp-2 $sp-4;
+  margin: 0 (-$sp-3);
+  padding-left: $sp-5;
+  padding-right: $sp-6;
+  border-top: 1px solid $border-subtle;
+  background: $bg-sidebar;
+
+  a {
+    font-size: 0.625rem;
+    color: $text-secondary;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}

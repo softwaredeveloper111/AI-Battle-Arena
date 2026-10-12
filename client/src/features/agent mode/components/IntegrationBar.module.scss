@@ -1,0 +1,31 @@
+@use '../../../styles/variables' as *;
+
+.bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: $sp-4;
+  margin-top: $sp-3;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $sp-2;
+  min-width: 84px;
+  height: 34px;
+  padding: 0 $sp-4;
+  font-size: $fs-xs;
+  color: $text-primary;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $bg-surface;
+  transition: border-color $dur-fast $ease, background $dur-fast $ease, transform $dur-fast $ease;
+
+  &:hover {
+    border-color: $border-gold-soft;
+    background: $bg-surface-2;
+    transform: translateY(-1px);
+  }
+}

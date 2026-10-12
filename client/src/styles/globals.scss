@@ -1,0 +1,69 @@
+@use './variables' as *;
+
+// Fonts (Inter + Rajdhani) are loaded from index.html
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: $font-sans;
+  font-size: $fs-md;
+  line-height: 1.5;
+  color: $text-primary;
+  background: $bg-base;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+input,
+textarea {
+  font: inherit;
+  color: inherit;
+}
+
+img,
+svg {
+  display: block;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+::selection {
+  background: rgba(245, 196, 0, 0.3);
+  color: #fff;
+}
+
+::placeholder {
+  color: $text-faint;
+}
+
+* {
+  @include scrollbar;
+}

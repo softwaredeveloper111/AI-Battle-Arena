@@ -1,0 +1,121 @@
+@use '../../../styles/variables' as *;
+
+.panel {
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-md;
+  background: $bg-surface;
+  overflow: hidden;
+}
+
+.header {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  padding: $sp-2 $sp-4;
+  color: $primary;
+  border-bottom: 1px solid $border-gold-soft;
+  background: linear-gradient(90deg, rgba(245, 196, 0, 0.18), rgba(245, 196, 0, 0.05));
+
+  // checker / dot texture on the right
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    pointer-events: none;
+    background-image:
+      linear-gradient(45deg, rgba(245, 196, 0, 0.12) 25%, transparent 25%, transparent 75%, rgba(245, 196, 0, 0.12) 75%),
+      linear-gradient(45deg, rgba(245, 196, 0, 0.12) 25%, transparent 25%, transparent 75%, rgba(245, 196, 0, 0.12) 75%);
+    background-size: 10px 10px;
+    background-position: 0 0, 5px 5px;
+    mask-image: linear-gradient(90deg, transparent, #000);
+  }
+
+  h3 {
+    font-size: $fs-md;
+    font-weight: $fw-semibold;
+  }
+}
+
+.verdict {
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  padding: $sp-2 $sp-4 $sp-1;
+  color: $primary;
+
+  h4 {
+    font-size: $fs-xl;
+    font-weight: $fw-bold;
+  }
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $sp-6;
+  padding: $sp-2 $sp-4 $sp-4;
+
+  @include respond($bp-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.score {
+  padding: $sp-3 $sp-4 $sp-3;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  background: $bg-surface-2;
+
+  h5 {
+    margin-top: $sp-2;
+    font-size: $fs-xs;
+    font-weight: $fw-semibold;
+  }
+
+  p {
+    font-size: $fs-xs;
+    line-height: 1.5;
+    color: $text-secondary;
+  }
+}
+
+.winner {
+  border-color: $border-gold;
+  background: linear-gradient(180deg, rgba(245, 196, 0, 0.08), rgba(245, 196, 0, 0.02));
+  box-shadow: 0 0 18px rgba(245, 196, 0, 0.1);
+}
+
+.scoreHead {
+  display: flex;
+  align-items: center;
+  gap: $sp-2;
+}
+
+.ring {
+  width: 11px;
+  height: 11px;
+  border-radius: 50%;
+  border: 2.5px solid $primary;
+  background: rgba(245, 196, 0, 0.35);
+}
+
+.scoreLabel {
+  flex: 1;
+  font-size: $fs-xs;
+  color: $text-primary;
+}
+
+.scoreValue {
+  font-size: $fs-lg;
+  color: $text-secondary;
+
+  strong {
+    font-size: 1.6rem;
+    font-weight: $fw-bold;
+    color: $primary;
+  }
+}

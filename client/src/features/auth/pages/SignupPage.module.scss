@@ -1,0 +1,261 @@
+@use '../../../styles/variables' as *;
+
+.page {
+  position: relative;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
+  display: grid;
+  grid-template-columns: 50% 50%;
+  background:
+    radial-gradient(ellipse at 15% 75%, rgba(245, 196, 0, 0.08), transparent 45%),
+    radial-gradient(ellipse at 100% 0%, rgba(245, 196, 0, 0.04), transparent 40%),
+    $bg-base;
+
+  @include respond($bp-md) {
+    grid-template-columns: 1fr;
+    overflow-y: auto;
+  }
+}
+
+.dotsLeft {
+  position: absolute;
+  left: 0;
+  top: 35%;
+  width: 60px;
+  height: 220px;
+  pointer-events: none;
+  @include dot-grid(rgba(245, 196, 0, 0.35), 9px);
+  mask-image: linear-gradient(90deg, #000 10%, transparent);
+}
+
+.dotsRight {
+  position: absolute;
+  right: 0;
+  top: 10%;
+  width: 140px;
+  height: 140px;
+  pointer-events: none;
+  @include dot-grid(rgba(245, 196, 0, 0.22), 8px);
+  mask-image: radial-gradient(circle at 100% 0%, #000 20%, transparent 75%);
+}
+
+.pixels {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  z-index: 2;
+  transform: scaleX(-1) scaleY(-1);
+}
+
+/* ---------- Left Section ---------- */
+.left {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: $sp-6 6% 0;
+  overflow: hidden;
+
+  @include respond($bp-md) {
+    display: none;
+  }
+}
+
+.leftHeader {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  margin-top: 4vh;
+}
+
+.headline {
+  font-size: clamp(2rem, 3.2vw, 2.9rem);
+  font-weight: $fw-bold;
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+
+  span {
+    color: $primary;
+  }
+}
+
+.lead {
+  margin-top: $sp-3;
+  font-size: clamp(0.9rem, 1.2vw, 1.1rem);
+  color: $text-secondary;
+  line-height: 1.5;
+}
+
+.heroArt {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  margin: -2% 0 0 -12%;
+  display: flex;
+  align-items: flex-end;
+  pointer-events: none;
+
+  img {
+    width: 118%;
+    max-height: 100%;
+    object-fit: contain;
+    object-position: left bottom;
+    mask-image: radial-gradient(ellipse 65% 65% at 45% 65%, #000 50%, transparent 100%);
+    filter: saturate(1.15) contrast(1.05);
+  }
+}
+
+/* ---------- Right Section ---------- */
+.right {
+  position: relative;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: center;
+  padding: 0 24px 0 12px;
+  overflow: hidden;
+}
+
+/* ---------- Card touching top & bottom ---------- */
+.card {
+  position: relative;
+  width: 100%;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border: 1px solid $border-gold;
+  border-radius: $radius-xl;
+  background:
+    radial-gradient(ellipse at 100% 100%, rgba(245, 196, 0, 0.06), transparent 40%),
+    linear-gradient(180deg, rgba(20, 18, 10, 0.94), rgba(10, 10, 10, 0.98));
+  box-shadow: 0 0 0 1px rgba(245, 196, 0, 0.06), 0 0 40px rgba(245, 196, 0, 0.08), $shadow-panel;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    @include dot-grid(rgba(245, 196, 0, 0.12), 7px);
+    mask-image: radial-gradient(ellipse at 50% 45%, transparent 55%, #000 100%);
+  }
+}
+
+.langSelect {
+  position: absolute;
+  top: 14px;
+  right: 18px;
+  z-index: 3;
+}
+
+.cardInner {
+  position: relative;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+  padding: $sp-4 $sp-6;
+}
+
+.cardHead {
+  text-align: center;
+  margin-bottom: 10px;
+
+  h2 {
+    margin-top: 4px;
+    font-size: 1.3rem;
+    font-weight: $fw-bold;
+  }
+
+  p {
+    margin-top: 2px;
+    font-size: $fs-xs;
+    color: $text-secondary;
+  }
+
+  strong {
+    color: $primary;
+    font-weight: $fw-bold;
+  }
+}
+
+.cardLogo {
+  margin: 0 auto;
+  color: $primary;
+  filter: drop-shadow(0 0 8px rgba(245, 196, 0, 0.4));
+}
+
+.googleWrap {
+  :global([class*="google"]) {
+    height: 38px;
+  }
+}
+
+/* Compact input overrides for signup */
+.form {
+  margin-bottom: 0;
+
+  :global([class*="field"]) {
+    margin-bottom: 8px;
+  }
+
+  :global([class*="label"]) {
+    font-size: 0.75rem;
+    margin-bottom: 3px;
+  }
+
+  :global([class*="inputWrap"]) {
+    height: 38px;
+  }
+}
+
+.submitWrap {
+  margin-top: 4px;
+
+  :global([class*="submit"]) {
+    height: 38px;
+  }
+}
+
+.rules {
+  margin: 2px 0 10px;
+
+  p {
+    font-size: 0.6875rem;
+    color: $text-secondary;
+    margin-bottom: 3px;
+  }
+
+  ul {
+    display: grid;
+    grid-template-columns: 1fr 1.25fr;
+    gap: 2px 8px;
+    padding-left: 2px;
+  }
+
+  li {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.6875rem;
+    color: $text-secondary;
+
+    svg {
+      color: $primary;
+      flex-shrink: 0;
+    }
+  }
+}
+
+.switch {
+  margin-top: 10px;
+  font-size: 0.75rem;
+}

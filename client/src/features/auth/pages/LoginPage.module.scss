@@ -1,0 +1,202 @@
+@use '../../../styles/variables' as *;
+
+.page {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 51% 49%;
+  background: $bg-app;
+
+  @include respond($bp-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Decorative dot grids ---------- */
+.dots {
+  position: absolute;
+  pointer-events: none;
+  @include dot-grid(rgba(245, 196, 0, 0.35), 9px);
+}
+
+.dotsTop {
+  top: 13%;
+  left: 0;
+  width: 40px;
+  height: 110px;
+  mask-image: linear-gradient(90deg, #000, transparent);
+}
+
+.dotsBottom {
+  bottom: 9%;
+  left: 0;
+  width: 46px;
+  height: 46px;
+  mask-image: linear-gradient(90deg, #000, transparent);
+}
+
+.dotsRight {
+  top: 4%;
+  right: 3%;
+  width: 70px;
+  height: 36px;
+  mask-image: linear-gradient(270deg, #000 30%, transparent);
+}
+
+/* ---------- Left ---------- */
+.left {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: $sp-8 $sp-10 $sp-10;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(245, 196, 0, 0.04), transparent 50%),
+    $bg-app;
+  border-right: 1px solid $border-subtle;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-right: 6%;
+}
+
+.formWrap {
+  width: 100%;
+  max-width: 400px;
+  margin: 13vh auto 0;
+
+  @include respond($bp-md) {
+    margin-top: $sp-12;
+  }
+}
+
+.title {
+  font-size: 1.85rem;
+  font-weight: $fw-bold;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.subtitle {
+  margin: $sp-1 0 $sp-6;
+  font-size: $fs-base;
+  color: $text-secondary;
+}
+
+.form {
+  margin-bottom: $sp-6;
+}
+
+.submitRow {
+  margin-top: $sp-8;
+}
+
+.legal {
+  width: 100%;
+  max-width: 400px;
+  margin: auto auto 0;
+  padding-top: $sp-10;
+  font-size: $fs-xs;
+  color: $text-secondary;
+  line-height: 1.6;
+
+  a {
+    color: $primary;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+}
+
+/* ---------- Right ---------- */
+.right {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: flex-start;
+  background-color: $bg-base;
+  background-size: cover;
+  background-position: center bottom;
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(100deg, rgba(5, 5, 5, 0.92) 0%, rgba(5, 5, 5, 0.6) 45%, rgba(5, 5, 5, 0) 75%);
+  }
+
+  @include respond($bp-md) {
+    display: none;
+  }
+}
+
+.pixels {
+  position: absolute;
+  top: 4%;
+  right: 3%;
+  z-index: 1;
+}
+
+.showcase {
+  position: relative;
+  z-index: 1;
+  margin-top: 19vh;
+  padding-left: 15%;
+}
+
+.bigLogo {
+  color: $primary;
+  filter: drop-shadow(0 0 20px rgba(245, 196, 0, 0.45));
+}
+
+.bigWord {
+  @include brand-text;
+  margin-top: $sp-5;
+  font-size: clamp(2rem, 3.3vw, 3rem);
+  line-height: 1;
+
+  span {
+    color: $primary;
+  }
+}
+
+.tagline {
+  margin: $sp-6 0 $sp-8;
+  font-size: $fs-lg;
+  color: $text-secondary;
+  line-height: 1.5;
+}
+
+.features {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-6;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  gap: $sp-4;
+
+  h3 {
+    font-size: $fs-md;
+    font-weight: $fw-semibold;
+  }
+
+  p {
+    font-size: $fs-xs;
+    color: $text-muted;
+  }
+}
+
+.featureIcon {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  @include flex-center;
+  color: $primary;
+  border: 1.5px solid $border-gold;
+  border-radius: $radius-md;
+  background: rgba(245, 196, 0, 0.05);
+  box-shadow: inset 0 0 10px rgba(245, 196, 0, 0.1);
+}

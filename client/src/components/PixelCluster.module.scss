@@ -1,0 +1,25 @@
+@use '../styles/variables' as *;
+
+.cluster {
+  display: grid;
+  grid-auto-rows: var(--cell);
+  gap: 2px;
+  pointer-events: none;
+
+  span {
+    border-radius: 1px;
+  }
+}
+
+.solid {
+  background: $primary;
+  box-shadow: 0 0 6px rgba(245, 196, 0, 0.4);
+}
+
+.mid {
+  background: rgba(245, 196, 0, 0.55);
+}
+
+.faint {
+  background: rgba(245, 196, 0, 0.2);
+}

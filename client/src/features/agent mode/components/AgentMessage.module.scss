@@ -1,0 +1,44 @@
+@use '../../../styles/variables' as *;
+
+.row {
+  display: flex;
+  align-items: flex-start;
+  gap: $sp-3;
+}
+
+.avatar {
+  @include flex-center;
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  color: $primary;
+  border: 1.5px solid $border-gold;
+  border-radius: 50%;
+  background: rgba(245, 196, 0, 0.08);
+  box-shadow: 0 0 12px rgba(245, 196, 0, 0.15);
+}
+
+.body {
+  padding-top: 5px;
+}
+
+.text {
+  font-size: $fs-md;
+  color: $text-primary;
+}
+
+.actions {
+  display: flex;
+  gap: $sp-3;
+  margin-top: $sp-3;
+
+  button {
+    display: flex;
+    color: $text-secondary;
+    transition: color $dur-fast $ease;
+
+    &:hover {
+      color: $primary;
+    }
+  }
+}

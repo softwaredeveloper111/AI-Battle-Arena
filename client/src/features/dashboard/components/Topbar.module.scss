@@ -1,0 +1,106 @@
+@use '../../../styles/variables' as *;
+
+.topbar {
+  position: relative;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  min-height: $topbar-height;
+  padding: $sp-2 $sp-4;
+  border-bottom: 1px solid $border-gold-faint;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
+
+  @include respond($bp-sm) {
+    grid-template-columns: 1fr auto;
+  }
+}
+
+.dots {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 280px;
+  height: 100%;
+  pointer-events: none;
+  @include dot-grid(rgba(245, 196, 0, 0.18), 7px);
+  mask-image: linear-gradient(270deg, rgba(0, 0, 0, 0.9), transparent);
+}
+
+.titleBlock {
+  position: relative;
+  min-width: 0;
+}
+
+.title {
+  display: inline-flex;
+  align-items: center;
+  gap: $sp-2;
+  font-size: $fs-lg;
+  font-weight: $fw-semibold;
+  color: $text-primary;
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  svg {
+    color: $text-secondary;
+    flex-shrink: 0;
+  }
+}
+
+.subtitle {
+  font-size: $fs-xs;
+  color: $text-secondary;
+  margin-top: -1px;
+}
+
+.switch {
+  position: relative;
+  display: flex;
+  padding: 3px;
+  border: 1px solid $border-default;
+  border-radius: $radius-pill;
+  background: $bg-surface;
+}
+
+.tab {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: $sp-2;
+  min-width: 96px;
+  height: 30px;
+  padding: 0 $sp-5;
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+  color: $text-secondary;
+  border-radius: $radius-pill;
+  transition: background $dur $ease, color $dur $ease;
+
+  &:hover {
+    color: $text-primary;
+  }
+}
+
+.tabActive {
+  color: $on-primary;
+  background: linear-gradient(180deg, $gold-400, $gold-500);
+  box-shadow: 0 0 16px rgba(245, 196, 0, 0.3);
+
+  &:hover {
+    color: $on-primary;
+  }
+}
+
+.pixels {
+  position: absolute;
+  top: 6px;
+  right: 10px;
+
+  @include respond($bp-sm) {
+    display: none;
+  }
+}

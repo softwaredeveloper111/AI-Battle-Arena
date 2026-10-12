@@ -49,12 +49,24 @@ const LoginPage = () => {
               icon={LockIcon}
               trailingEye
             />
+            <div className={styles.forgotRow}>
+              <Link to="#" id="forgot-password-link" className={styles.forgotLink}>
+                Forgot password?
+              </Link>
+            </div>
             <div className={styles.submitRow}>
               <SubmitButton id="login-submit-btn">Sign in</SubmitButton>
             </div>
           </form>
 
           <SwitchAuth text="Don't have an account?" linkText="Sign up" to="/signup" />
+
+          <div className={styles.verificationWrap}>
+            <p className={styles.verificationText}>Didn&apos;t receive verification email?</p>
+            <Link to="#" id="resend-verification-link" className={styles.verificationLink}>
+              Resend verification email
+            </Link>
+          </div>
         </div>
 
         <p className={styles.legal}>

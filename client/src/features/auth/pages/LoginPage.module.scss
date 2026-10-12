@@ -64,7 +64,7 @@
 .formWrap {
   width: 100%;
   max-width: 400px;
-  margin: 13vh auto 0;
+  margin: 7vh auto 0;
 
   @include respond($bp-md) {
     margin-top: $sp-12;
@@ -85,18 +85,61 @@
 }
 
 .form {
-  margin-bottom: $sp-6;
+  margin-bottom: $sp-5;
+}
+
+.forgotRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: -$sp-2;
+  margin-bottom: $sp-5;
+}
+
+.forgotLink {
+  font-size: $fs-xs;
+  color: #728a9c;
+  transition: color $dur-fast $ease;
+
+  &:hover {
+    color: $primary;
+    text-decoration: underline;
+  }
 }
 
 .submitRow {
-  margin-top: $sp-8;
+  margin-top: 0;
+}
+
+.verificationWrap {
+  margin-top: $sp-4;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.verificationText {
+  font-size: $fs-xs;
+  color: $text-muted;
+}
+
+.verificationLink {
+  font-size: $fs-xs;
+  font-weight: $fw-semibold;
+  color: $primary;
+  transition: filter $dur-fast $ease;
+
+  &:hover {
+    text-decoration: underline;
+    filter: brightness(1.15);
+  }
 }
 
 .legal {
   width: 100%;
   max-width: 400px;
   margin: auto auto 0;
-  padding-top: $sp-10;
+  padding-top: $sp-6;
   font-size: $fs-xs;
   color: $text-secondary;
   line-height: 1.6;

@@ -31,7 +31,7 @@ const judgeModel = geminiModel.withStructuredOutput(JudgeSchema);
 
 
 
-const StartNode =async  (state:typeof AIBattleState.State)=>{
+const StartNode = async  (state:typeof AIBattleState.State)=>{
   const problemStatement = state.problem;
   if(!problemStatement){
     throw new Error("Please provide a problem statement");
@@ -104,9 +104,16 @@ const graph = new StateGraph(AIBattleState)
   .compile();
 
 
-export default async function(userMessage:string){
-
+export default async function generateResponse(userMessage:string){
   const result = await graph.invoke({problem:userMessage,judge:{solution_1_score:0,solution_2_score:0,solution_1_reasoning:"",solution_2_reasoning:""}});
   return result
-
 }
+
+
+
+
+/**
+ * stateSchema is used to define the format(propertiy+data type) of the data which share b/w different nodes
+ */
+
+console.log(await generateResponse("are you consious , answer in short"))

@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
 import { CheckIcon, LockIcon, MailIcon, PillarLogo, UserIcon } from '../../../components/Icons'
@@ -21,6 +21,12 @@ const PASSWORD_RULES = [
 ]
 
 const SignupPage = () => {
+  const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    navigate('/')
+  }
   return (
     <main className={styles.page}>
       <span className={styles.dotsLeft} aria-hidden />
@@ -71,7 +77,7 @@ const SignupPage = () => {
 
             <OrDivider />
 
-            <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+            <form className={styles.form} onSubmit={handleSubmit}>
               <AuthInput id="signup-username" label="Username" placeholder="Choose a username" icon={UserIcon} />
               <AuthInput id="signup-email" label="Email" type="email" placeholder="you@example.com" icon={MailIcon} />
               <AuthInput

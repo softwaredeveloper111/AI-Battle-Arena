@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
 import { PillarLogo, BoltIcon, BrainIcon, NodesIcon, MailIcon, LockIcon } from '../../../components/Icons'
@@ -20,6 +20,13 @@ const FEATURES = [
 ]
 
 const LoginPage = () => {
+  const navigate = useNavigate()
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    navigate('/')
+  }
+
   return (
     <main className={styles.page}>
       {/* ---------- Left : form ---------- */}
@@ -39,7 +46,7 @@ const LoginPage = () => {
           <GoogleButton id="login-google-btn" />
           <OrDivider />
 
-          <form className={styles.form} onSubmit={(e) => e.preventDefault()}>
+          <form className={styles.form} onSubmit={handleSubmit}>
             <AuthInput id="login-email" label="Email" type="email" placeholder="you@example.com" icon={MailIcon} />
             <AuthInput
               id="login-password"

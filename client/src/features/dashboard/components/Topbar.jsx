@@ -1,13 +1,11 @@
-import { NavLink } from 'react-router-dom'
 import PixelCluster from '../../../components/PixelCluster'
 import { ChevronDownIcon, RobotIcon, SwordsIcon } from '../../../components/Icons'
 import styles from './Topbar.module.scss'
 
 /**
- * Top bar with chat title + Battle / Agent mode switch.
- * Mode switch only navigates between the two static screens.
+ * Top bar with chat title + Battle / Agent state switcher.
  */
-const Topbar = ({ title, subtitle }) => {
+const Topbar = ({ title, subtitle, mode = 'battle', onModeChange }) => {
   return (
     <header className={styles.topbar}>
       <span className={styles.dots} aria-hidden />
@@ -21,22 +19,28 @@ const Topbar = ({ title, subtitle }) => {
       </div>
 
       <div className={styles.switch} role="tablist" aria-label="Mode">
-        <NavLink
-          to="/battle"
+        <button
+          type="button"
           id="mode-battle-tab"
-          className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`}
+          onClick={() => onModeChange?.('battle')}
+          className={`${styles.tab} ${mode === 'battle' ? styles.tabActive : ''}`}
+          aria-selected={mode === 'battle'}
+          role="tab"
         >
           <SwordsIcon size={17} />
           <span>Battle</span>
-        </NavLink>
-        <NavLink
-          to="/agent"
+        </button>
+        <button
+          type="button"
           id="mode-agent-tab"
-          className={({ isActive }) => `${styles.tab} ${isActive ? styles.tabActive : ''}`}
+          onClick={() => onModeChange?.('agent')}
+          className={`${styles.tab} ${mode === 'agent' ? styles.tabActive : ''}`}
+          aria-selected={mode === 'agent'}
+          role="tab"
         >
           <RobotIcon size={17} />
           <span>Agent</span>
-        </NavLink>
+        </button>
       </div>
 
       <PixelCluster variant="corner" cell={7} className={styles.pixels} />

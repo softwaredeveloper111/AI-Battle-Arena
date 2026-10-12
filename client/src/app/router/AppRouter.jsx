@@ -3,11 +3,15 @@ import AuthLayout from '../../layout/AuthLayout'
 import AppLayout from '../../layout/AppLayout'
 import LoginPage from '../../features/auth/pages/LoginPage'
 import SignupPage from '../../features/auth/pages/SignupPage'
-import BattlePage from '../../features/battle mode/pages/BattlePage'
-import AgentPage from '../../features/agent mode/pages/AgentPage'
+import Dashboard from '../../features/dashboard/pages/Dashboard'
 
 const router = createBrowserRouter([
-  { path: '/', element: <Navigate to="/login" replace /> },
+  {
+    element: <AppLayout />,
+    children: [
+      { path: '/', element: <Dashboard /> },
+    ],
+  },
   {
     element: <AuthLayout />,
     children: [
@@ -15,14 +19,7 @@ const router = createBrowserRouter([
       { path: '/signup', element: <SignupPage /> },
     ],
   },
-  {
-    element: <AppLayout />,
-    children: [
-      { path: '/battle', element: <BattlePage /> },
-      { path: '/agent', element: <AgentPage /> },
-    ],
-  },
-  { path: '*', element: <Navigate to="/login" replace /> },
+  { path: '*', element: <Navigate to="/" replace /> },
 ])
 
 export default router

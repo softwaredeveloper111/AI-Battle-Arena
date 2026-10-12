@@ -1,0 +1,69 @@
+@use '../../../styles/variables' as *;
+
+.dashboard {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  min-width: 0;
+}
+
+/* ---------- Battle Conversation ---------- */
+.battleConversation {
+  flex: 1;
+  overflow-y: auto;
+  padding: $sp-4 $sp-4 $sp-4;
+  display: flex;
+  flex-direction: column;
+  gap: $sp-3;
+}
+
+.promptRow {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.prompt {
+  min-width: 220px;
+  padding: $sp-2 $sp-4;
+  font-size: $fs-sm;
+  color: $text-primary;
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-md;
+  background: linear-gradient(90deg, rgba(245, 196, 0, 0.1), rgba(245, 196, 0, 0.04));
+}
+
+.responses {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $sp-3;
+
+  @include respond($bp-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ---------- Agent Conversation ---------- */
+.agentConversation {
+  flex: 1;
+  overflow-y: auto;
+  padding: $sp-12 $sp-10 $sp-6 $sp-8;
+
+  @include respond($bp-sm) {
+    padding: $sp-6 $sp-4;
+  }
+}
+
+.userRow {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: $sp-4;
+}
+
+.userBubble {
+  padding: $sp-2 $sp-4;
+  font-size: $fs-md;
+  font-weight: $fw-semibold;
+  color: $text-primary;
+  background: $bg-user-bubble;
+  border-radius: $radius-lg;
+}

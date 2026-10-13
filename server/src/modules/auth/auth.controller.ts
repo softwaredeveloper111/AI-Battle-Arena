@@ -4,7 +4,11 @@ import ApiResponse from "../../shared/utils/ApiResponse.util.js";
 import userModel from "./user.model.js"
 import type {Request,Response} from "express"
 import jwt from "jsonwebtoken"
-import config from "../../config/config.js"
+import config from "../../config/config.js";
+import crypto from "crypto"
+
+
+
 
 type CookieOptions= {
   httpOnly:boolean,
@@ -50,6 +54,16 @@ export const registerController = asyncWrapper(async(req:Request,res:Response)=>
    if(!user){
     throw new ApiError("User not created",500)
    }
+
+
+   const emailVerificationToken = jwt.sign({
+    id:user._id
+   },config.EMAIL_VERIFICATION_SECRET_KEY,{
+    expiresIn:"5m"
+   });
+
+   const emailVerificationTokenHash =  crypto.createHash("sha256").update(emailVerificationToken).digest("hex")
+
 
    return ApiResponse(res,201,"User created successfully",user)
 

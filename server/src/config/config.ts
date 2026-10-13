@@ -52,6 +52,16 @@ if(!process.env.BACKEND_URL){
 }
 
 
+if(!process.env.EMAIL_VERIFICATION_SECRET_KEY){
+    throw new Error('EMAIL_VERIFICATION_SECRET_KEY in enviroment variables')
+}
+
+
+if(!process.env.REDIS_URL){
+    throw new Error('REDIS_URL is required in enviroment variables')
+}
+
+
 type CONFIG = {
    readonly NODE_ENV: string;
    readonly PORT: number;
@@ -65,6 +75,8 @@ type CONFIG = {
    readonly RESEND_API_KEY: string,
    readonly FRONTEND_URL:string,
    readonly BACKEND_URL:string,
+   readonly EMAIL_VERIFICATION_SECRET_KEY:string,
+   readonly REDIS_URL:string
 }
 
 
@@ -81,6 +93,8 @@ const config:CONFIG = {
   RESEND_API_KEY: process.env.RESEND_API_KEY,
   FRONTEND_URL:process.env.FRONTEND_URL,
   BACKEND_URL:process.env.BACKEND_URL,
+  EMAIL_VERIFICATION_SECRET_KEY:process.env.EMAIL_VERIFICATION_SECRET_KEY,
+  REDIS_URL:process.env.REDIS_URL
 };
 
 

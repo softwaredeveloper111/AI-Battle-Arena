@@ -8,17 +8,28 @@ const httpLogger = pinoHttp({
   quietReqLogger: true,
   quietResLogger: true,
 
-  customSuccessMessage: (req, res) =>
-    `${req.method} ${req.url} ${res.statusCode}`,
+    customLogLevel: (req, res, err) => {
+    if (res.statusCode >= 500) return "error";
+    if (res.statusCode >= 400) return "warn";
+    return "info";
+  },
 
-  customErrorMessage: (req, res) =>
-    `${req.method} ${req.url} ${res.statusCode} failed`,
+
+  customSuccessMessage: (req, res) =>
+     `${req.method} ${req.url} ${res.statusCode}`,
+
+  customErrorMessage: (req, res , err) =>
+   `${req.method} ${req.url} ${res.statusCode} - ${err?.message || "Request failed"}`,
 
   serializers: {
   res(res) {
     return { statusCode: res.statusCode };
   },
+  err() {
+      return undefined;
+    },
 },
+
 });
 
 export default httpLogger;

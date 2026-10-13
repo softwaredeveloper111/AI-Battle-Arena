@@ -1,6 +1,6 @@
-import  asyncWrapper from "../../utils/AsyncWrapper.util.js";
-import ApiError from "../../utils/ApiError.util.js";
-import ApiResponse from "../../utils/ApiResponse.util.js";
+import  asyncWrapper from "../../shared/utils/AsyncWrapper.util.js";
+import ApiError from "../../shared/utils/ApiError.util.js";
+import ApiResponse from "../../shared/utils/ApiResponse.util.js";
 import userModel from "./user.model.js"
 import type {Request,Response} from "express"
 import jwt from "jsonwebtoken"

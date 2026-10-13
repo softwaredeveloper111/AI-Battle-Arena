@@ -1,13 +1,11 @@
 import express from "express";
-import httpLogger from  "./lib/httpLogger.js";
+import httpLogger from "./lib/httpLogger.js";
 
-import errorHandler from "./middlewares/errorHandler.middleware.js";
+import errorHandler from "./shared/middlewares/errorHandler.middleware.js";
 
 import authRouter from "./modules/auth/auth.route.js";
 
-
 const app = express();
-
 
 /**
  * application middlewares
@@ -18,36 +16,27 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" })); //Maximum reques
 
 app.use(httpLogger);
 
-
-
-
 /**
  * routes
  */
-app.use("/api/auth",authRouter);
-
-
-
+app.use("/api/auth", authRouter);
 
 /**
  * health check routes
  */
 app.get("/api/health", (req, res) => {
-    res.status(200).json({ 
-        status: "ok",
-        timestamp: new Date().toISOString(),
-        uptime:process.uptime(),
-        app: "AI Battle Arena API",
-        version: "1.0.0",
-        
-    });
+  res.status(200).json({
+    status: "ok",
+    timestamp: new Date().toISOString(),
+    uptime: process.uptime(),
+    app: "AI Battle Arena API",
+    version: "1.0.0",
+  });
 });
-
 
 /**
  * global error handler
  */
-app.use(errorHandler)
-
+app.use(errorHandler);
 
 export default app;

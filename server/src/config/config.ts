@@ -37,6 +37,16 @@ if(!process.env.MONGO_URI){
 }
 
 
+if(!process.env.RESEND_API_KEY){
+    throw new Error("RESEND_API_KEY is required in enviroment variables")
+}
+
+
+if(!process.env.FRONTEND_URL){
+    throw new Error("FRONTEND_URL is required in enviroment variables")
+}
+
+
 type CONFIG = {
    readonly NODE_ENV: string;
    readonly PORT: number;
@@ -47,6 +57,8 @@ type CONFIG = {
    readonly BCRYPT_SALT_ROUNDS: number;
    readonly JWT_SECRET_KEY: string;
    readonly MONGO_URI: string;
+   readonly RESEND_API_KEY: string,
+   readonly FRONTEND_URL:string
 }
 
 
@@ -59,7 +71,9 @@ const config:CONFIG = {
   COHERE_API_KEY: process.env.COHERE_API_KEY,
   BCRYPT_SALT_ROUNDS: Number(process.env.BCRYPT_SALT_ROUNDS),
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
-  MONGO_URI: process.env.MONGO_URI
+  MONGO_URI: process.env.MONGO_URI,
+  RESEND_API_KEY: process.env.RESEND_API_KEY,
+  FRONTEND_URL:process.env.FRONTEND_URL
 };
 
 

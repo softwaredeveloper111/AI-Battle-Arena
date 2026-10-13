@@ -169,3 +169,20 @@ permissions and available API capabilities.
 -   [ ] Sidebar includes Terms of Use, Privacy Policy, and Cookies.
 -   [ ] UI follows the finalized black-and-gold mockup and works
     responsively.
+
+
+
+
+
+
+
+arena.techy.fun
+ARENA BATTLE AI frontend — Vercel
+
+
+arena-api.techy.fun
+ARENA BATTLE AI backend — Render
+
+
+techy.fun
+Resend se verification emails

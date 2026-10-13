@@ -1,10 +1,11 @@
 import app from "./src/app.js";
 import config from "./src/config/config.js";
 import logger from "./src/lib/logger.js";
-
+import connectedToDB from "./src/config/db.js";
 
 const PORT = config.PORT;
 
+connectedToDB();
 
 app.listen(PORT, () => {
     

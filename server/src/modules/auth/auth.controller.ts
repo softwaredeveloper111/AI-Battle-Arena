@@ -25,6 +25,9 @@ type CookieOptions= {
   path:string
 }
 
+
+
+
 const cookieOptions:CookieOptions = {
   httpOnly:true,
   secure:config.NODE_ENV === "production",
@@ -32,6 +35,8 @@ const cookieOptions:CookieOptions = {
   maxAge:1000*60*60*24,
   path: "/",
 }
+
+
 
 
 export const registerController = asyncWrapper(async(req:Request,res:Response)=>{
@@ -93,6 +98,8 @@ export const registerController = asyncWrapper(async(req:Request,res:Response)=>
 
 
 
+
+
 export const loginController = asyncWrapper(async(req:Request,res:Response)=>{
 
   const {email,password} = req.body;
@@ -136,6 +143,10 @@ export const loginController = asyncWrapper(async(req:Request,res:Response)=>{
   return ApiResponse(res,200,"User logged in successfully", user)
 
 })
+
+
+
+
 
 
 export const verifyLinkController = asyncWrapper(async (req:Request, res:Response) => {

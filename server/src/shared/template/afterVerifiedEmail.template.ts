@@ -114,7 +114,7 @@ const afterVerifiedEmailTemplate = ()=>{
                     "
                   >
                     Your email address has been successfully verified.
-                    You can now log in to your AI-BATTLE-ACCOUNT account and get started.
+                    You can now log in to your AI-BATTLE-ARENA account and get started.
                   </p>
 
                

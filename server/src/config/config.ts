@@ -32,6 +32,10 @@ if(!process.env.JWT_SECRET_KEY){
     throw new Error("JWT_SECRET_KEY is required in enviroment variables")
 }
 
+if(!process.env.MONGO_URI){
+    throw new Error("MONGO_URI is required in enviroment variables")
+}
+
 
 type CONFIG = {
    readonly NODE_ENV: string;
@@ -42,6 +46,7 @@ type CONFIG = {
    readonly COHERE_API_KEY: string;
    readonly BCRYPT_SALT_ROUNDS: number;
    readonly JWT_SECRET_KEY: string;
+   readonly MONGO_URI: string;
 }
 
 
@@ -53,7 +58,8 @@ const config:CONFIG = {
   MISTRAL_API_KEY: process.env.MISTRAL_API_KEY,
   COHERE_API_KEY: process.env.COHERE_API_KEY,
   BCRYPT_SALT_ROUNDS: Number(process.env.BCRYPT_SALT_ROUNDS),
-  JWT_SECRET_KEY: process.env.JWT_SECRET_KEY
+  JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
+  MONGO_URI: process.env.MONGO_URI
 };
 
 

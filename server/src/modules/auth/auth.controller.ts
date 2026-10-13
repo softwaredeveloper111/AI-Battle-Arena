@@ -1,6 +1,6 @@
 import  asyncWrapper from "../../utils/AsyncWrapper.util.js";
 import ApiError from "../../utils/ApiError.util.js";
-import ApiResponse from "../../utils/apiResponse.util.js";
+import ApiResponse from "../../utils/ApiResponse.util.js";
 import userModel from "./user.model.js"
 import type {Request,Response} from "express"
 import jwt from "jsonwebtoken"
@@ -10,20 +10,24 @@ type CookieOptions= {
   httpOnly:boolean,
   secure:boolean,
   sameSite:"strict" | "none" | "lax",
-  maxAge:number
+  maxAge:number,
+  path:string
 }
 
 const cookieOptions:CookieOptions = {
   httpOnly:true,
   secure:config.NODE_ENV === "production",
-  sameSite:config.NODE_ENV === "production"?"strict":"none",
-  maxAge:1000*60*60*24
+  sameSite:config.NODE_ENV === "development"?"strict":"none",
+  maxAge:1000*60*60*24,
+  path: "/",
 }
 
 
 export const registerController = asyncWrapper(async(req:Request,res:Response)=>{
  
-   const {username,email,password} = req.body;
+   const username = req.body?.username;
+   const email = req.body?.email;
+   const password = req.body?.password;
    
    if(!username || !email || !password){
     throw new ApiError("All fields are required",400)
@@ -34,7 +38,7 @@ export const registerController = asyncWrapper(async(req:Request,res:Response)=>
    })
 
    if(userExists){
-    throw new ApiError("User already exists",400)
+    throw new ApiError("User already exists",409)
    }
   
    const user = await userModel.create({
@@ -96,3 +100,5 @@ export const loginController = asyncWrapper(async(req:Request,res:Response)=>{
   return ApiResponse(res,200,"User logged in successfully", user)
 
 })
+
+

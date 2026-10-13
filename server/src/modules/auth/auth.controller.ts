@@ -14,6 +14,7 @@ import invalidVerificationEmailTemplate from "../../shared/template/invalidVerif
 import alreadyEmailVerifiedTemplate from "../../shared/template/alreadyVerifiedEmail.template.js";
 import expiredVerificationEmailTemplate from "../../shared/template/expiredEmailVerification.template.js";
 import afterEmailVerfiedTemplate from "../../shared/template/afterVerifiedEmail.template.js"
+import forgotPasswordEmailTemplate from "../../shared/template/forgotPasswordEmailTemplate.js"
 
 
 
@@ -263,3 +264,59 @@ export const resendVerificationLinkController = asyncWrapper(async(req:Request,r
 
 
 })
+
+
+
+
+
+
+export const forgotPasswordController = asyncWrapper(async(req:Request,res:Response)=>{
+  
+  const email = req.body?.email;
+
+  if (!email || typeof email !== "string"){
+    throw new ApiError("Invalid email",400)
+  }
+
+  const user = await userModel.findOne({email});
+
+  if(!user){
+   return ApiResponse(res,404, "user not found",null)
+  }
+
+  const resetPasswordToken = jwt.sign(
+    {
+      id: user._id,
+    },
+    config.RESET_PASSWORD_SECRET_KEY,
+    { 
+      expiresIn: "5m" 
+    },
+  );
+  
+   const resetPasswordTokenHash = crypto
+    .createHash("sha256")
+    .update(resetPasswordToken)
+    .digest("hex");
+
+
+   await redisClient.set(
+  `password-reset:user:${user._id}`,
+  resetPasswordTokenHash,
+  "EX",
+  300
+);
+    const resetUrl = `${config.FRONTEND_URL}/reset-password?token=${resetPasswordToken}`;
+  
+  await sendEmail(
+    user.email,
+    "Password Reset",
+    forgotPasswordEmailTemplate({
+      username:user.username,
+      resetUrl
+    })
+  )
+  
+  return ApiResponse(res,200,"password reset link sent successfully",null);
+})
+

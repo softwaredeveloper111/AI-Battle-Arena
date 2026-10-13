@@ -61,6 +61,10 @@ if(!process.env.REDIS_URL){
     throw new Error('REDIS_URL is required in enviroment variables')
 }
 
+if(!process.env.RESET_PASSWORD_SECRET_KEY){
+    throw new Error('RESET_PASSWORD_SECRET_KEY is required in enviroment variables')
+}
+
 
 type CONFIG = {
    readonly NODE_ENV: string;
@@ -76,7 +80,8 @@ type CONFIG = {
    readonly FRONTEND_URL:string,
    readonly BACKEND_URL:string,
    readonly EMAIL_VERIFICATION_SECRET_KEY:string,
-   readonly REDIS_URL:string
+   readonly REDIS_URL:string,
+   readonly RESET_PASSWORD_SECRET_KEY:string
 }
 
 
@@ -94,7 +99,8 @@ const config:CONFIG = {
   FRONTEND_URL:process.env.FRONTEND_URL,
   BACKEND_URL:process.env.BACKEND_URL,
   EMAIL_VERIFICATION_SECRET_KEY:process.env.EMAIL_VERIFICATION_SECRET_KEY,
-  REDIS_URL:process.env.REDIS_URL
+  REDIS_URL:process.env.REDIS_URL,
+  RESET_PASSWORD_SECRET_KEY:process.env.RESET_PASSWORD_SECRET_KEY
 };
 
 

@@ -1,5 +1,5 @@
-import Redis from "ioredis"
-import config from "../config/config.js"
+import {Redis} from "ioredis"
+import config from "./config.js"
 import logger from "../lib/logger.js"
 
 
@@ -11,8 +11,8 @@ redisClient.on('connect',()=>{
 })
 
 
-redisClient.on('error',(err)=>{
-    logger.error('Error connecting to Redis : ',err)
+redisClient.on('error',(err:Error)=>{
+      logger.error({ err }, "Error connecting to Redis");
 })
 
 

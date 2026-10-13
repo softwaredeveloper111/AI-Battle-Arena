@@ -195,7 +195,7 @@ const verificationEmailTemplate = ({ username, emailVerificationToken }: Props) 
                         color: #a3a3a3;
                       "
                     >
-                      © ${new Date().getFullYear()}AI-BATTLE-ARENA. All rights reserved.
+                      © ${new Date().getFullYear()} AI-BATTLE-ARENA. All rights reserved.
                     </p>
                   </td>
                 </tr>

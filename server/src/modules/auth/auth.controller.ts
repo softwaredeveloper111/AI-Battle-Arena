@@ -6,7 +6,14 @@ import type {Request,Response} from "express"
 import jwt from "jsonwebtoken"
 import config from "../../config/config.js";
 import crypto from "crypto"
+import redisClient from "../../config/cache.js"
+import sendEmail from "../../shared/services/email.service.js"
 
+import verificationEmailTemplate from "../../shared/template/emailVerification.template.js";
+import invalidVerificationEmailTemplate from "../../shared/template/invalidVerificationEmail.template.js";
+import alreadyEmailVerifiedTemplate from "../../shared/template/alreadyVerifiedEmail.template.js";
+import expiredVerificationEmailTemplate from "../../shared/template/expiredEmailVerification.template.js";
+import afterEmailVerfiedTemplate from "../../shared/template/afterVerifiedEmail.template.js"
 
 
 
@@ -62,10 +69,25 @@ export const registerController = asyncWrapper(async(req:Request,res:Response)=>
     expiresIn:"5m"
    });
 
-   const emailVerificationTokenHash =  crypto.createHash("sha256").update(emailVerificationToken).digest("hex")
+   const emailVerificationTokenHash =  crypto.createHash("sha256").update(emailVerificationToken).digest("hex");
+   
+   await redisClient.set(
+     `email-verification:${user._id}`,
+     emailVerificationTokenHash,
+     "EX", 300
+   )
 
 
-   return ApiResponse(res,201,"User created successfully",user)
+   await sendEmail(
+        email,
+        "[AI-BATTLE-ARENA] Verify your email address",
+        verificationEmailTemplate({
+          username,
+          emailVerificationToken,
+        })
+    );
+
+   return ApiResponse(res,201,"User created successfully and email verification link sent",user)
 
 })
 
@@ -116,3 +138,64 @@ export const loginController = asyncWrapper(async(req:Request,res:Response)=>{
 })
 
 
+export const verifyLinkController = asyncWrapper(async (req:Request, res:Response) => {
+  const token = req.query?.token;
+
+  if (!token || typeof token !== "string") {
+    return res.status(400).send(invalidVerificationEmailTemplate());
+  }
+
+  let decoded;
+  try {
+
+    decoded = jwt.verify(
+      token,
+      config.EMAIL_VERIFICATION_SECRET_KEY
+    );
+    
+  } catch (error:unknown) {
+     if (error instanceof Error && error.name === "TokenExpiredError"){
+      return res.status(401).send(expiredVerificationEmailTemplate());
+    }
+
+    return res.status(401).send(invalidVerificationEmailTemplate());
+  }
+
+ 
+  if (typeof decoded === "string" || !decoded.id) {
+    return res.status(401).send(invalidVerificationEmailTemplate());
+  }
+
+  const user = await userModel.findById(decoded.id);
+
+  if (!user) {
+    return res.status(404).send(invalidVerificationEmailTemplate());
+  }
+
+
+  if (user.emailVerified) {
+    return res.status(403).send(alreadyEmailVerifiedTemplate());
+  }
+
+  const tokenHash = crypto
+  .createHash("sha256")
+  .update(token)
+  .digest("hex");
+
+   const getRedisHashToken = await redisClient.get(
+  `email-verification:${decoded.id}`
+);
+
+if (!getRedisHashToken || (getRedisHashToken !== tokenHash)) {
+  return res.status(401).send(
+    invalidVerificationEmailTemplate()
+  );
+}
+
+  user.emailVerified = true;
+  await user.save();
+
+  await redisClient.del(`email-verification:${decoded.id}`);
+
+  return res.status(200).send(afterEmailVerfiedTemplate());
+});

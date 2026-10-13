@@ -7,16 +7,14 @@ const resend = new Resend(config.RESEND_API_KEY);
 const sendEmail = async (
   to: string,
   subject: string,
-  text: string,
-  html?: string
+  html: string,
 ) => {
   try {
     const { data, error } = await resend.emails.send({
       from: "ARENA BATTLE AI <noreply@techy.fun>",
       to: [to],
       subject,
-      text,
-      ...(html ? { html } : {}),
+            html,
     });
 
     if (error) {
@@ -33,5 +31,4 @@ const sendEmail = async (
   }
 };
 
-export   { sendEmail };
-
+export default sendEmail

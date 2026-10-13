@@ -1,6 +1,7 @@
 import { Router } from "express";
 import {registerController} from "./auth.controller.js"
-import {loginController } from "./auth.controller.js"
+import {loginController } from "./auth.controller.js";
+import {verifyLinkController} from "./auth.controller.js"
 
 const authRouter = Router();
 
@@ -42,6 +43,25 @@ authRouter.post("/register",registerController);
  */
 
 authRouter.post("/login",loginController);
+
+
+
+
+/**
+ * 
+ * @description verify email link
+ * @route GET /api/auth/verify-email
+ * @access public
+ * 
+ * @param {string} req.query.token - token for email verification
+ * 
+ * @returns {Object} 200 email verified successfully
+ * @returns {Object} 401 invalid token
+ * @returns {Object} 404 user not found
+ * @returns {Object} 403 email already verified
+ * 
+ */
+authRouter.get("/verify-email", verifyLinkController);
 
 
 

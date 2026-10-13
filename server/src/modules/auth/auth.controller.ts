@@ -377,7 +377,7 @@ export const resetPasswordController =  asyncWrapper(async(req:Request,res:Respo
 
   await redisClient.del(`password-reset:user:${decoded.id}`);
 
-  return ApiResponse(res,200,"Password reset successfully",null)
+  return ApiResponse(res,200,"Password reset successfully",user)
 
 })
 

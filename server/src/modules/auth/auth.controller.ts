@@ -210,3 +210,56 @@ if (!getRedisHashToken || (getRedisHashToken !== tokenHash)) {
 
   return res.status(200).send(afterEmailVerfiedTemplate());
 });
+
+
+
+
+
+
+export const resendVerificationLinkController = asyncWrapper(async(req:Request,res:Response)=>{
+
+   const {email} = req.body;
+
+   if (!email || typeof email !== "string"){
+    throw new ApiError("Invalid email",400)
+   }
+  
+   const isEmailRegistered = await userModel.findOne({email});
+   if(!isEmailRegistered){
+    throw new ApiError("user not found",404)
+   }
+
+   const isEmailAlreadyVerified = isEmailRegistered.emailVerified ;
+   if(isEmailAlreadyVerified){
+    throw new ApiError("user already verified",400)
+   }
+   
+
+   const emailVerificationToken = jwt.sign({
+    id:isEmailRegistered._id
+   },config.EMAIL_VERIFICATION_SECRET_KEY,{
+    expiresIn:"5m"
+   });
+
+   const emailVerificationTokenHash =  crypto.createHash("sha256").update(emailVerificationToken).digest("hex");
+   
+   await redisClient.set(
+     `email-verification:${isEmailRegistered._id}`,
+     emailVerificationTokenHash,
+     "EX", 300
+   )
+
+
+   await sendEmail(
+        email,
+        "[AI-BATTLE-ARENA] Verify your email address",
+        verificationEmailTemplate({
+          username:isEmailRegistered?.username,
+          emailVerificationToken,
+        })
+    );
+
+  return ApiResponse(res,200,"email verification link sent successfully",null)
+
+
+})

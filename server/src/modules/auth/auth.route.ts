@@ -1,7 +1,9 @@
 import { Router } from "express";
 import {registerController} from "./auth.controller.js"
 import {loginController } from "./auth.controller.js";
-import {verifyLinkController} from "./auth.controller.js"
+import {verifyLinkController} from "./auth.controller.js";
+import {resendVerificationLinkController} from "./auth.controller.js"
+
 
 const authRouter = Router();
 
@@ -62,6 +64,26 @@ authRouter.post("/login",loginController);
  * 
  */
 authRouter.get("/verify-email", verifyLinkController);
+
+
+
+
+
+/**
+ * @description resend verification link
+ * @route POST /api/auth/resend-verification-link
+ * @access public
+ * 
+ * @param {string} req.body.email - email for the user
+ * 
+ * @returns {Object} 200 email verification link sent successfully
+ * @returns {Object} 400 invalid email
+ * @returns {Object} 404 user not found
+ * @returns {Object} 403 email already verified
+ * 
+ */
+authRouter.post("/resend-verification-link",resendVerificationLinkController)
+
 
 
 

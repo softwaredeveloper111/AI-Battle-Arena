@@ -79,9 +79,9 @@ export const loginController = asyncWrapper(async(req:Request,res:Response)=>{
     throw new ApiError("Invalid password",401)
   }
 
-  const isVerified = user.emailVerified;
+  const isEmailVerified = user.emailVerified;
 
-  if(!isVerified){
+  if(!isEmailVerified){
     throw new ApiError("Email not verified",403)
   }
 

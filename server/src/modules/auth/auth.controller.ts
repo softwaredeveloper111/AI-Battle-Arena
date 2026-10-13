@@ -381,3 +381,53 @@ export const resetPasswordController =  asyncWrapper(async(req:Request,res:Respo
 
 })
 
+
+
+
+
+export const getMeController = asyncWrapper(async(req:Request,res:Response)=>{
+  const user = req.user;
+  return ApiResponse(res,200,"user get successfully",user);
+})
+
+
+
+
+
+
+export const logoutController =  asyncWrapper(async(req:Request,res:Response)=>{
+  
+  const token = req.cookies?.token;
+  const userId = req.user?._id;
+
+  if (!token || typeof token !== "string") {
+    throw new ApiError("Token not found", 401);
+  }
+
+  const createTokenHash = crypto
+  .createHash("sha256")
+  .update(token)
+  .digest("hex");
+   
+
+  const decoded = jwt.verify(token, config.JWT_SECRET_KEY);
+
+  if (typeof decoded === "string" || !decoded.exp) {
+    throw new ApiError("Invalid token payload", 400);
+  }
+
+  const remainingTTL = decoded.exp - Math.floor(Date.now() / 1000);
+
+  if (remainingTTL > 0) {
+    await redisClient.set(`blacklist:token:${createTokenHash}`, "1", "EX", remainingTTL);
+  }
+  
+  /** delete user cache -  cache invalidation */
+  if (userId) {
+    await redisClient.del(`user:${userId}`);
+  }
+
+  res.clearCookie("token", cookieOptions);
+  return ApiResponse(res,200,"user logout successfully",null);
+  
+});  

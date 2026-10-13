@@ -4,8 +4,11 @@ import {loginController } from "./auth.controller.js";
 import {verifyLinkController} from "./auth.controller.js";
 import {resendVerificationLinkController} from "./auth.controller.js"
 import {forgotPasswordController} from "./auth.controller.js";
-import {resetPasswordController} from "./auth.controller.js"
+import {resetPasswordController} from "./auth.controller.js";
+import {getMeController} from "./auth.controller.js"
+import {logoutController} from "./auth.controller.js"
 
+import identifyUser from "../../shared/middlewares/identifyUser.middleware.js"
 
 
 
@@ -127,6 +130,34 @@ authRouter.post("/forgot-password",forgotPasswordController)
  */
 authRouter.post("/reset-password",resetPasswordController)
 
+
+
+
+
+/**
+ * @description get current user
+ * @route GET /api/auth/me
+ * @access protected
+ * 
+ * @returns {Object} 200 user object
+ * @returns {Object} 401 unauthorized
+ * 
+ */
+authRouter.get("/me", identifyUser ,  getMeController)
+
+
+
+
+/**
+ * @description logout a user
+ * @route POST /api/auth/logout
+ * @access protected
+ * 
+ * @returns {Object} 200 user logged out successfully
+ * @returns {Object} 401 unauthorized
+ * 
+ */
+authRouter.post("/logout", identifyUser , logoutController)
 
 
 

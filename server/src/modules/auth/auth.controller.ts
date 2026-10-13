@@ -134,7 +134,7 @@ export const loginController = asyncWrapper(async(req:Request,res:Response)=>{
    */
 
   const token = jwt.sign({
-    _id:user._id,
+    id:user._id,
   },config.JWT_SECRET_KEY,{
     expiresIn:"1d"
   });

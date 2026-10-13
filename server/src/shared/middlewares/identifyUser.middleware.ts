@@ -44,8 +44,11 @@ if (isBlacklisted) {
   
   /** verify jwt */
     const decoded = jwt.verify(token,config.JWT_SECRET_KEY);
+     
+ 
+    const userId = typeof decoded !== "string" ? decoded.id : undefined;
 
-    const userId = typeof decoded !== "string" ? (decoded.id || decoded._id) : undefined;
+
     if (typeof decoded === "string" || !userId) {
       throw new ApiError("Invalid token payload",401)
     }

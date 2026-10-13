@@ -320,3 +320,64 @@ export const forgotPasswordController = asyncWrapper(async(req:Request,res:Respo
   return ApiResponse(res,200,"password reset link sent successfully",null);
 })
 
+
+
+
+
+export const resetPasswordController =  asyncWrapper(async(req:Request,res:Response)=>{
+ 
+  
+  const token = req.body?.token;
+  const password = req.body?.password;
+
+  if(!token || typeof token !== "string" || !password || typeof password !== "string"){
+    throw new ApiError("Invalid request body",400)
+  }
+
+  let decoded;
+
+  try {
+    decoded = jwt.verify(
+      token,
+      config.RESET_PASSWORD_SECRET_KEY
+    );
+  } catch (error:unknown){
+    if(error instanceof Error && error.name === "TokenExpiredError"){
+      throw new ApiError("expired reset token", 400);
+    }
+    throw new ApiError("Invalid reset token", 400);
+  }
+
+  if (typeof decoded === "string" || !decoded?.id) {
+    throw new ApiError("Invalid reset token", 400);
+  }
+
+
+  const tokenHash = crypto
+    .createHash("sha256")
+    .update(token)
+    .digest("hex");
+
+  const getRedisHashedToken = await redisClient.get(
+  `password-reset:user:${decoded.id}`
+);
+
+   if (!getRedisHashedToken || (getRedisHashedToken !== tokenHash)) {
+  throw new ApiError("Invalid  reset token", 400);
+}
+
+  const user = await userModel.findById(decoded.id);
+
+  if (!user) {
+    throw new ApiError("user not found", 404);
+  }
+
+  user.password = password;
+  await user.save();
+
+  await redisClient.del(`password-reset:user:${decoded.id}`);
+
+  return ApiResponse(res,200,"Password reset successfully",null)
+
+})
+

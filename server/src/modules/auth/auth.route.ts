@@ -3,7 +3,11 @@ import {registerController} from "./auth.controller.js"
 import {loginController } from "./auth.controller.js";
 import {verifyLinkController} from "./auth.controller.js";
 import {resendVerificationLinkController} from "./auth.controller.js"
-import {forgotPasswordController} from "./auth.controller.js"
+import {forgotPasswordController} from "./auth.controller.js";
+import {resetPasswordController} from "./auth.controller.js"
+
+
+
 
 const authRouter = Router();
 
@@ -102,6 +106,28 @@ authRouter.post("/resend-verification-link",resendVerificationLinkController)
  * 
  */
 authRouter.post("/forgot-password",forgotPasswordController)
+
+
+
+
+/**
+ * @description reset password
+ * @route POST /api/auth/reset-password
+ * @access public
+ * 
+ * @param {string} req.body.token - token for password reset
+ * @param {string} req.body.password - new password for the user
+
+ * 
+ * @returns {Object} 200 password reset successfully
+ * @returns {Object} 400 invalid token
+ * @returns {Object} 404 user not found
+ * @returns {Object} 401 invalid password
+ * 
+ */
+authRouter.post("/reset-password",resetPasswordController)
+
+
 
 
 export default authRouter

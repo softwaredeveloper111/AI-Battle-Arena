@@ -47,6 +47,11 @@ if(!process.env.FRONTEND_URL){
 }
 
 
+if(!process.env.BACKEND_URL){
+    throw new Error('BACKEND_URL is required in enviroment variables')
+}
+
+
 type CONFIG = {
    readonly NODE_ENV: string;
    readonly PORT: number;
@@ -58,7 +63,8 @@ type CONFIG = {
    readonly JWT_SECRET_KEY: string;
    readonly MONGO_URI: string;
    readonly RESEND_API_KEY: string,
-   readonly FRONTEND_URL:string
+   readonly FRONTEND_URL:string,
+   readonly BACKEND_URL:string,
 }
 
 
@@ -73,7 +79,8 @@ const config:CONFIG = {
   JWT_SECRET_KEY: process.env.JWT_SECRET_KEY,
   MONGO_URI: process.env.MONGO_URI,
   RESEND_API_KEY: process.env.RESEND_API_KEY,
-  FRONTEND_URL:process.env.FRONTEND_URL
+  FRONTEND_URL:process.env.FRONTEND_URL,
+  BACKEND_URL:process.env.BACKEND_URL,
 };
 
 

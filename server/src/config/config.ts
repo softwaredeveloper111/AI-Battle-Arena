@@ -24,6 +24,11 @@ if(!process.env.COHERE_API_KEY){
     throw new Error("COHERE_API_KEY is required in enviroment variables");
 }
 
+if(!process.env.BCRYPT_SALT_ROUNDS){
+    throw new Error("BCRYPT_SALT_ROUNDS is required in enviroment variables")
+}
+
+
 type CONFIG = {
    readonly NODE_ENV: string;
    readonly PORT: number;
@@ -31,6 +36,7 @@ type CONFIG = {
    readonly GEMINI_API_KEY: string;
    readonly MISTRAL_API_KEY: string;
    readonly COHERE_API_KEY: string;
+   readonly BCRYPT_SALT_ROUNDS: number;
 }
 
 
@@ -41,6 +47,7 @@ const config:CONFIG = {
   GEMINI_API_KEY: process.env.GEMINI_API_KEY,
   MISTRAL_API_KEY: process.env.MISTRAL_API_KEY,
   COHERE_API_KEY: process.env.COHERE_API_KEY,
+  BCRYPT_SALT_ROUNDS: Number(process.env.BCRYPT_SALT_ROUNDS)
 };
 
 

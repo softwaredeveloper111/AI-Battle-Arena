@@ -1,6 +1,10 @@
 import express from "express";
 import httpLogger from  "./lib/httpLogger.js";
 
+import errorHandler from "./middlewares/errorHandler.middleware.js";
+
+import authRouter from "./modules/auth/auth.route.js";
+
 
 const app = express();
 
@@ -15,6 +19,12 @@ app.use(express.urlencoded({ extended: true, limit: "10kb" })); //Maximum reques
 app.use(httpLogger);
 
 
+
+
+/**
+ * routes
+ */
+app.use("/api/auth",authRouter);
 
 
 
@@ -33,6 +43,11 @@ app.get("/api/health", (req, res) => {
     });
 });
 
+
+/**
+ * global error handler
+ */
+app.use(errorHandler)
 
 
 export default app;

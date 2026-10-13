@@ -3,7 +3,20 @@ import bcrypt from "bcryptjs";
 import config from "../../config/config.js";
 
 
-const userSchema = new mongoose.Schema({
+
+interface IUser{
+  username:string,
+  email:string,
+  password:string,
+  emailVerified:boolean,
+}
+
+interface IUserMethods {
+  comparePassword(password: string): Promise<boolean>;
+}
+
+
+const userSchema = new mongoose.Schema<IUser, mongoose.Model<IUser, {} , IUserMethods>,IUserMethods>({
   username:{
     type:String,
     trim:true,
@@ -68,6 +81,7 @@ userSchema.methods.toJSON = function() {
 
 
 
-const User = mongoose.model("User",userSchema)
+
+const User = mongoose.model<IUser, mongoose.Model<IUser, {}, IUserMethods>>("User",userSchema)
 
 export default User

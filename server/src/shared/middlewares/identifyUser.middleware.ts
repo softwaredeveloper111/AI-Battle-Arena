@@ -9,6 +9,7 @@ import logger from "../../lib/logger.js";
 import type {Request,Response,NextFunction} from "express"
 
 
+
 declare global {
   namespace Express {
     interface Request {
@@ -44,23 +45,42 @@ if (isBlacklisted) {
   
   /** verify jwt */
     const decoded = jwt.verify(token,config.JWT_SECRET_KEY);
-     
- 
-    const userId = typeof decoded !== "string" ? decoded.id : undefined;
 
+    const userId = typeof decoded !== "string" ? decoded.id : undefined;
 
     if (typeof decoded === "string" || !userId) {
       throw new ApiError("Invalid token payload",401)
     }
 
-    const user = await userModel.findById(userId);
-    if (!user){
-      throw new ApiError("User not found",404)
+    const cacheKey = `user:${userId}`;
+
+     /** check for the data in redis cached storage */
+    const cachedUser = await redisClient.get(cacheKey);
+
+
+    /** cache hit */
+    if(cachedUser){
+      logger.info("Cache Hit ⚡");
+      req.user = JSON.parse(cachedUser);
+      return next();
     }
 
+
+    /** cache miss */
+     logger.info(`Cache Miss❌`);
+
+    /** cache miss - fetch data from database */
+     const user = await userModel.findById(userId).lean();
+    if(!user){
+      throw new ApiError("user not found",404)
+    }
+
+    /** return  user  data from db,  save in redis with 5 min TTL */
+    await redisClient.set(cacheKey,JSON.stringify(user),"EX",300) 
+
     req.user = user;
-    next();
-    
+    next()
+
   } catch (error:unknown) {
      if (
       error instanceof Error && 

@@ -66,6 +66,21 @@ if(!process.env.RESET_PASSWORD_SECRET_KEY){
 }
 
 
+if(!process.env.GOOGLE_CLIENT_ID){
+    throw new Error('GOOGLE_CLIENT_ID is required in enviroment variables')
+}
+
+if(!process.env.GOOGLE_CLIENT_SECRET){
+    throw new Error('GOOGLE_CLIENT_SECRET is required in enviroment variables')
+}
+
+
+if(!process.env.GOOGLE_CALLBACK_URL){
+    throw new Error("GOOGLE_CALLBACK_URL is required in enviroment variables")
+}
+
+
+
 type CONFIG = {
    readonly NODE_ENV: string;
    readonly PORT: number;
@@ -81,7 +96,10 @@ type CONFIG = {
    readonly BACKEND_URL:string,
    readonly EMAIL_VERIFICATION_SECRET_KEY:string,
    readonly REDIS_URL:string,
-   readonly RESET_PASSWORD_SECRET_KEY:string
+   readonly RESET_PASSWORD_SECRET_KEY:string,
+   readonly GOOGLE_CLIENT_ID:string,
+   readonly GOOGLE_CLIENT_SECRET:string,
+   readonly GOOGLE_CALLBACK_URL:string
 }
 
 
@@ -100,7 +118,10 @@ const config:CONFIG = {
   BACKEND_URL:process.env.BACKEND_URL,
   EMAIL_VERIFICATION_SECRET_KEY:process.env.EMAIL_VERIFICATION_SECRET_KEY,
   REDIS_URL:process.env.REDIS_URL,
-  RESET_PASSWORD_SECRET_KEY:process.env.RESET_PASSWORD_SECRET_KEY
+  RESET_PASSWORD_SECRET_KEY:process.env.RESET_PASSWORD_SECRET_KEY,
+  GOOGLE_CLIENT_ID:process.env.GOOGLE_CLIENT_ID,
+  GOOGLE_CLIENT_SECRET:process.env.GOOGLE_CLIENT_SECRET,
+  GOOGLE_CALLBACK_URL:process.env.GOOGLE_CALLBACK_URL
 };
 
 

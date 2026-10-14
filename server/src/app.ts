@@ -3,6 +3,9 @@ import httpLogger from "./lib/httpLogger.js";
 import errorHandler from "./shared/middlewares/errorHandler.middleware.js";
 import authRouter from "./modules/auth/auth.route.js";
 import cookieParser from "cookie-parser";
+import passport from "./config/passport.js"
+
+
 
 
 
@@ -14,9 +17,10 @@ const app = express();
 app.use(express.static("public"));
 app.use(express.json({ limit: "50kb" })); //Maximum request body size 50 KB allowed hai
 app.use(express.urlencoded({ extended: true, limit: "10kb" })); //Maximum request body size 10 KB allowed hai.
-app.use(cookieParser())
-
+app.use(cookieParser());
 app.use(httpLogger);
+app.use(passport.initialize());
+
 
 /**
  * routes

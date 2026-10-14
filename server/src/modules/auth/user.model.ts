@@ -4,7 +4,7 @@ import config from "../../config/config.js";
 
 
 
-interface IUser{
+export interface IUser{
   username:string,
   email:string,
   password:string,
@@ -22,7 +22,6 @@ const userSchema = new mongoose.Schema<IUser, mongoose.Model<IUser, {} , IUserMe
     trim:true,
     lowercase:true,
     required:[true,"username must be required"],
-    unique:[true,"username already exists"],
     minlength:[3,"username must be atleast 3 characters long"],
     maxlength:[20,"username must be at most 20 characters long"],
     match:[/^[a-z0-9_]{3,30}$/, 'please provide a valid username']

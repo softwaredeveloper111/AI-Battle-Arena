@@ -6,10 +6,12 @@ import {resendVerificationLinkController} from "./auth.controller.js"
 import {forgotPasswordController} from "./auth.controller.js";
 import {resetPasswordController} from "./auth.controller.js";
 import {getMeController} from "./auth.controller.js"
-import {logoutController} from "./auth.controller.js"
+import {logoutController} from "./auth.controller.js";
+import {ContinueWithGoogleController} from "./auth.controller.js";
 
 import identifyUser from "../../shared/middlewares/identifyUser.middleware.js"
-
+import passport from "passport"
+import config from "../../config/config.js"
 
 
 const authRouter = Router();
@@ -158,6 +160,44 @@ authRouter.get("/me", identifyUser ,  getMeController)
  * 
  */
 authRouter.post("/logout", identifyUser , logoutController)
+
+
+
+/**
+ * @description continue with google
+ * @route GET /api/auth/google
+ * @access public
+ * 
+ * @returns {Object} 200 user object
+ * @returns {Object} 401 unauthorized
+ *  
+ */
+authRouter.get('/google',
+  passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+
+
+
+/**
+ * @description continue with google
+ * @route GET /api/auth/google/callback
+ * @access public
+ * 
+ * @returns {Object} 200 user object
+ * @returns {Object} 401 unauthorized
+ *  
+ */
+authRouter.get('/google/callback', 
+  passport.authenticate('google', { session: false , failureRedirect:`${config.FRONTEND_URL}/login`}),
+  ContinueWithGoogleController
+);
+
+
+
+
+
+
 
 
 

@@ -431,3 +431,21 @@ export const logoutController =  asyncWrapper(async(req:Request,res:Response)=>{
   return ApiResponse(res,200,"user logout successfully",null);
   
 });  
+
+
+
+
+
+
+export const ContinueWithGoogleController = asyncWrapper(async(req:Request,res:Response)=>{
+  // Generate a JWT for the authenticated user
+  const token = jwt.sign(
+    { id: req.user.id }, 
+    config.JWT_SECRET_KEY, 
+    { expiresIn: '1d' }
+  );
+
+  // Send the token to the client
+  res.cookie("token",token, cookieOptions)
+  return ApiResponse(res,200,"user get successfully",req.user);
+})

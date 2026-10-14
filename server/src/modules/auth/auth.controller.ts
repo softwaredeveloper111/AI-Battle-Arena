@@ -280,7 +280,7 @@ export const forgotPasswordController = asyncWrapper(async(req:Request,res:Respo
   const user = await userModel.findOne({email});
 
   if(!user){
-   return ApiResponse(res,404, "user not found",null)
+   throw new ApiError("user not found",404)
   }
 
   const resetPasswordToken = jwt.sign(

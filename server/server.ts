@@ -4,6 +4,8 @@ import logger from "./src/lib/logger.js";
 import connectedToDB from "./src/config/db.js";
 import "./src/config/cache.js";
 
+import "./src/workers/main.js";
+
 const PORT = config.PORT;
 
 connectedToDB();

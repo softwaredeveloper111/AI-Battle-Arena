@@ -8,7 +8,7 @@ type Props = {
 const verificationEmailTemplate = ({ username, emailVerificationToken }: Props) => {
 
   const verificationUrl =
-  `${config.BACKEND_URL}/api/auth/verify-email?token=${emailVerificationToken}`;
+  `${config.BACKEND_URL}/api/auth/verify-link?token=${emailVerificationToken}`;
 
   return(
 

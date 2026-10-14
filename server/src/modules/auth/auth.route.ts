@@ -9,6 +9,12 @@ import {getMeController} from "./auth.controller.js"
 import {logoutController} from "./auth.controller.js";
 import {ContinueWithGoogleController} from "./auth.controller.js";
 
+import {globalRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
+import {authRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
+import {resetPasswordRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
+import {resendEmailRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
+import {emailRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
+
 import identifyUser from "../../shared/middlewares/identifyUser.middleware.js"
 import passport from "passport"
 import config from "../../config/config.js"
@@ -32,7 +38,10 @@ const authRouter = Router();
  * @returns {Object} 409 username or email already exists
  */
 
-authRouter.post("/register",registerController);
+authRouter.post(
+  "/register",
+  authRateLimit,
+  registerController);
 
 
 
@@ -53,7 +62,10 @@ authRouter.post("/register",registerController);
  * @returns {Object} 403 email not verified
  */
 
-authRouter.post("/login",loginController);
+authRouter.post(
+  "/login",
+  authRateLimit,
+  loginController);
 
 
 
@@ -61,7 +73,7 @@ authRouter.post("/login",loginController);
 /**
  * 
  * @description verify email link
- * @route GET /api/auth/verify-email
+ * @route GET /api/auth/verify-link
  * @access public
  * 
  * @param {string} req.query.token - token for email verification
@@ -72,7 +84,11 @@ authRouter.post("/login",loginController);
  * @returns {Object} 403 email already verified
  * 
  */
-authRouter.get("/verify-email", verifyLinkController);
+authRouter.get(
+  "/verify-link", 
+  authRateLimit,
+  verifyLinkController
+);
 
 
 
@@ -91,7 +107,12 @@ authRouter.get("/verify-email", verifyLinkController);
  * @returns {Object} 403 email already verified
  * 
  */
-authRouter.post("/resend-verification-link",resendVerificationLinkController)
+authRouter.post(
+  "/resend-verification-link",
+  emailRateLimit,
+  resendEmailRateLimit,
+  resendVerificationLinkController
+)
 
 
 
@@ -110,7 +131,12 @@ authRouter.post("/resend-verification-link",resendVerificationLinkController)
  * @returns {Object} 404 user not found
  * 
  */
-authRouter.post("/forgot-password",forgotPasswordController)
+authRouter.post(
+  "/forgot-password",
+  emailRateLimit,
+  resendEmailRateLimit,
+  forgotPasswordController
+)
 
 
 
@@ -130,7 +156,11 @@ authRouter.post("/forgot-password",forgotPasswordController)
  * @returns {Object} 401 invalid password
  * 
  */
-authRouter.post("/reset-password",resetPasswordController)
+authRouter.post(
+  "/reset-password",
+  resetPasswordRateLimit,
+  resetPasswordController
+)
 
 
 
@@ -145,7 +175,12 @@ authRouter.post("/reset-password",resetPasswordController)
  * @returns {Object} 401 unauthorized
  * 
  */
-authRouter.get("/me", identifyUser ,  getMeController)
+authRouter.get(
+  "/me",
+   globalRateLimit,
+   identifyUser ,  
+   getMeController
+  )
 
 
 
@@ -159,7 +194,11 @@ authRouter.get("/me", identifyUser ,  getMeController)
  * @returns {Object} 401 unauthorized
  * 
  */
-authRouter.post("/logout", identifyUser , logoutController)
+authRouter.post(
+  "/logout", 
+  globalRateLimit,
+  identifyUser , 
+  logoutController)
 
 
 
@@ -172,7 +211,9 @@ authRouter.post("/logout", identifyUser , logoutController)
  * @returns {Object} 401 unauthorized
  *  
  */
-authRouter.get('/google',
+authRouter.get(
+  '/google',
+  authRateLimit,
   passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 

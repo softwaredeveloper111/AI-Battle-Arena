@@ -59,4 +59,9 @@ emailWorker.on("failed", (job, error) => {
   }, "Job failed");
 });
 
+emailWorker.on("error", (err) => {
+  logger.error({ err }, "BullMQ Worker connection error");
+});
+
+
 export default emailWorker;

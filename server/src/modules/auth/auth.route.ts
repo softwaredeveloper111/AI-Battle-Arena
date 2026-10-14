@@ -18,6 +18,15 @@ import {emailRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
 import identifyUser from "../../shared/middlewares/identifyUser.middleware.js"
 import passport from "passport"
 import config from "../../config/config.js"
+import validateSchema from "../../shared/middlewares/validation.middleware.js"
+
+import {registerSchema} from "./auth.validator.js"
+import {loginSchema} from "./auth.validator.js"
+import {forgotPasswordSchema} from "./auth.validator.js"
+import {resetPasswordSchema} from "./auth.validator.js"
+import {resendVerificationLinkSchema} from "./auth.validator.js"
+
+
 
 
 const authRouter = Router();
@@ -43,6 +52,7 @@ authRouter.post(
   authRateLimit,
   resendEmailRateLimit,
   emailRateLimit,
+  validateSchema(registerSchema),
   registerController);
 
 
@@ -67,7 +77,9 @@ authRouter.post(
 authRouter.post(
   "/login",
   authRateLimit,
-  loginController);
+  validateSchema(loginSchema),
+  loginController
+);
 
 
 
@@ -113,6 +125,7 @@ authRouter.post(
   "/resend-verification-link",
   emailRateLimit,
   resendEmailRateLimit,
+  validateSchema(resendVerificationLinkSchema),
   resendVerificationLinkController
 )
 
@@ -137,6 +150,7 @@ authRouter.post(
   "/forgot-password",
   emailRateLimit,
   resendEmailRateLimit,
+  validateSchema(forgotPasswordSchema),
   forgotPasswordController
 )
 
@@ -161,6 +175,7 @@ authRouter.post(
 authRouter.post(
   "/reset-password",
   resetPasswordRateLimit,
+  validateSchema(resetPasswordSchema),
   resetPasswordController
 )
 

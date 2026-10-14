@@ -7,7 +7,7 @@ import { z } from "zod";
  * - password: 6-32 chars, at least 1 lowercase, 1 uppercase, 1 number, 1 special char (@$!%*?&)
  */
 const usernameSchema = z
-  .string()
+  .string({ error: "username is required" })
   .trim()
   .toLowerCase()
   .min(3, "username must be atleast 3 characters long")
@@ -15,14 +15,14 @@ const usernameSchema = z
   .regex(/^[a-z0-9_]{3,20}$/, "please provide a valid username");
 
 const emailSchema = z
-  .string()
+  .string({ error: "email is required" })
   .trim()
   .toLowerCase()
   .min(1, "email is required")
   .email("Please enter a valid email address");
 
 const strongPasswordSchema = z
-  .string()
+  .string({ error: "password is required" })
   .min(6, "password must be atleast 6 characters long")
   .max(32, "password must be at most 32 characters long")
   .regex(
@@ -45,7 +45,7 @@ export const registerSchema = z.object({
 export const loginSchema = z.object({
   email: emailSchema,
   password: z
-    .string()
+    .string({ error: "password is required" })
     .min(1, "password is required"),
 });
 
@@ -68,7 +68,7 @@ export const forgotPasswordSchema = z.object({
  */
 export const resetPasswordSchema = z.object({
   token: z
-    .string()
+    .string({ error: "token is required" })
     .trim()
     .min(1, "token is required"),
   password: strongPasswordSchema,

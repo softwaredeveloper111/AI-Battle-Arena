@@ -93,8 +93,8 @@ export const emailRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
   limit: 3,
 
-  keyGenerator: (req:Request) => {
-    return req.body.email?.toLowerCase().trim() || "unknown";
+  keyGenerator: (req: Request) => {
+    return req.body?.email?.toLowerCase().trim() || "unknown";
   },
 
   store: createRedisStore("email-rate-limit:"),

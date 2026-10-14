@@ -50,8 +50,10 @@ const authRouter = Router();
 authRouter.post(
   "/register",
   authRateLimit,
+  resendEmailRateLimit,
   validateSchema(registerSchema),
-  registerController
+  emailRateLimit,
+  registerController,
 );
 
 
@@ -122,9 +124,9 @@ authRouter.get(
  */
 authRouter.post(
   "/resend-verification-link",
-  emailRateLimit,
   resendEmailRateLimit,
   validateSchema(resendVerificationLinkSchema),
+  emailRateLimit,
   resendVerificationLinkController
 )
 
@@ -147,9 +149,9 @@ authRouter.post(
  */
 authRouter.post(
   "/forgot-password",
-  emailRateLimit,
   resendEmailRateLimit,
   validateSchema(forgotPasswordSchema),
+  emailRateLimit,
   forgotPasswordController
 )
 

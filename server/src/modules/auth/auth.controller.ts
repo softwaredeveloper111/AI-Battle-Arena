@@ -50,12 +50,10 @@ export const registerController = asyncWrapper(async(req:Request,res:Response)=>
     throw new ApiError("All fields are required",400)
    }
 
-   const userExists = await userModel.findOne({
-    $or: [{email}, {username}]
-   })
+   const userExists = await userModel.findOne({email})
 
    if(userExists){
-    throw new ApiError("User already exists",409)
+    throw new ApiError("Account already exists",409)
    }
   
    const user = await userModel.create({
@@ -103,8 +101,9 @@ export const registerController = asyncWrapper(async(req:Request,res:Response)=>
 
 export const loginController = asyncWrapper(async(req:Request,res:Response)=>{
 
-  const {email,password} = req.body;
-  
+  const email = req.body?.email;
+  const password  = req.body?.password;
+
   if(!email || !password){
     throw new ApiError("All fields are required",400)
   }

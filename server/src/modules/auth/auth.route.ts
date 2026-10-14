@@ -41,6 +41,8 @@ const authRouter = Router();
 authRouter.post(
   "/register",
   authRateLimit,
+  resendEmailRateLimit,
+  emailRateLimit,
   registerController);
 
 

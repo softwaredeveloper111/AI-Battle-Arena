@@ -1,30 +1,30 @@
 import { Router } from "express";
-import {registerController} from "./auth.controller.js"
-import {loginController } from "./auth.controller.js";
-import {verifyLinkController} from "./auth.controller.js";
-import {resendVerificationLinkController} from "./auth.controller.js"
-import {forgotPasswordController} from "./auth.controller.js";
-import {resetPasswordController} from "./auth.controller.js";
-import {getMeController} from "./auth.controller.js"
-import {logoutController} from "./auth.controller.js";
-import {ContinueWithGoogleController} from "./auth.controller.js";
+import { registerController } from "../controllers/auth.controller.js";
+import { loginController } from "../controllers/auth.controller.js";
+import { verifyLinkController } from "../controllers/auth.controller.js";
+import { resendVerificationLinkController } from "../controllers/auth.controller.js";
+import { forgotPasswordController } from "../controllers/auth.controller.js";
+import { resetPasswordController } from "../controllers/auth.controller.js";
+import { getMeController } from "../controllers/auth.controller.js";
+import { logoutController } from "../controllers/auth.controller.js";
+import { ContinueWithGoogleController } from "../controllers/auth.controller.js";
 
-import {globalRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
-import {authRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
-import {resetPasswordRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
-import {resendEmailRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
-import {emailRateLimit} from "../../shared/middlewares/ratelimit.middleware.js";
+import { globalRateLimit } from "../middlewares/ratelimit.middleware.js";
+import { authRateLimit } from "../middlewares/ratelimit.middleware.js";
+import { resetPasswordRateLimit } from "../middlewares/ratelimit.middleware.js";
+import { resendEmailRateLimit } from "../middlewares/ratelimit.middleware.js";
+import { emailRateLimit } from "../middlewares/ratelimit.middleware.js";
 
-import identifyUser from "../../shared/middlewares/identifyUser.middleware.js"
-import passport from "passport"
-import config from "../../config/config.js"
-import validateSchema from "../../shared/middlewares/validation.middleware.js"
+import identifyUser from "../middlewares/identifyUser.middleware.js";
+import passport from "passport";
+import config from "../config/config.js";
+import validateSchema from "../middlewares/validation.middleware.js";
 
-import {registerSchema} from "./auth.validator.js"
-import {loginSchema} from "./auth.validator.js"
-import {forgotPasswordSchema} from "./auth.validator.js"
-import {resetPasswordSchema} from "./auth.validator.js"
-import {resendVerificationLinkSchema} from "./auth.validator.js"
+import { registerSchema } from "../validations/auth.validator.js";
+import { loginSchema } from "../validations/auth.validator.js";
+import { forgotPasswordSchema } from "../validations/auth.validator.js";
+import { resetPasswordSchema } from "../validations/auth.validator.js";
+import { resendVerificationLinkSchema } from "../validations/auth.validator.js";
 
 
 

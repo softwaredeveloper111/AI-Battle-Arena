@@ -1,22 +1,12 @@
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
-import userModel from "../../modules/auth/user.model.js";
+import userModel from "../models/user.model.js";
 import ApiError from "../utils/ApiError.util.js";
-import config from "../../config/config.js"
-import redisClient from "../../config/cache.js"
-import logger from "../../lib/logger.js";
+import config from "../config/config.js";
+import redisClient from "../config/cache.js";
+import logger from "../lib/logger.js";
 
-import type {Request,Response,NextFunction} from "express"
-
-
-
-declare global {
-  namespace Express {
-    interface Request {
-      user?: any;
-    }
-  }
-}
+import type { Request, Response, NextFunction } from "express";
 
  const identifyUser = async(req:Request,res:Response,next:NextFunction)=>{
   try {

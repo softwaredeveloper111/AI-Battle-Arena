@@ -1,9 +1,12 @@
-import type { Document } from "mongoose";
-
 declare global {
   namespace Express {
-    interface Request {
-      user?: any;
+    interface User {
+      _id?: any;
+      id?: any;
+      username?: string;
+      email?: string;
+      emailVerified?: boolean;
+      [key: string]: any;
     }
   }
 }

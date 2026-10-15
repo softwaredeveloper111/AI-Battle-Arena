@@ -1,16 +1,17 @@
-import config from "../../config/config.js";
+import config from "../config/config.js";
 
-const alreadyVerifiedEmailTemplate = ()=>{
+const afterVerifiedEmailTemplate = ()=>{
 
-  const loggedInUrl = `${config.FRONTEND_URL}/login`
+   const loggedInUrl = `${config.FRONTEND_URL}/login`
 
-  return(
-    `<!DOCTYPE html>
+  return (
+    `
+  <!DOCTYPE html>
   <html lang="en">
     <head>
       <meta charset="UTF-8" />
       <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <title>Email Already Verified</title>
+      <title>Email Verified successfully</title>
     </head>
 
     <body
@@ -32,7 +33,7 @@ const alreadyVerifiedEmailTemplate = ()=>{
         <tr>
           <td align="center" valign="middle" style="padding: 40px 16px;">
 
-     
+          
             <table
               width="100%"
               cellpadding="0"
@@ -69,7 +70,7 @@ const alreadyVerifiedEmailTemplate = ()=>{
                 </td>
               </tr>
 
-        
+          
               <tr>
                 <td
                   align="center"
@@ -85,9 +86,7 @@ const alreadyVerifiedEmailTemplate = ()=>{
                       background-color: #fff7ed;
                       border-radius: 50%;
                       line-height: 64px;
-                      font-size: 28px;
-                      font-weight: 700;
-                      color: #f97316;
+                      font-size: 30px;
                     "
                   >
                     ✓
@@ -102,7 +101,7 @@ const alreadyVerifiedEmailTemplate = ()=>{
                       color: #171717;
                     "
                   >
-                    Email already verified
+                    Email verified successfully
                   </h1>
 
                   <p
@@ -114,11 +113,11 @@ const alreadyVerifiedEmailTemplate = ()=>{
                       color: #737373;
                     "
                   >
-                    Your email address has already been verified.
-                    You can continue to your AI-BATTLE-ARENA account.
+                    Your email address has been successfully verified.
+                    You can now log in to your AI-BATTLE-ARENA account and get started.
                   </p>
 
-                
+               
                   <table
                     cellpadding="0"
                     cellspacing="0"
@@ -153,6 +152,7 @@ const alreadyVerifiedEmailTemplate = ()=>{
                 </td>
               </tr>
 
+           
               <tr>
                 <td
                   align="center"
@@ -181,9 +181,9 @@ const alreadyVerifiedEmailTemplate = ()=>{
         </tr>
       </table>
     </body>
-  </html>`
+  </html>
+`
   )
 }
 
-
-export default alreadyVerifiedEmailTemplate
+export default afterVerifiedEmailTemplate

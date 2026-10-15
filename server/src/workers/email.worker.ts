@@ -1,10 +1,10 @@
 import { Worker } from "bullmq";
 import  config  from "../config/config.js";
 import  logger  from "../lib/logger.js";
-import  sendEmail  from "../shared/services/email.service.js";
+import  sendEmail  from "../services/email.service.js";
 
-import forgotPasswordEmailTemplate from "../shared/template/forgotPasswordEmailTemplate.js";
-import emailVerificationTemplate from "../shared/template/emailVerification.template.js";
+import forgotPasswordEmailTemplate from "../template/forgotPasswordEmailTemplate.js";
+import emailVerificationTemplate from "../template/emailVerification.template.js";
 
 const emailWorker = new Worker(
   "email",

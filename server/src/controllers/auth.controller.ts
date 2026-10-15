@@ -1,22 +1,22 @@
-import asyncWrapper from "../../shared/utils/AsyncWrapper.util.js";
-import ApiError from "../../shared/utils/ApiError.util.js";
-import ApiResponse from "../../shared/utils/ApiResponse.util.js";
-import userModel from "./user.model.js";
+import asyncWrapper from "../utils/AsyncWrapper.util.js";
+import ApiError from "../utils/ApiError.util.js";
+import ApiResponse from "../utils/ApiResponse.util.js";
+import userModel from "../models/user.model.js";
 import type { Request, Response } from "express";
 import jwt from "jsonwebtoken";
-import config from "../../config/config.js";
+import config from "../config/config.js";
 import crypto from "crypto";
-import redisClient from "../../config/cache.js";
-import sendEmail from "../../shared/services/email.service.js";
+import redisClient from "../config/cache.js";
+import sendEmail from "../services/email.service.js";
 
-import verificationEmailTemplate from "../../shared/template/emailVerification.template.js";
-import invalidVerificationEmailTemplate from "../../shared/template/invalidVerificationEmail.template.js";
-import alreadyEmailVerifiedTemplate from "../../shared/template/alreadyVerifiedEmail.template.js";
-import expiredVerificationEmailTemplate from "../../shared/template/expiredEmailVerification.template.js";
-import afterEmailVerfiedTemplate from "../../shared/template/afterVerifiedEmail.template.js";
-import forgotPasswordEmailTemplate from "../../shared/template/forgotPasswordEmailTemplate.js";
+import verificationEmailTemplate from "../template/emailVerification.template.js";
+import invalidVerificationEmailTemplate from "../template/invalidVerificationEmail.template.js";
+import alreadyEmailVerifiedTemplate from "../template/alreadyVerifiedEmail.template.js";
+import expiredVerificationEmailTemplate from "../template/expiredEmailVerification.template.js";
+import afterEmailVerfiedTemplate from "../template/afterVerifiedEmail.template.js";
+import forgotPasswordEmailTemplate from "../template/forgotPasswordEmailTemplate.js";
 
-import emailQueue from "../../queues/email.queue.js";
+import emailQueue from "../queues/email.queue.js";
 
 type CookieOptions = {
   httpOnly: boolean;
@@ -435,8 +435,12 @@ export const logoutController = asyncWrapper(
 
 export const ContinueWithGoogleController = asyncWrapper(
   async (req: Request, res: Response) => {
+    if (!req.user) {
+      throw new ApiError("User not authenticated", 401);
+    }
     // Generate a JWT for the authenticated user
-    const token = jwt.sign({ id: req.user.id }, config.JWT_SECRET_KEY, {
+    const userId = (req.user as any)._id || (req.user as any).id;
+    const token = jwt.sign({ id: userId }, config.JWT_SECRET_KEY, {
       expiresIn: "1d",
     });
 

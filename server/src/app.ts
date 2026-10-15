@@ -1,9 +1,9 @@
 import express from "express";
 import httpLogger from "./lib/httpLogger.js";
-import errorHandler from "./shared/middlewares/errorHandler.middleware.js";
-import authRouter from "./modules/auth/auth.route.js";
+import errorHandler from "./middlewares/errorHandler.middleware.js";
+import authRouter from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
-import passport from "./config/passport.js"
+import passport from "./config/passport.js";
 
 
 

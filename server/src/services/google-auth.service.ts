@@ -1,6 +1,6 @@
-import userModel, { type IUser } from "./user.model.js";
-import generatePassword from "../../shared/utils/generatePassword.util.js";
-import sanitizeUsername from "../../shared/utils/sanitizeUsername.util.js";
+import userModel, { type IUser } from "../models/user.model.js";
+import generatePassword from "../utils/generatePassword.util.js";
+import sanitizeUsername from "../utils/sanitizeUsername.util.js";
 import type { Profile } from "passport-google-oauth20";
 
 const findOrCreateGoogleUser = async (profile: Profile): Promise<IUser> => {

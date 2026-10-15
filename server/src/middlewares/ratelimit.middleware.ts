@@ -1,7 +1,7 @@
 import {rateLimit} from "express-rate-limit";
 import {RedisStore , type RedisReply} from "rate-limit-redis";
-import redisClient from "../../config/cache.js";
-import config from "../../config/config.js";
+import redisClient from "../config/cache.js";
+import config from "../config/config.js";
 import type{Request} from "express"
 
 

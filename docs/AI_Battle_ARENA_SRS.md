@@ -186,3 +186,8 @@ ARENA BATTLE AI backend — Render
 
 techy.fun
 Resend se verification emails
+
+
+
+
+Battle Mode = Text & Code only

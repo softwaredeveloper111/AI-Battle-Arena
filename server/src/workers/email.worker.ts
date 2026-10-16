@@ -48,6 +48,10 @@ const emailWorker = new Worker(
 );
 
 
+emailWorker.on("ready", () => {
+  logger.info("Worker is ready for background messages and jobs");
+});
+
 emailWorker.on("completed", (job) => {
   logger.info(`Job ${job.id} completed successfully`);
 });

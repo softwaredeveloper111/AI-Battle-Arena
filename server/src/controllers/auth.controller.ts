@@ -16,7 +16,9 @@ import expiredVerificationEmailTemplate from "../template/expiredEmailVerificati
 import afterEmailVerfiedTemplate from "../template/afterVerifiedEmail.template.js";
 import forgotPasswordEmailTemplate from "../template/forgotPasswordEmailTemplate.js";
 
+
 import emailQueue from "../queues/email.queue.js";
+
 
 type CookieOptions = {
   httpOnly: boolean;
@@ -99,6 +101,8 @@ export const registerController = asyncWrapper(
         },
       },
     );
+
+
     return ApiResponse(
       res,
       201,

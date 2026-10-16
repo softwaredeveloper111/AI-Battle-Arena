@@ -34,6 +34,8 @@ const cookieOptions: CookieOptions = {
   path: "/",
 };
 
+
+
 export const registerController = asyncWrapper(
   async (req: Request, res: Response) => {
     const username = req.body?.username;
@@ -106,6 +108,13 @@ export const registerController = asyncWrapper(
   },
 );
 
+
+
+
+
+
+
+
 export const loginController = asyncWrapper(
   async (req: Request, res: Response) => {
     const email = req.body?.email;
@@ -156,6 +165,13 @@ export const loginController = asyncWrapper(
     return ApiResponse(res, 200, "User logged in successfully", user);
   },
 );
+
+
+
+
+
+
+
 
 export const verifyLinkController = asyncWrapper(
   async (req: Request, res: Response) => {
@@ -208,6 +224,14 @@ export const verifyLinkController = asyncWrapper(
     return res.status(200).send(afterEmailVerfiedTemplate());
   },
 );
+
+
+
+
+
+
+
+
 
 export const resendVerificationLinkController = asyncWrapper(
   async (req: Request, res: Response) => {
@@ -274,6 +298,15 @@ export const resendVerificationLinkController = asyncWrapper(
   },
 );
 
+
+
+
+
+
+
+
+
+
 export const forgotPasswordController = asyncWrapper(
   async (req: Request, res: Response) => {
     const email = req.body?.email;
@@ -331,6 +364,15 @@ export const forgotPasswordController = asyncWrapper(
   },
 );
 
+
+
+
+
+
+
+
+
+
 export const resetPasswordController = asyncWrapper(
   async (req: Request, res: Response) => {
     const token = req.body?.token;
@@ -385,12 +427,25 @@ export const resetPasswordController = asyncWrapper(
   },
 );
 
+
+
+
+
+
+
+
 export const getMeController = asyncWrapper(
   async (req: Request, res: Response) => {
     const user = req.user;
     return ApiResponse(res, 200, "user get successfully", user);
   },
 );
+
+
+
+
+
+
 
 export const logoutController = asyncWrapper(
   async (req: Request, res: Response) => {
@@ -425,13 +480,19 @@ export const logoutController = asyncWrapper(
 
     /** delete user cache -  cache invalidation */
     if (userId) {
-      await redisClient.del(`user:${userId}`);
+      await redisClient.del(`user:profile:${userId}`);
     }
 
     res.clearCookie("token", cookieOptions);
     return ApiResponse(res, 200, "user logout successfully", null);
   },
 );
+
+
+
+
+
+
 
 export const ContinueWithGoogleController = asyncWrapper(
   async (req: Request, res: Response) => {

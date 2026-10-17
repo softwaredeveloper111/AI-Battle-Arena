@@ -23,7 +23,6 @@ const chatSessionSchema = new Schema<IChatSession>(
       required: [true, "title is required"],
       trim: true,
       maxlength: [60, "title must be at most 60 characters long"],
-      default: "New Chat",
     },
     mode: {
       type: String,

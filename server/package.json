@@ -6,6 +6,7 @@
   "scripts": {
     "test": "vitest",
     "test:run": "vitest run",
+    "test:unit": "vitest run --config vitest.unit.config.ts",
     "test:coverage": "vitest run --coverage",
     "dev": "tsx watch server.ts",
     "build": "tsc",
@@ -17,7 +18,7 @@
   "type": "module",
   "dependencies": {
     "@langchain/cohere": "^1.1.0",
-    "@langchain/core": "^1.2.17",
+    "@langchain/core": "^1.2.18",
     "@langchain/google": "^0.2.10",
     "@langchain/langgraph": "^1.4.21",
     "@langchain/mistralai": "^1.2.0",

@@ -66,49 +66,29 @@ export const executeBattleController = asyncWrapper(
 );
 
 
-
-/**
- * 2. Create Chat Session
- * Sidebar me 'New Battle Chat' button ke liye
- */
-// export const createChatSessionController = asyncWrapper(
-//   async (req: Request, res: Response) => {
-//     const userId = (req.user as any)?._id;
-//     const { title } = req.body;
-
-//     const session = await ChatSessionModel.create({
-//       userId,
-//       title: title || "New Battle",
-//       mode: "battle",
-//     });
-
-//     return ApiResponse(res, 201, "Chat session created successfully", session);
-//   }
-// );
-
 /**
  * 3. Get All Chat Sessions
  * Sidebar me user ki battle history load karne ke liye
  */
-// export const getAllChatSessionsController = asyncWrapper(
-//   async (req: Request, res: Response) => {
-//     const userId = (req.user as any)?._id;
+export const getAllChatSessionsController = asyncWrapper(
+  async (req: Request, res: Response) => {
+    const userId = (req.user as any)?._id;
 
-//     const sessions = await ChatSessionModel.find({
-//       userId,
-//       mode: "battle",
-//     })
-//       .sort({ isPinned: -1, updatedAt: -1 })
-//       .lean();
+    const chatListSessions = await ChatSessionModel.find({
+      userId,
+      mode: "battle",
+    })
+      .sort({ isPinned: -1, updatedAt: -1 })
+      .lean();
 
-//     return ApiResponse(
-//       res,
-//       200,
-//       "Chat sessions fetched successfully",
-//       sessions
-//     );
-//   }
-// );
+    return ApiResponse(
+      res,
+      200,
+      "Chat sessions fetched successfully",
+      chatListSessions
+    );
+  }
+);
 
 /**
  * 4. Get Chat Messages By Chat ID

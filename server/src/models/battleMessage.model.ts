@@ -1,4 +1,4 @@
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 
 export interface IJudge {
   solution_1_score: number;
@@ -7,15 +7,15 @@ export interface IJudge {
   solution_2_reasoning: string;
 }
 
-export interface IBattleMessage extends Document {
+export interface IBattleMessage {
   chatId: mongoose.Types.ObjectId;
   problem: string;
   solution_1: string;
   solution_2: string;
   judge: IJudge;
   winner: "solution_1" | "solution_2" | "tie";
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const judgeSubSchema = new Schema<IJudge>(

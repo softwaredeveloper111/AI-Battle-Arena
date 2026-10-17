@@ -2,11 +2,22 @@ import {Router} from "express"
 import { executeBattleController } from "../controllers/battle.controller.js";
 import {getAllChatSessionsController} from "../controllers/battle.controller.js";
 import {getChatMessagesController} from "../controllers/battle.controller.js";
+import {pinnedChatSessionController} from "../controllers/battle.controller.js";
+import {renameChatSessionController} from "../controllers/battle.controller.js";
+import {deleteChatSessionController} from "../controllers/battle.controller.js";
 
 import identifyUser from "../middlewares/identifyUser.middleware.js";
 import {executeBattleSchema} from "../validations/battle.validator.js"
 import {getChatMessagesSchema} from "../validations/battle.validator.js"
+import {pinnedChatSchema} from "../validations/battle.validator.js"
+import {deleteChatSessionSchema} from "../validations/battle.validator.js"
+import {
+  renameChatSessionParamSchema,
+  renameChatSessionBodySchema,
+} from "../validations/battle.validator.js"
 import validate from "../middlewares/validation.middleware.js"
+
+
 
 const battleRouter = Router();
 
@@ -68,6 +79,65 @@ battleRouter.get(
 )
 
 
+/**
+ * @description this route is for renaming the chat session
+ * @route PATCH /api/battle/rename/:chatId
+ * @method PATCH
+ * @access private
+ * 
+ * @param {string} chatId - chat id is required
+ * 
+ * @returns {object} - 200 chat session renamed successfully
+ * @returns {object} - 404 Chat not found
+ * @returns {object} - 500 Internal Server Error
+ */
+battleRouter.patch(
+    "/rename/:chatId",
+    validate(renameChatSessionParamSchema, "params"),
+    validate(renameChatSessionBodySchema, "body"),
+    identifyUser,
+    renameChatSessionController
+)
+
+
+/**
+ * @description this route is for deleting the chat session
+ * @route DELETE /api/battle/delete/:chatId
+ * @method DELETE
+ * @access private
+ * 
+ * @param {string} chatId - chat id is required
+ * 
+ * @returns {object} - 200 chat session deleted successfully
+ * @returns {object} - 404 Chat not found
+ * @returns {object} - 500 Internal Server Error
+ */
+battleRouter.delete(
+    "/delete/:chatId",
+    validate(deleteChatSessionSchema, "params"),
+    identifyUser,
+    deleteChatSessionController
+)
+
+
+/**
+ * @description this route is for pinning the chat session
+ * @route PATCH /api/battle/pinned/:chatId
+ * @method PATCH
+ * @access private
+ * 
+ * @param {string} chatId - chat id is required
+ * 
+ * @returns {object} - 200 chat session pinned successfully
+ * @returns {object} - 404 Chat not found
+ * @returns {object} - 500 Internal Server Error
+ */
+battleRouter.patch(
+    "/pinned/:chatId",
+    validate(pinnedChatSchema, "params"),
+    identifyUser,
+    pinnedChatSessionController
+)
 
 
 

@@ -126,6 +126,7 @@ export const getChatMessagesController = asyncWrapper(
  */
 export const renameChatSessionController = asyncWrapper(
   async (req: Request, res: Response) => {
+
     const userId = (req.user as any)?._id;
     const chatId = req.params?.chatId;
     const title = req.body?.title;
@@ -152,27 +153,63 @@ export const renameChatSessionController = asyncWrapper(
   }
 );
 
+
 /**
  * 6. Delete Chat Session
  * Chat aur uske andar ke saare battle turns delete karne ke liye
  */
-// export const deleteChatSessionController = asyncWrapper(
-//   async (req: Request, res: Response) => {
-//     const userId = (req.user as any)?._id;
-//     const { chatId } = req.params;
+export const deleteChatSessionController = asyncWrapper(
+  async (req: Request, res: Response) => {
 
-//     const session = await ChatSessionModel.findOneAndDelete({
-//       _id: chatId,
-//       userId,
-//     });
+    const userId = (req.user as any)?._id;
+    const chatId = req.params?.chatId;
 
-//     if (!session) {
-//       throw new ApiError("Chat session not found", 404);
-//     }
+    if (!chatId) {
+      throw new ApiError("Chat ID is required", 400);
+    }
 
-//     // Us chat ke saare messages bhi clean up karo
-//     await BattleMessageModel.deleteMany({ chatId });
+    const chatSession = await ChatSessionModel.findOneAndDelete({
+      _id: chatId,
+      userId,
+    });
 
-//     return ApiResponse(res, 200, "Chat session deleted successfully", null);
-//   }
-// );
+    if (!chatSession) {
+      throw new ApiError("Chat session not found", 404);
+    }
+
+    // Us chat ke saare messages bhi clean up karo
+    await BattleMessageModel.deleteMany({ chatId });
+
+    return ApiResponse(res, 200, "Chat session deleted successfully", null);
+  }
+);
+
+
+
+
+/**
+ * 7. Pinned/unpinned chat session
+ * pinned chat sesstion, unpinned chat session
+ */
+export const pinnedChatSessionController = asyncWrapper(
+  async (req: Request, res: Response) => {
+    const userId = (req.user as any)?._id;
+    const chatId = req.params?.chatId;
+
+    if (!chatId) {
+      throw new ApiError("Chat ID is required", 400);
+    }
+
+    const chatSession = await ChatSessionModel.findOne({ _id: chatId, userId });
+
+    if (!chatSession) {
+      throw new ApiError("Chat session not found", 404);
+    }
+
+    chatSession.isPinned = !chatSession.isPinned;
+    await chatSession.save();
+  
+
+    return ApiResponse(res, 200, "Chat session pinned successfully", chatSession);
+  }
+);

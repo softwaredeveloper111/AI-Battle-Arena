@@ -38,15 +38,37 @@ export const getChatMessagesSchema = z.object({
 
 
 
-export const updateChatSessionSchema = z.object({
-  title: titleSchema.optional(),
-  isPinned: z.boolean().optional(),
+export const pinnedChatSchema = z.object({
+  chatId: chatIdSchema,
+})
+
+
+
+
+export const deleteChatSessionSchema = z.object({
+  chatId: chatIdSchema,
+})
+
+
+
+export const renameChatSessionParamSchema = z.object({
+  chatId: chatIdSchema,
 });
+
+export const renameChatSessionBodySchema = z.object({
+  title: titleSchema,
+});
+
+export const renameChatSessionSchema = renameChatSessionBodySchema;
 
 
 
 
 
 export type ExecuteBattleInput = z.infer<typeof executeBattleSchema>;
-export type UpdateChatSessionInput = z.infer<typeof updateChatSessionSchema>;
 export type GetChatMessagesInput = z.infer<typeof getChatMessagesSchema>;
+export type PinnedChatInput = z.infer<typeof pinnedChatSchema>;
+export type DeleteChatSessionInput = z.infer<typeof deleteChatSessionSchema>;
+export type RenameChatSessionParamInput = z.infer<typeof renameChatSessionParamSchema>;
+export type RenameChatSessionBodyInput = z.infer<typeof renameChatSessionBodySchema>;
+export type RenameChatSessionInput = RenameChatSessionBodyInput;

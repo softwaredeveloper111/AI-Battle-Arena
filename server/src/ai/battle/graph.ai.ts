@@ -1,63 +1,92 @@
-import { HumanMessage, SystemMessage } from "@langchain/core/messages";
+import { HumanMessage, AIMessage, SystemMessage } from "@langchain/core/messages";
 import { cohereModel, geminiModel, mistralModel } from "./llmModel.provider.js";
 import {
   StateSchema,
-  MessagesValue,
-  type GraphNode,
   StateGraph,
   START,
   END,
 } from "@langchain/langgraph";
 import z from "zod";
 
-
-
 const JudgeSchema = z.object({
-    solution_1_score: z.number().min(0).max(10).default(0),
-    solution_2_score: z.number().min(0).max(10).default(0),
-    solution_1_reasoning: z.string().default(""),
-    solution_2_reasoning: z.string().default(""),
-  })
+  solution_1_score: z.number().min(0).max(10).default(0),
+  solution_2_score: z.number().min(0).max(10).default(0),
+  solution_1_reasoning: z.string().default(""),
+  solution_2_reasoning: z.string().default(""),
+});
+
+export const BattleHistoryItemSchema = z.object({
+  problem: z.string(),
+  solution_1: z.string(),
+  solution_2: z.string(),
+});
+
+export type BattleHistoryItem = z.infer<typeof BattleHistoryItemSchema>;
 
 const AIBattleState = new StateSchema({
   problem: z.string().default(""),
+  history: z.array(BattleHistoryItemSchema).default([]),
   solution_1: z.string().default(""),
   solution_2: z.string().default(""),
-  judge: JudgeSchema
+  judge: JudgeSchema,
 });
 
 const judgeModel = geminiModel.withStructuredOutput(JudgeSchema);
 
-
-
-
-const StartNode = async  (state:typeof AIBattleState.State)=>{
+const StartNode = async (state: typeof AIBattleState.State) => {
   const problemStatement = state.problem;
-  if(!problemStatement){
+  if (!problemStatement) {
     throw new Error("Please provide a problem statement");
   }
-  return {problem:problemStatement}
-}
+  return { problem: problemStatement };
+};
 
+const SolutionNode = async (state: typeof AIBattleState.State) => {
+  const problemStatement = state.problem;
+  const history = state.history || [];
 
-const SolutionNode = async (state:typeof AIBattleState.State)=>{
-   const problemStatement = state.problem;
-   const [solution_1,solution_2] = await Promise.all([
-     mistralModel.invoke(problemStatement),
-     cohereModel.invoke(problemStatement),
-   ]);
+  // Model 1 (Mistral): user problem aur Model 1 ke past responses
+  const mistralMessages = [
+    ...history.flatMap((turn) => [
+      new HumanMessage(turn.problem),
+      new AIMessage(turn.solution_1),
+    ]),
+    new HumanMessage(problemStatement),
+  ];
 
-   return {solution_1:solution_1.content,solution_2:solution_2.content}
-}
+  // Model 2 (Cohere): user problem aur Model 2 ke past responses
+  const cohereMessages = [
+    ...history.flatMap((turn) => [
+      new HumanMessage(turn.problem),
+      new AIMessage(turn.solution_2),
+    ]),
+    new HumanMessage(problemStatement),
+  ];
 
+  const [solution_1, solution_2] = await Promise.all([
+    mistralModel.invoke(mistralMessages),
+    cohereModel.invoke(cohereMessages),
+  ]);
 
+  const sol1Text =
+    typeof solution_1.content === "string"
+      ? solution_1.content
+      : JSON.stringify(solution_1.content);
+  const sol2Text =
+    typeof solution_2.content === "string"
+      ? solution_2.content
+      : JSON.stringify(solution_2.content);
 
-const compareNode = async (state:typeof AIBattleState.State)=>{
+  return { solution_1: sol1Text, solution_2: sol2Text };
+};
+
+const compareNode = async (state: typeof AIBattleState.State) => {
   const solution_1 = state.solution_1;
   const solution_2 = state.solution_2;
-  const problemStatement = state.problem
-  
-  const systemMessage:string = `
+  const problemStatement = state.problem;
+  const history = state.history || [];
+
+  const systemMessage: string = `
   You are an impartial AI Judge. Your task is to evaluate two AI-generated solutions to the same problem.
 
 Evaluate both solutions using these criteria:
@@ -76,22 +105,29 @@ Rules:
 - Never invent facts to justify a score.
 
 Return only the evaluation in the exact JSON format requested by the application. Include the score and reasoning for each solution.
-  `
+  `;
+
+  const contextSnippet =
+    history.length > 0
+      ? `\nRecent Conversation History:\n${history
+          .map(
+            (turn, index) =>
+              `Turn ${index + 1}:\nUser Question: ${turn.problem}\nSolution 1: ${turn.solution_1}\nSolution 2: ${turn.solution_2}`
+          )
+          .join("\n\n")}\n\n`
+      : "";
 
   const judgment = await judgeModel.invoke([
-     new SystemMessage(systemMessage),
-     new HumanMessage(`
-    Problem: ${problemStatement}
+    new SystemMessage(systemMessage),
+    new HumanMessage(`
+    ${contextSnippet}Current Problem: ${problemStatement}
     Solution 1:${solution_1}
     Solution 2:${solution_2}
   `),
-     
-  ])
-  
+  ]);
+
   return { judge: judgment };
-
-}
-
+};
 
 const graph = new StateGraph(AIBattleState)
   .addNode("StartNode", StartNode)
@@ -103,10 +139,21 @@ const graph = new StateGraph(AIBattleState)
   .addEdge("compareNode", END)
   .compile();
 
-
-export default async function generateResponse(userMessage:string){
-  const result = await graph.invoke({problem:userMessage,judge:{solution_1_score:0,solution_2_score:0,solution_1_reasoning:"",solution_2_reasoning:""}});
-  return result
+export default async function generateResponse(
+  userMessage: string,
+  history: BattleHistoryItem[] = []
+) {
+  const result = await graph.invoke({
+    problem: userMessage,
+    history,
+    judge: {
+      solution_1_score: 0,
+      solution_2_score: 0,
+      solution_1_reasoning: "",
+      solution_2_reasoning: "",
+    },
+  });
+  return result;
 }
 
 

@@ -7,6 +7,9 @@ import BattleMessageModel from "../models/battleMessage.model.js";
 import generateAIResponse from "../ai/battle/graph.ai.js";
 import generateChatTitle from "../ai/chatTitleGenerate.js";
 
+import type { BattleHistoryItem } from "../ai/battle/graph.ai.js";
+
+const HISTORY_LIMIT = 20;
 
 /**
  * 1. Execute Battle Turn
@@ -14,17 +17,42 @@ import generateChatTitle from "../ai/chatTitleGenerate.js";
  */
 export const executeBattleController = asyncWrapper(
   async (req: Request, res: Response) => {
-    
     const userId = (req.user as any)?._id;
-    const  problem = req.body?.problem;
+    const problem = req.body?.problem;
+    const chatId = req.body?.chatId;
 
-    if(!problem){
+    if (!problem) {
       throw new ApiError("Problem is required", 400);
     }
 
+    let chat = null;
+    let history: BattleHistoryItem[] = [];
 
-    // AI Battle LangGraph invoke karo
-    const [aiResult, chatTitle] = await Promise.all([generateAIResponse(problem), generateChatTitle(problem)]);
+    if (chatId) {
+      chat = await ChatSessionModel.findOne({ _id: chatId, userId });
+      if (!chat) {
+        throw new ApiError("Chat session not found", 404);
+      }
+
+      const recent = await BattleMessageModel.find({ chatId: chat._id })
+        .sort({ createdAt: -1, _id: -1 })
+        .limit(HISTORY_LIMIT)
+        .lean();
+
+      history = recent.reverse().map((msg) => ({
+        problem: msg.problem,
+        solution_1: msg.solution_1,
+        solution_2: msg.solution_2,
+      }));
+    }
+
+    const isNewChat = !chat;
+
+    // AI Battle LangGraph invoke karo aur agar new chat ho toh chat title generate karo
+    const [aiResult, chatTitle] = await Promise.all([
+      generateAIResponse(problem, history),
+      isNewChat ? generateChatTitle(problem) : Promise.resolve(null),
+    ]);
 
     const score1 = aiResult?.judge?.solution_1_score ?? 0;
     const score2 = aiResult?.judge?.solution_2_score ?? 0;
@@ -36,16 +64,24 @@ export const executeBattleController = asyncWrapper(
       winner = "solution_2";
     }
 
-    /** save chat title in database in chatSession.model */
-    const chatCreatedSession = await ChatSessionModel.create({
-      userId,
-      title: chatTitle,
-      mode: "battle",
-    });
+    let activeChatId = chat?._id;
+
+    if (!activeChatId) {
+      const newSession = await ChatSessionModel.create({
+        userId,
+        title: chatTitle || "New Battle",
+        mode: "battle",
+      });
+      activeChatId = newSession._id;
+    } else {
+      await ChatSessionModel.findByIdAndUpdate(activeChatId, {
+        $set: { updatedAt: new Date() },
+      });
+    }
 
     // Database me battle turn message save karo
     const battleMessage = await BattleMessageModel.create({
-      chatId: chatCreatedSession._id,
+      chatId: activeChatId,
       problem,
       solution_1: aiResult.solution_1,
       solution_2: aiResult.solution_2,
@@ -57,9 +93,9 @@ export const executeBattleController = asyncWrapper(
       },
       winner,
     });
-  
+
     return ApiResponse(res, 200, "Battle turn completed successfully", {
-      chatId: chatCreatedSession._id,
+      chatId: activeChatId,
       turn: battleMessage,
     });
   }

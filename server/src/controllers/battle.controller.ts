@@ -94,49 +94,63 @@ export const getAllChatSessionsController = asyncWrapper(
  * 4. Get Chat Messages By Chat ID
  * Sidebar se kisi chat par click karne par uske saare battle turns load karne ke liye
  */
-// export const getChatMessagesController = asyncWrapper(
-//   async (req: Request, res: Response) => {
-//     const userId = (req.user as any)?._id;
-//     const { chatId } = req.params;
+export const getChatMessagesController = asyncWrapper(
+  async (req: Request, res: Response) => {
+    
+    const userId = (req.user as any)?._id;
+    const chatId = req.params?.chatId;
 
-//     const session = await ChatSessionModel.findOne({ _id: chatId, userId });
-//     if (!session) {
-//       throw new ApiError("Chat session not found", 404);
-//     }
+    if(!chatId){
+      throw new ApiError("Chat ID is required", 400);
+    }
 
-//     const messages = await BattleMessageModel.find({ chatId })
-//       .sort({ createdAt: 1 })
-//       .lean();
+    const session = await ChatSessionModel.findOne({ _id: chatId, userId });
+    if (!session) {
+      throw new ApiError("Chat session not found", 404);
+    }
 
-//     return ApiResponse(res, 200, "Messages fetched successfully", {
-//       session,
-//       messages,
-//     });
-//   }
-// );
+    const messages = await BattleMessageModel.find({ chatId })
+      .sort({ createdAt: 1 })
+      .lean();
+
+    return ApiResponse(res, 200, "Messages fetched successfully", {
+      session,
+      messages,
+    });
+  }
+);
+
 
 /**
- * 5. Update Chat Session (Title rename ya Pin/Unpin)
+ * 5. rename Chat title (Title rename)
  */
-// export const updateChatSessionController = asyncWrapper(
-//   async (req: Request, res: Response) => {
-//     const userId = (req.user as any)?._id;
-//     const { chatId } = req.params;
-//     const { title, isPinned } = req.body;
+export const renameChatSessionController = asyncWrapper(
+  async (req: Request, res: Response) => {
+    const userId = (req.user as any)?._id;
+    const chatId = req.params?.chatId;
+    const title = req.body?.title;
 
-//     const session = await ChatSessionModel.findOne({ _id: chatId, userId });
-//     if (!session) {
-//       throw new ApiError("Chat session not found", 404);
-//     }
+    if (!chatId) {
+      throw new ApiError("Chat ID is required", 400);
+    }
 
-//     if (title !== undefined) session.title = title;
-//     if (isPinned !== undefined) session.isPinned = isPinned;
+    if (!title) {
+      throw new ApiError("Title is required", 400);
+    }
 
-//     await session.save();
+    const chatSession = await ChatSessionModel.findOneAndUpdate(
+      { _id: chatId, userId },
+      { title },
+      { new: true }
+    );
 
-//     return ApiResponse(res, 200, "Chat session updated successfully", session);
-//   }
-// );
+    if (!chatSession) {
+      throw new ApiError("Chat session not found", 404);
+    }
+
+    return ApiResponse(res, 200, "Chat session renamed successfully", chatSession);
+  }
+);
 
 /**
  * 6. Delete Chat Session

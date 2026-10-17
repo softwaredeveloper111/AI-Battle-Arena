@@ -1,9 +1,11 @@
 import {Router} from "express"
 import { executeBattleController } from "../controllers/battle.controller.js";
-import {getAllChatSessionsController} from "../controllers/battle.controller.js"
+import {getAllChatSessionsController} from "../controllers/battle.controller.js";
+import {getChatMessagesController} from "../controllers/battle.controller.js";
 
 import identifyUser from "../middlewares/identifyUser.middleware.js";
 import {executeBattleSchema} from "../validations/battle.validator.js"
+import {getChatMessagesSchema} from "../validations/battle.validator.js"
 import validate from "../middlewares/validation.middleware.js"
 
 const battleRouter = Router();
@@ -46,8 +48,24 @@ battleRouter.get(
 
 
 
-
-
+/**
+ * @description this route is for getting the chat messages by chat id
+ * @route GET /api/battle/messages/:chatId
+ * @method GET
+ * @access private
+ * 
+ * @param {string} chatId - chat id is required
+ * 
+ * @returns {object} - 200 chat messages
+ * @returns {object} - 404 Chat not found
+ * @returns {object} - 500 Internal Server Error
+ */
+battleRouter.get(
+    "/messages/:chatId", 
+    validate(getChatMessagesSchema, "params"),
+    identifyUser , 
+    getChatMessagesController
+)
 
 
 

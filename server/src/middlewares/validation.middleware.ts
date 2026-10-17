@@ -1,9 +1,11 @@
 import type { Request, Response, NextFunction } from "express";
 import type { ZodSchema } from "zod";
 
-const validate = (schema: ZodSchema) => {
+type ValidationTarget = "body" | "params" | "query";
+
+const validate = (schema: ZodSchema, target: ValidationTarget = "body") => {
   return (req: Request, res: Response, next: NextFunction): void => {
-    const dataToValidate = req.body ?? {};
+    const dataToValidate = req[target] ?? {};
     const result = schema.safeParse(dataToValidate);
 
     if (!result.success) {
@@ -11,7 +13,7 @@ const validate = (schema: ZodSchema) => {
       const primaryMessage = firstIssue?.message || "Validation failed";
 
       const formattedErrors = result.error.issues.map((issue) => ({
-        field: issue.path.join(".") || "body",
+        field: issue.path.join(".") || target,
         message: issue.message,
       }));
 
@@ -25,7 +27,7 @@ const validate = (schema: ZodSchema) => {
       return;
     }
 
-    req.body = result.data;
+    req[target] = result.data;
     next();
   };
 };

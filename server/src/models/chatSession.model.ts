@@ -1,13 +1,13 @@
 /** Left side bar mein chat history ke liye - both agent & battle mode */
-import mongoose, { Schema, Document, Model } from "mongoose";
+import mongoose, { Schema, Model } from "mongoose";
 
-export interface IChatSession extends Document {
+export interface IChatSession {
   userId: mongoose.Types.ObjectId;
   title: string;
   mode: "agent" | "battle";
   isPinned: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 const chatSessionSchema = new Schema<IChatSession>(

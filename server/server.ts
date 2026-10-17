@@ -6,11 +6,16 @@ import "./src/config/cache.js";
 
 import "./src/workers/main.js";
 
+import { initSocket } from "./src/socket/server.socket.js";
+import {createServer} from "http"
+
+const httpServer = createServer(app)
 const PORT = config.PORT;
 
 connectedToDB();
+initSocket(httpServer);
 
-app.listen(PORT, () => {
+httpServer.listen(PORT, () => {
     
   if(config.NODE_ENV === "production")
     logger.info(`Server is running on port ${PORT} in ${config.NODE_ENV} mode`);

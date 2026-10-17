@@ -227,7 +227,7 @@ export const renameChatSessionController = asyncWrapper(
     const chatSession = await ChatSessionModel.findOneAndUpdate(
       { _id: chatId, userId },
       { title },
-      { new: true }
+      { returnDocument: "after" }
     );
 
     if (!chatSession) {

@@ -1,10 +1,11 @@
 import express from "express";
 import httpLogger from "./lib/httpLogger.js";
 import errorHandler from "./middlewares/errorHandler.middleware.js";
-import authRouter from "./routes/auth.route.js";
 import cookieParser from "cookie-parser";
 import passport from "./config/passport.js";
 
+import authRouter from "./routes/auth.route.js";
+import BattleRouter from "./routes/battle.route.js"
 
 
 
@@ -26,6 +27,7 @@ app.use(passport.initialize());
  * routes
  */
 app.use("/api/auth", authRouter);
+app.use("/api/battle", BattleRouter);
 
 /**
  * health check routes

@@ -25,7 +25,6 @@ const titleSchema = z
  * User prompt bhejkar battle initiate karega
  */
 export const executeBattleSchema = z.object({
-  chatId: chatIdSchema.optional(),
   problem: problemSchema,
 });
 

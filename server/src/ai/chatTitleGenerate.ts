@@ -90,3 +90,6 @@ export default async function generateChatTitle(message:string) {
   const truncated = wordsOf(lastTitle).slice(0, 4);
   return truncated.length >= 2 ? truncated.join(" ") : fallbackTitle(message);
 }
+
+
+console.log(await generateChatTitle("are you consious , answer in short"))

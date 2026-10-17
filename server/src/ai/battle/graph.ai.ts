@@ -115,5 +115,5 @@ export default async function generateResponse(userMessage:string){
 /**
  * stateSchema is used to define the format(propertiy+data type) of the data which share b/w different nodes
  */
-
-console.log(await generateResponse("are you consious , answer in short"))
+//ex.
+// console.log(await generateResponse("are you consious , answer in short"))

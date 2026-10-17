@@ -41,9 +41,17 @@ const StartNode = async (state: typeof AIBattleState.State) => {
   return { problem: problemStatement };
 };
 
-const SolutionNode = async (state: typeof AIBattleState.State) => {
+const SolutionNode = async (
+  state: typeof AIBattleState.State,
+  config?: any
+) => {
   const problemStatement = state.problem;
   const history = state.history || [];
+
+  config?.writer?.({
+    type: "status",
+    message: "Generating solutions...",
+  });
 
   // Model 1 (Mistral): user problem aur Model 1 ke past responses
   const mistralMessages = [
@@ -63,28 +71,70 @@ const SolutionNode = async (state: typeof AIBattleState.State) => {
     new HumanMessage(problemStatement),
   ];
 
-  const [solution_1, solution_2] = await Promise.all([
-    mistralModel.invoke(mistralMessages),
-    cohereModel.invoke(cohereMessages),
-  ]);
+  // Stream Model 1 (Mistral) token by token
+  const streamMistral = async (): Promise<string> => {
+    let fullText = "";
+    const stream = await mistralModel.stream(mistralMessages);
+    for await (const chunk of stream) {
+      const text =
+        typeof chunk.content === "string"
+          ? chunk.content
+          : JSON.stringify(chunk.content);
+      if (text) {
+        fullText += text;
+        config?.writer?.({
+          type: "token",
+          model: "solution_1",
+          token: text,
+        });
+      }
+    }
+    return fullText;
+  };
 
-  const sol1Text =
-    typeof solution_1.content === "string"
-      ? solution_1.content
-      : JSON.stringify(solution_1.content);
-  const sol2Text =
-    typeof solution_2.content === "string"
-      ? solution_2.content
-      : JSON.stringify(solution_2.content);
+  // Stream Model 2 (Cohere) token by token
+  const streamCohere = async (): Promise<string> => {
+    let fullText = "";
+    const stream = await cohereModel.stream(cohereMessages);
+    for await (const chunk of stream) {
+      const text =
+        typeof chunk.content === "string"
+          ? chunk.content
+          : JSON.stringify(chunk.content);
+      if (text) {
+        fullText += text;
+        config?.writer?.({
+          type: "token",
+          model: "solution_2",
+          token: text,
+        });
+      }
+    }
+    return fullText;
+  };
+
+  // Dono models concurrently stream honge
+  const [sol1Text, sol2Text] = await Promise.all([
+    streamMistral(),
+    streamCohere(),
+  ]);
 
   return { solution_1: sol1Text, solution_2: sol2Text };
 };
 
-const compareNode = async (state: typeof AIBattleState.State) => {
+const compareNode = async (
+  state: typeof AIBattleState.State,
+  config?: any
+) => {
   const solution_1 = state.solution_1;
   const solution_2 = state.solution_2;
   const problemStatement = state.problem;
   const history = state.history || [];
+
+  config?.writer?.({
+    type: "status",
+    message: "Evaluating solutions...",
+  });
 
   const systemMessage: string = `
   You are an impartial AI Judge. Your task is to evaluate two AI-generated solutions to the same problem.
@@ -129,7 +179,7 @@ Return only the evaluation in the exact JSON format requested by the application
   return { judge: judgment };
 };
 
-const graph = new StateGraph(AIBattleState)
+export const graph = new StateGraph(AIBattleState)
   .addNode("StartNode", StartNode)
   .addNode("SolutionNode", SolutionNode)
   .addNode("compareNode", compareNode)
@@ -138,6 +188,42 @@ const graph = new StateGraph(AIBattleState)
   .addEdge("SolutionNode", "compareNode")
   .addEdge("compareNode", END)
   .compile();
+
+export type StreamChunk = {
+  type: "updates" | "custom";
+  data: any;
+};
+
+/**
+ * Token-by-token streaming generator using LangGraph streamMode: ["updates", "custom"]
+ */
+export async function* streamBattleResponse(
+  userMessage: string,
+  history: BattleHistoryItem[] = []
+): AsyncGenerator<StreamChunk> {
+  const stream = await graph.stream(
+    {
+      problem: userMessage,
+      history,
+      judge: {
+        solution_1_score: 0,
+        solution_2_score: 0,
+        solution_1_reasoning: "",
+        solution_2_reasoning: "",
+      },
+    },
+    {
+      streamMode: ["updates", "custom"],
+    }
+  );
+
+  for await (const [mode, data] of stream) {
+    yield {
+      type: mode as "updates" | "custom",
+      data,
+    };
+  }
+}
 
 export default async function generateResponse(
   userMessage: string,

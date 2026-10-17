@@ -24,12 +24,15 @@ export function initSocket(httpServer: HttpServer): Server {
     })
   })
 
-    return io
-
-  }catch(err){
-    logger.error(err)
-    throw err
+    return io;
+  } catch (err) {
+    logger.error(err);
+    throw err;
   }
+}
+
+export function getIO(): Server | undefined {
+  return io;
 }
 
 

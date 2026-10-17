@@ -29,6 +29,7 @@ const titleSchema = z
 export const executeBattleSchema = z.object({
   problem: problemSchema,
   chatId: chatIdSchema.optional(),
+  socketId: z.string().trim().optional(),
 });
 
 

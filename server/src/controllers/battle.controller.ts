@@ -4,8 +4,9 @@ import ApiError from "../utils/ApiError.util.js";
 import ApiResponse from "../utils/ApiResponse.util.js";
 import ChatSessionModel from "../models/chatSession.model.js";
 import BattleMessageModel from "../models/battleMessage.model.js";
-import generateAIResponse from "../ai/battle/graph.ai.js";
+import { streamBattleResponse } from "../ai/battle/graph.ai.js";
 import generateChatTitle from "../ai/chatTitleGenerate.js";
+import { getIO } from "../socket/server.socket.js";
 
 import type { BattleHistoryItem } from "../ai/battle/graph.ai.js";
 
@@ -20,6 +21,7 @@ export const executeBattleController = asyncWrapper(
     const userId = (req.user as any)?._id;
     const problem = req.body?.problem;
     const chatId = req.body?.chatId;
+    const socketId = req.body?.socketId;
 
     if (!problem) {
       throw new ApiError("Problem is required", 400);
@@ -47,15 +49,45 @@ export const executeBattleController = asyncWrapper(
     }
 
     const isNewChat = !chat;
+    const io = getIO();
 
-    // AI Battle LangGraph invoke karo aur agar new chat ho toh chat title generate karo
-    const [aiResult, chatTitle] = await Promise.all([
-      generateAIResponse(problem, history),
+    let solution_1 = "";
+    let solution_2 = "";
+    let judge = {
+      solution_1_score: 0,
+      solution_2_score: 0,
+      solution_1_reasoning: "",
+      solution_2_reasoning: "",
+    };
+
+    // LangGraph streaming runner
+    const runStream = async () => {
+      for await (const chunk of streamBattleResponse(problem, history)) {
+        if (chunk.type === "custom") {
+          // Token ya status event socket client ko emit karo
+          if (io && socketId) {
+            io.to(socketId).emit("battle:stream", chunk.data);
+          }
+        } else if (chunk.type === "updates") {
+          if (chunk.data.SolutionNode) {
+            solution_1 = chunk.data.SolutionNode.solution_1 || "";
+            solution_2 = chunk.data.SolutionNode.solution_2 || "";
+          }
+          if (chunk.data.compareNode?.judge) {
+            judge = chunk.data.compareNode.judge;
+          }
+        }
+      }
+    };
+
+    // Graph stream aur new chat ke liye title generation parallel mein chalenge
+    const [, chatTitle] = await Promise.all([
+      runStream(),
       isNewChat ? generateChatTitle(problem) : Promise.resolve(null),
     ]);
 
-    const score1 = aiResult?.judge?.solution_1_score ?? 0;
-    const score2 = aiResult?.judge?.solution_2_score ?? 0;
+    const score1 = judge?.solution_1_score ?? 0;
+    const score2 = judge?.solution_2_score ?? 0;
 
     let winner: "solution_1" | "solution_2" | "tie" = "tie";
     if (score1 > score2) {
@@ -83,16 +115,24 @@ export const executeBattleController = asyncWrapper(
     const battleMessage = await BattleMessageModel.create({
       chatId: activeChatId,
       problem,
-      solution_1: aiResult.solution_1,
-      solution_2: aiResult.solution_2,
+      solution_1,
+      solution_2,
       judge: {
         solution_1_score: score1,
         solution_2_score: score2,
-        solution_1_reasoning: aiResult.judge?.solution_1_reasoning || "",
-        solution_2_reasoning: aiResult.judge?.solution_2_reasoning || "",
+        solution_1_reasoning: judge?.solution_1_reasoning || "",
+        solution_2_reasoning: judge?.solution_2_reasoning || "",
       },
       winner,
     });
+
+    // Stream complete hone ka event emit karo
+    if (io && socketId) {
+      io.to(socketId).emit("battle:done", {
+        chatId: activeChatId,
+        turn: battleMessage,
+      });
+    }
 
     return ApiResponse(res, 200, "Battle turn completed successfully", {
       chatId: activeChatId,

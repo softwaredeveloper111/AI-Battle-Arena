@@ -41,6 +41,11 @@ const StartNode = async (state: typeof AIBattleState.State) => {
   return { problem: problemStatement };
 };
 
+import logger from "../../lib/logger.js";
+
+const FALLBACK_SOLUTION_1 = "Model 1 was temporarily unable to generate a response. Please try again.";
+const FALLBACK_SOLUTION_2 = "Model 2 was temporarily unable to generate a response. Please try again.";
+
 const SolutionNode = async (
   state: typeof AIBattleState.State,
   config?: any
@@ -71,46 +76,66 @@ const SolutionNode = async (
     new HumanMessage(problemStatement),
   ];
 
-  // Stream Model 1 (Mistral) token by token
+  // Stream Model 1 (Mistral) token by token with try/catch
   const streamMistral = async (): Promise<string> => {
     let fullText = "";
-    const stream = await mistralModel.stream(mistralMessages);
-    for await (const chunk of stream) {
-      const text =
-        typeof chunk.content === "string"
-          ? chunk.content
-          : JSON.stringify(chunk.content);
-      if (text) {
-        fullText += text;
-        config?.writer?.({
-          type: "token",
-          model: "solution_1",
-          token: text,
-        });
+    try {
+      const stream = await mistralModel.stream(mistralMessages);
+      for await (const chunk of stream) {
+        const text =
+          typeof chunk.content === "string"
+            ? chunk.content
+            : JSON.stringify(chunk.content);
+        if (text) {
+          fullText += text;
+          config?.writer?.({
+            type: "token",
+            model: "solution_1",
+            token: text,
+          });
+        }
       }
+      return fullText || FALLBACK_SOLUTION_1;
+    } catch (err) {
+      logger.error({ err }, "Mistral streaming error");
+      config?.writer?.({
+        type: "model_error",
+        model: "solution_1",
+        message: "Model 1 encountered an error while generating response.",
+      });
+      return FALLBACK_SOLUTION_1;
     }
-    return fullText;
   };
 
-  // Stream Model 2 (Cohere) token by token
+  // Stream Model 2 (Cohere) token by token with try/catch
   const streamCohere = async (): Promise<string> => {
     let fullText = "";
-    const stream = await cohereModel.stream(cohereMessages);
-    for await (const chunk of stream) {
-      const text =
-        typeof chunk.content === "string"
-          ? chunk.content
-          : JSON.stringify(chunk.content);
-      if (text) {
-        fullText += text;
-        config?.writer?.({
-          type: "token",
-          model: "solution_2",
-          token: text,
-        });
+    try {
+      const stream = await cohereModel.stream(cohereMessages);
+      for await (const chunk of stream) {
+        const text =
+          typeof chunk.content === "string"
+            ? chunk.content
+            : JSON.stringify(chunk.content);
+        if (text) {
+          fullText += text;
+          config?.writer?.({
+            type: "token",
+            model: "solution_2",
+            token: text,
+          });
+        }
       }
+      return fullText || FALLBACK_SOLUTION_2;
+    } catch (err) {
+      logger.error({ err }, "Cohere streaming error");
+      config?.writer?.({
+        type: "model_error",
+        model: "solution_2",
+        message: "Model 2 encountered an error while generating response.",
+      });
+      return FALLBACK_SOLUTION_2;
     }
-    return fullText;
   };
 
   // Dono models concurrently stream honge
@@ -130,6 +155,21 @@ const compareNode = async (
   const solution_2 = state.solution_2;
   const problemStatement = state.problem;
   const history = state.history || [];
+
+  const isSol1Failed = solution_1 === FALLBACK_SOLUTION_1;
+  const isSol2Failed = solution_2 === FALLBACK_SOLUTION_2;
+
+  // Agar dono models fail ho gaye toh judge call karne ki zaroorat nahi
+  if (isSol1Failed && isSol2Failed) {
+    return {
+      judge: {
+        solution_1_score: 0,
+        solution_2_score: 0,
+        solution_1_reasoning: "Model 1 was unable to generate a response.",
+        solution_2_reasoning: "Model 2 was unable to generate a response.",
+      },
+    };
+  }
 
   config?.writer?.({
     type: "status",
@@ -167,16 +207,40 @@ Return only the evaluation in the exact JSON format requested by the application
           .join("\n\n")}\n\n`
       : "";
 
-  const judgment = await judgeModel.invoke([
-    new SystemMessage(systemMessage),
-    new HumanMessage(`
-    ${contextSnippet}Current Problem: ${problemStatement}
-    Solution 1:${solution_1}
-    Solution 2:${solution_2}
-  `),
-  ]);
+  try {
+    const judgment = await judgeModel.invoke([
+      new SystemMessage(systemMessage),
+      new HumanMessage(`
+      ${contextSnippet}Current Problem: ${problemStatement}
+      Solution 1:${solution_1}
+      Solution 2:${solution_2}
+    `),
+    ]);
 
-  return { judge: judgment };
+    return { judge: judgment };
+  } catch (err) {
+    logger.error({ err }, "Judge evaluation error");
+    config?.writer?.({
+      type: "status",
+      message: "Judge is temporarily unavailable. Turn recorded as tie.",
+    });
+
+    const s1Score = isSol1Failed ? 0 : 5;
+    const s2Score = isSol2Failed ? 0 : 5;
+
+    return {
+      judge: {
+        solution_1_score: s1Score,
+        solution_2_score: s2Score,
+        solution_1_reasoning: isSol1Failed
+          ? "Model 1 was unable to generate a response."
+          : "AI Judge was temporarily unavailable to evaluate this turn.",
+        solution_2_reasoning: isSol2Failed
+          ? "Model 2 was unable to generate a response."
+          : "AI Judge was temporarily unavailable to evaluate this turn.",
+      },
+    };
+  }
 };
 
 export const graph = new StateGraph(AIBattleState)

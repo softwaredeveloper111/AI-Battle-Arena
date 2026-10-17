@@ -60,23 +60,32 @@ export const executeBattleController = asyncWrapper(
       solution_2_reasoning: "",
     };
 
-    // LangGraph streaming runner
+    // LangGraph streaming runner with error handling
     const runStream = async () => {
-      for await (const chunk of streamBattleResponse(problem, history)) {
-        if (chunk.type === "custom") {
-          // Token ya status event socket client ko emit karo
-          if (io && socketId) {
-            io.to(socketId).emit("battle:stream", chunk.data);
-          }
-        } else if (chunk.type === "updates") {
-          if (chunk.data.SolutionNode) {
-            solution_1 = chunk.data.SolutionNode.solution_1 || "";
-            solution_2 = chunk.data.SolutionNode.solution_2 || "";
-          }
-          if (chunk.data.compareNode?.judge) {
-            judge = chunk.data.compareNode.judge;
+      try {
+        for await (const chunk of streamBattleResponse(problem, history)) {
+          if (chunk.type === "custom") {
+            // Token, status, ya model_error event socket client ko emit karo
+            if (io && socketId) {
+              io.to(socketId).emit("battle:stream", chunk.data);
+            }
+          } else if (chunk.type === "updates") {
+            if (chunk.data.SolutionNode) {
+              solution_1 = chunk.data.SolutionNode.solution_1 || "";
+              solution_2 = chunk.data.SolutionNode.solution_2 || "";
+            }
+            if (chunk.data.compareNode?.judge) {
+              judge = chunk.data.compareNode.judge;
+            }
           }
         }
+      } catch (err) {
+        if (io && socketId) {
+          io.to(socketId).emit("battle:error", {
+            message: "An unexpected error occurred during the battle.",
+          });
+        }
+        throw err;
       }
     };
 

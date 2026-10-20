@@ -373,3 +373,54 @@
     display: none;
   }
 }
+
+/* ---------- Account popup (Sign out) ---------- */
+.avatar {
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+.accountPopup {
+  position: fixed;
+  z-index: 1000;
+  min-width: 160px;
+  padding: $sp-1;
+  background: $bg-elevated;
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-md;
+  box-shadow: $shadow-panel, $glow-gold-sm;
+  animation: popIn 0.15s $ease;
+  transform-origin: bottom left;
+}
+
+.signOut {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  height: 38px;
+  padding: 0 $sp-3;
+  font-size: $fs-sm;
+  color: $text-primary;
+  text-align: left;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition: background $dur-fast $ease, color $dur-fast $ease;
+
+  &:hover {
+    background: $bg-gold-tint;
+    color: $primary;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateX(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
 import {
@@ -47,6 +48,38 @@ const Sidebar = () => {
       }
       return next
     })
+  }
+
+  const navigate = useNavigate()
+  const [menuPos, setMenuPos] = useState(null) // { left, bottom } | null
+
+  const openMenu = (e) => {
+    if (menuPos) return setMenuPos(null)
+    const r = e.currentTarget.getBoundingClientRect()
+    setMenuPos({ left: r.right + 10, bottom: window.innerHeight - r.bottom })
+  }
+
+  // close on outside click / Escape
+  useEffect(() => {
+    if (!menuPos) return
+    const onDown = (e) => {
+      if (!e.target.closest('[data-account-menu]')) setMenuPos(null)
+    }
+    const onKey = (e) => e.key === 'Escape' && setMenuPos(null)
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [menuPos])
+
+  // close when sidebar toggles
+  useEffect(() => setMenuPos(null), [collapsed])
+
+  const handleSignOut = () => {
+    setMenuPos(null)
+    navigate('/login')
   }
 
   return (
@@ -117,9 +150,17 @@ const Sidebar = () => {
       </nav>
 
       <div className={styles.account}>
-        <div className={styles.avatar} title="Sourav Giri (girisourav702939@gmail.com)">
+        <button
+          type="button"
+          className={styles.avatar}
+          data-account-menu
+          onClick={collapsed ? openMenu : undefined}
+          title="Sourav Giri (girisourav702939@gmail.com)"
+          aria-label="Account"
+          aria-haspopup={collapsed ? 'menu' : undefined}
+        >
           S
-        </div>
+        </button>
         <div className={styles.userInfo}>
           <strong>Sourav Giri</strong>
           <span>girisourav702939@gmail.com</span>
@@ -127,13 +168,35 @@ const Sidebar = () => {
         <button
           type="button"
           id="account-menu-btn"
+          data-account-menu
           className={`${styles.iconBtn} ${styles.accountMenuBtn}`}
+          onClick={openMenu}
           aria-label="Account menu"
+          aria-haspopup="menu"
+          aria-expanded={!!menuPos}
           title="Account menu"
         >
           <MoreVerticalIcon size={18} />
         </button>
       </div>
+
+      {menuPos && (
+        <div
+          className={styles.accountPopup}
+          data-account-menu
+          role="menu"
+          style={{ left: menuPos.left, bottom: menuPos.bottom }}
+        >
+          <button type="button" role="menuitem" className={styles.signOut} onClick={handleSignOut}>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
+              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+              <polyline points="16 17 21 12 16 7" />
+              <line x1="21" y1="12" x2="9" y2="12" />
+            </svg>
+            <span>Sign out</span>
+          </button>
+        </div>
+      )}
 
       <footer className={styles.footer}>
         <a href="#">Terms of Use</a>

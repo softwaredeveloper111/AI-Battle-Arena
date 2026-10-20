@@ -1,4 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { z } from 'zod'
+import { toast } from 'sonner'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
 import { PillarLogo, BoltIcon, BrainIcon, NodesIcon, MailIcon, LockIcon } from '../../../components/Icons'
@@ -13,6 +15,17 @@ import {
 import landscape from '../../../assets/login-landscape.jpg'
 import styles from './LoginPage.module.scss'
 
+const loginSchema = z.object({
+  email: z
+    .string()
+    .trim()
+    .min(1, 'Email cannot be empty')
+    .email('Please enter a valid email address'),
+  password: z
+    .string()
+    .min(1, 'Password cannot be empty'),
+})
+
 const FEATURES = [
   { icon: BoltIcon, title: 'Multi-Agent Battles', text: 'Pit AI agents against each other' },
   { icon: BrainIcon, title: 'Smart Agents', text: 'Solve complex problems with AI' },
@@ -24,7 +37,23 @@ const LoginPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault()
-    navigate('/')
+
+    const email = e.target.querySelector('#login-email')?.value ?? ''
+    const password = e.target.querySelector('#login-password')?.value ?? ''
+
+    const validation = loginSchema.safeParse({ email, password })
+
+    if (!validation.success) {
+      const firstIssue = validation.error.issues?.[0]
+      const errorMessage = firstIssue?.message || 'Invalid input'
+      toast.error(errorMessage)
+      return
+    }
+
+    console.log({
+      email: validation.data.email,
+      password: validation.data.password,
+    })
   }
 
   return (
@@ -46,7 +75,7 @@ const LoginPage = () => {
           <GoogleButton id="login-google-btn" />
           <OrDivider />
 
-          <form className={styles.form} onSubmit={handleSubmit}>
+          <form className={styles.form} onSubmit={handleSubmit} noValidate>
             <AuthInput id="login-email" label="Email" type="email" placeholder="you@example.com" icon={MailIcon} />
             <AuthInput
               id="login-password"

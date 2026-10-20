@@ -60,6 +60,12 @@ export const LockIcon = make(
     <circle cx="12" cy="15.5" r="1" />
   </>,
 )
+export const EyeIcon = make(
+  <>
+    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+    <circle cx="12" cy="12" r="3" />
+  </>,
+)
 export const EyeOffIcon = make(
   <>
     <path d="M10.6 5.1A10 10 0 0 1 12 5c5 0 9 4.5 10 7-.4 1-1.2 2.3-2.4 3.5M6.6 6.6C4.4 8 2.8 10.2 2 12c1 2.5 5 7 10 7 1.8 0 3.4-.5 4.8-1.3" />

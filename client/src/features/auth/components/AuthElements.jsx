@@ -1,7 +1,9 @@
+import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import {
   ArrowRightIcon,
   ChevronDownIcon,
+  EyeIcon,
   EyeOffIcon,
   GlobeIcon,
   GoogleIcon,
@@ -33,22 +35,48 @@ export const OrDivider = () => (
 )
 
 /* Labelled input with leading icon and optional trailing eye icon */
-export const AuthInput = ({ id, label, type = 'text', placeholder, icon: Icon, trailingEye = false }) => (
-  <div className={styles.field}>
-    <label htmlFor={id} className={styles.label}>
-      {label}
-    </label>
-    <div className={styles.inputWrap}>
-      {Icon && <Icon size={17} className={styles.leadIcon} />}
-      <input id={id} type={type} placeholder={placeholder} className={styles.input} autoComplete="off" />
-      {trailingEye && (
-        <button type="button" className={styles.eye} aria-label="Toggle password visibility">
-          <EyeOffIcon size={17} />
-        </button>
-      )}
+export const AuthInput = ({
+  id,
+  label,
+  type = 'text',
+  placeholder,
+  icon: Icon,
+  trailingEye = false,
+  ...props
+}) => {
+  const [showPassword, setShowPassword] = useState(false)
+  const isPassword = type === 'password'
+  const computedType = isPassword ? (showPassword ? 'text' : 'password') : type
+
+  return (
+    <div className={styles.field}>
+      <label htmlFor={id} className={styles.label}>
+        {label}
+      </label>
+      <div className={styles.inputWrap}>
+        {Icon && <Icon size={17} className={styles.leadIcon} />}
+        <input
+          id={id}
+          type={computedType}
+          placeholder={placeholder}
+          className={styles.input}
+          autoComplete="off"
+          {...props}
+        />
+        {trailingEye && (
+          <button
+            type="button"
+            className={styles.eye}
+            onClick={() => setShowPassword((prev) => !prev)}
+            aria-label={showPassword ? 'Hide password' : 'Show password'}
+          >
+            {showPassword ? <EyeIcon size={17} /> : <EyeOffIcon size={17} />}
+          </button>
+        )}
+      </div>
     </div>
-  </div>
-)
+  )
+}
 
 /* Primary gold submit button with trailing arrow */
 export const SubmitButton = ({ id, children }) => (

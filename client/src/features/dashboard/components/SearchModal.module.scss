@@ -1,0 +1,142 @@
+@use '../../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  @include flex-center;
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(3px);
+  animation: fadeIn 0.18s $ease;
+}
+
+.modal {
+  width: 560px;
+  height: 420px;
+  max-width: calc(100vw - 32px);
+  max-height: calc(100vh - 32px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: $bg-surface;
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-panel, $glow-gold-sm;
+  animation: popIn 0.2s $ease;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  padding: 0 $sp-4;
+  height: 54px;
+  flex-shrink: 0;
+  color: $text-secondary;
+  border-bottom: 1px solid $border-gold-faint;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  font-size: $fs-base;
+  color: $text-primary;
+  background: transparent;
+  border: none;
+  outline: none;
+
+  &::placeholder {
+    color: $text-muted;
+  }
+}
+
+.esc {
+  padding: 3px 8px;
+  font-size: $fs-2xs;
+  color: $text-secondary;
+  border: 1px solid $border-default;
+  border-radius: $radius-sm;
+  cursor: pointer;
+
+  &:hover {
+    color: $primary;
+    border-color: $border-gold-soft;
+  }
+}
+
+.results {
+  flex: 1;
+  overflow-y: auto;
+  padding: $sp-2 $sp-3 $sp-3;
+  @include scrollbar;
+}
+
+.groupLabel {
+  padding: $sp-3 $sp-2 $sp-1;
+  font-size: $fs-xs;
+  font-weight: $fw-medium;
+  color: $text-muted;
+}
+
+.result {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  height: 40px;
+  padding: 0 $sp-3;
+  font-size: $fs-sm;
+  color: $text-primary;
+  text-align: left;
+  border: 1px solid transparent;
+  border-radius: $radius-md;
+  cursor: pointer;
+  transition: background $dur-fast $ease, border-color $dur-fast $ease;
+
+  svg {
+    flex-shrink: 0;
+    color: $text-secondary;
+  }
+
+  span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  &:hover {
+    background: $bg-gold-tint;
+    border-color: $border-gold-faint;
+  }
+}
+
+.activeResult svg {
+  color: $primary;
+}
+
+.empty {
+  padding: $sp-12 $sp-4;
+  text-align: center;
+  font-size: $fs-sm;
+  color: $text-muted;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

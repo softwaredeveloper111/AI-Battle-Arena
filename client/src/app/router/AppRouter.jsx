@@ -10,6 +10,7 @@ const router = createBrowserRouter([
     element: <AppLayout />,
     children: [
       { path: '/', element: <Dashboard /> },
+      { path: '/chat/:chatId', element: <Dashboard /> },
     ],
   },
   {

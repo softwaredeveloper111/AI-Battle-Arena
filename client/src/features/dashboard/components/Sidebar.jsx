@@ -1,5 +1,7 @@
 import { useEffect, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useMatch } from 'react-router-dom'
+import SearchModal from './SearchModal'
+import { DEFAULT_CHAT_ID, groupConversations } from '../data/conversations'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
 import {
@@ -11,23 +13,7 @@ import {
 } from '../../../components/Icons'
 import styles from './Sidebar.module.scss'
 
-/* Static mock history (UI only) */
-const HISTORY = [
-  {
-    label: 'Today',
-    items: ['Explain how gravity works', 'Create a travel itinerary'],
-  },
-  {
-    label: 'Yesterday',
-    items: ['What is a black hole?', 'How does a neural network...', 'Plan a trip to Japan'],
-  },
-  {
-    label: 'Older',
-    items: ['Compare SQL vs NoSQL', 'Write a Python scraper', 'Best laptop for developers', 'Explain quantum computing'],
-  },
-]
-
-const ACTIVE_CHAT = 'Explain how gravity works'
+const HISTORY = groupConversations()
 
 const Sidebar = () => {
   const [collapsed, setCollapsed] = useState(() => {
@@ -81,6 +67,15 @@ const Sidebar = () => {
     setMenuPos(null)
     navigate('/login')
   }
+  const [searchOpen, setSearchOpen] = useState(false)
+  const chatMatch = useMatch('/chat/:chatId')
+  const activeId = chatMatch ? chatMatch.params.chatId : DEFAULT_CHAT_ID
+
+  const openChat = (id) => {
+    setSearchOpen(false)
+    navigate(`/chat/${id}`)
+  }
+
 
   return (
     <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
@@ -121,6 +116,7 @@ const Sidebar = () => {
         className={styles.search}
         title="Search"
         aria-label="Search"
+        onClick={() => setSearchOpen(true)}
       >
         <SearchIcon size={18} />
         <span>Search</span>
@@ -131,16 +127,17 @@ const Sidebar = () => {
           <div key={group.label} className={styles.group}>
             <h4 className={styles.groupLabel}>{group.label}</h4>
             <ul>
-              {group.items.map((item) => (
-                <li key={item}>
+              {group.items.map((chat) => (
+                <li key={chat.id}>
                   <button
                     type="button"
-                    title={item}
-                    aria-label={item}
-                    className={`${styles.item} ${item === ACTIVE_CHAT ? styles.active : ''}`}
+                    title={chat.title}
+                    aria-label={chat.title}
+                    onClick={() => openChat(chat.id)}
+                    className={`${styles.item} ${chat.id === activeId ? styles.active : ''}`}
                   >
                     <ChatIcon size={17} />
-                    <span>{item}</span>
+                    <span>{chat.title}</span>
                   </button>
                 </li>
               ))}
@@ -203,6 +200,12 @@ const Sidebar = () => {
         <a href="#">Privacy Policy</a>
         <a href="#">Cookies</a>
       </footer>
+      <SearchModal
+        open={searchOpen}
+        onClose={() => setSearchOpen(false)}
+        onSelect={openChat}
+        activeId={activeId}
+      />
     </aside>
   )
 }

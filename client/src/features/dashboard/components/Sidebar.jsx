@@ -25,6 +25,7 @@ const Sidebar = () => {
   })
 
   const toggleSidebar = () => {
+    setMenuPos(null)
     setCollapsed((prev) => {
       const next = !prev
       try {
@@ -59,9 +60,6 @@ const Sidebar = () => {
       document.removeEventListener('keydown', onKey)
     }
   }, [menuPos])
-
-  // close when sidebar toggles
-  useEffect(() => setMenuPos(null), [collapsed])
 
   const handleSignOut = () => {
     setMenuPos(null)

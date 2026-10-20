@@ -14,6 +14,9 @@ import {
 } from '../components/AuthElements'
 import landscape from '../../../assets/login-landscape.jpg'
 import styles from './LoginPage.module.scss'
+import SpinnerLoader from '../../../components/SpinnerLoader';
+import useAuth  from '../hooks/useAuth';
+
 
 const loginSchema = z.object({
   email: z
@@ -33,13 +36,16 @@ const FEATURES = [
 ]
 
 const LoginPage = () => {
+   
+  const {isLoading, loginUserHandler} = useAuth()
+
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
 
-    const email = e.target.querySelector('#login-email')?.value ?? ''
-    const password = e.target.querySelector('#login-password')?.value ?? ''
+    const email = e.target.querySelector('#login-email')?.value.trim() ?? ''
+    const password = e.target.querySelector('#login-password')?.value.trim() ?? ''
 
     const validation = loginSchema.safeParse({ email, password })
 
@@ -50,10 +56,21 @@ const LoginPage = () => {
       return
     }
 
-    console.log({
-      email: validation.data.email,
-      password: validation.data.password,
-    })
+    // console.log({
+    //   email: validation.data.email,
+    //   password: validation.data.password,
+    // })
+    console.log({email,password})
+    const res = await loginUserHandler(email, password);
+     if (res) {
+        e.target.querySelector('#login-email').value = ""
+        e.target.querySelector('#login-password').value = ""
+        navigate("/", { replace: true });
+      }
+  }
+
+  if(isLoading){
+    return <SpinnerLoader />
   }
 
   return (

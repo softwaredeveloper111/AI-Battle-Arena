@@ -1,11 +1,7 @@
-import { useState } from 'react'
 import Topbar from '../components/Topbar'
 import Composer from '../components/Composer'
-import { RobotIcon, SwordsIcon } from '../../../components/Icons'
 import ResponseCard from '../../battle mode/components/ResponseCard'
 import JudgePanel from '../../battle mode/components/JudgePanel'
-import AgentMessage from '../../agent mode/components/AgentMessage'
-import IntegrationBar from '../../agent mode/components/IntegrationBar'
 import styles from './Dashboard.module.scss'
 
 /* ---------- Mock data for Battle mode ---------- */
@@ -33,52 +29,27 @@ const JUDGE = {
 }
 
 const Dashboard = () => {
-  // Default is 'battle' mode (matching the uploaded dashboard image)
-  const [mode, setMode] = useState('battle')
-
   return (
     <section className={styles.dashboard}>
-      <Topbar
-        title={mode === 'battle' ? BATTLE_PROMPT : 'General Agent'}
-        subtitle={mode === 'agent' ? 'Your personal AI agent for research, creation and more' : undefined}
-        mode={mode}
-        onModeChange={setMode}
-      />
+      <Topbar title={BATTLE_PROMPT} />
 
-      {mode === 'battle' ? (
-        <>
-          <div className={styles.battleConversation}>
-            <div className={styles.promptRow}>
-              <p className={styles.prompt}>{BATTLE_PROMPT}</p>
-            </div>
+      <div className={styles.battleConversation}>
+        <div className={styles.promptRow}>
+          <p className={styles.prompt}>{BATTLE_PROMPT}</p>
+        </div>
 
-            <div className={styles.responses}>
-              <ResponseCard label="Response A" paragraphs={RESPONSE_A} />
-              <ResponseCard label="Response B" paragraphs={RESPONSE_B} />
-            </div>
+        <div className={styles.responses}>
+          <ResponseCard label="Response A" paragraphs={RESPONSE_A} />
+          <ResponseCard label="Response B" paragraphs={RESPONSE_B} />
+        </div>
 
-            <JudgePanel judge={JUDGE} />
-          </div>
+        <JudgePanel judge={JUDGE} />
+      </div>
 
-          <Composer placeholder="Ask a follow-up..." modeIcon={SwordsIcon} modeLabel="Battle" />
-        </>
-      ) : (
-        <>
-          <div className={styles.agentConversation}>
-            <div className={styles.userRow}>
-              <p className={styles.userBubble}>hello</p>
-            </div>
-
-            <AgentMessage>Hello! What can I help you with today?</AgentMessage>
-          </div>
-
-          <Composer placeholder="Ask anything to your agent..." modeIcon={RobotIcon} modeLabel="Agent" withCaret>
-            <IntegrationBar />
-          </Composer>
-        </>
-      )}
+      <Composer placeholder="Ask a follow-up..." />
     </section>
   )
 }
 
 export default Dashboard
+

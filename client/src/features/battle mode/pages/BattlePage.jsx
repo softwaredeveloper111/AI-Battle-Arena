@@ -1,6 +1,5 @@
 import Topbar from '../../dashboard/components/Topbar'
 import Composer from '../../dashboard/components/Composer'
-import { SwordsIcon } from '../../../components/Icons'
 import ResponseCard from '../components/ResponseCard'
 import JudgePanel from '../components/JudgePanel'
 import styles from './BattlePage.module.scss'
@@ -47,7 +46,7 @@ const BattlePage = () => {
         <JudgePanel judge={JUDGE} />
       </div>
 
-      <Composer placeholder="Ask a follow-up..." modeIcon={SwordsIcon} modeLabel="Battle" />
+      <Composer placeholder="Ask a follow-up..." />
     </section>
   )
 }

@@ -1,11 +1,11 @@
 import PixelCluster from '../../../components/PixelCluster'
-import { ChevronDownIcon, RobotIcon, SwordsIcon } from '../../../components/Icons'
+import { ChevronDownIcon, SwordsIcon } from '../../../components/Icons'
 import styles from './Topbar.module.scss'
 
 /**
- * Top bar with chat title + Battle / Agent state switcher.
+ * Top bar with chat title and Battle mode badge.
  */
-const Topbar = ({ title, subtitle, mode = 'battle', onModeChange }) => {
+const Topbar = ({ title, subtitle }) => {
   return (
     <header className={styles.topbar}>
       <span className={styles.dots} aria-hidden />
@@ -18,29 +18,11 @@ const Topbar = ({ title, subtitle, mode = 'battle', onModeChange }) => {
         {subtitle && <p className={styles.subtitle}>{subtitle}</p>}
       </div>
 
-      <div className={styles.switch} role="tablist" aria-label="Mode">
-        <button
-          type="button"
-          id="mode-battle-tab"
-          onClick={() => onModeChange?.('battle')}
-          className={`${styles.tab} ${mode === 'battle' ? styles.tabActive : ''}`}
-          aria-selected={mode === 'battle'}
-          role="tab"
-        >
+      <div className={styles.switch} aria-label="Mode">
+        <span className={`${styles.tab} ${styles.tabActive}`}>
           <SwordsIcon size={17} />
           <span>Battle</span>
-        </button>
-        <button
-          type="button"
-          id="mode-agent-tab"
-          onClick={() => onModeChange?.('agent')}
-          className={`${styles.tab} ${mode === 'agent' ? styles.tabActive : ''}`}
-          aria-selected={mode === 'agent'}
-          role="tab"
-        >
-          <RobotIcon size={17} />
-          <span>Agent</span>
-        </button>
+        </span>
       </div>
 
       <PixelCluster variant="corner" cell={7} className={styles.pixels} />
@@ -49,3 +31,4 @@ const Topbar = ({ title, subtitle, mode = 'battle', onModeChange }) => {
 }
 
 export default Topbar
+

@@ -42,28 +42,4 @@
   }
 }
 
-/* ---------- Agent Conversation ---------- */
-.agentConversation {
-  flex: 1;
-  overflow-y: auto;
-  padding: $sp-12 $sp-10 $sp-6 $sp-8;
 
-  @include respond($bp-sm) {
-    padding: $sp-6 $sp-4;
-  }
-}
-
-.userRow {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: $sp-4;
-}
-
-.userBubble {
-  padding: $sp-2 $sp-4;
-  font-size: $fs-md;
-  font-weight: $fw-semibold;
-  color: $text-primary;
-  background: $bg-user-bubble;
-  border-radius: $radius-lg;
-}

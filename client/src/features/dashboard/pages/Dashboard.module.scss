@@ -43,3 +43,81 @@
 }
 
 
+
+/* ---------- New Chat (empty state) ---------- */
+.newChat {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: $sp-3;
+  padding: $sp-6 $sp-4;
+  text-align: center;
+  animation: newChatIn 0.3s $ease;
+
+  h1 {
+    font-size: $fs-3xl;
+    font-weight: $fw-semibold;
+    color: $text-primary;
+  }
+
+  p {
+    max-width: 460px;
+    font-size: $fs-md;
+    color: $text-secondary;
+  }
+}
+
+.newChatIcon {
+  @include flex-center;
+  width: 64px;
+  height: 64px;
+  margin-bottom: $sp-2;
+  color: $primary;
+  border: 1px solid $border-gold;
+  border-radius: $radius-xl;
+  background: linear-gradient(180deg, rgba(245, 196, 0, 0.18), rgba(245, 196, 0, 0.05));
+  box-shadow: $glow-gold-md;
+}
+
+.suggestions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: $sp-3;
+  width: 100%;
+  max-width: 560px;
+  margin-top: $sp-4;
+
+  @include respond($bp-sm) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.suggestion {
+  padding: $sp-3 $sp-4;
+  font-size: $fs-sm;
+  color: $text-primary;
+  text-align: left;
+  border: 1px solid $border-gold-faint;
+  border-radius: $radius-md;
+  background: $bg-surface;
+  cursor: pointer;
+  transition: border-color $dur-fast $ease, background $dur-fast $ease;
+
+  &:hover {
+    border-color: $border-gold-soft;
+    background: $bg-gold-tint;
+  }
+}
+
+@keyframes newChatIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

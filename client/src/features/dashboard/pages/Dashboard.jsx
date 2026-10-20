@@ -1,15 +1,49 @@
-import { Navigate, useParams } from 'react-router-dom'
+import { Navigate, useMatch, useNavigate, useParams } from 'react-router-dom'
 import Topbar from '../components/Topbar'
 import Composer from '../components/Composer'
 import ResponseCard from '../../battle mode/components/ResponseCard'
 import JudgePanel from '../../battle mode/components/JudgePanel'
-import { DEFAULT_CHAT_ID, getConversation } from '../data/conversations'
+import { SwordsIcon } from '../../../components/Icons'
+import { CONVERSATIONS, DEFAULT_CHAT_ID, getConversation } from '../data/conversations'
 import styles from './Dashboard.module.scss'
+
+const SUGGESTIONS = CONVERSATIONS.slice(0, 4)
+
+/* Empty "New Chat" screen (UI only) */
+const NewChat = () => {
+  const navigate = useNavigate()
+
+  return (
+    <section className={styles.dashboard}>
+      <Topbar title="New Chat" />
+
+      <div className={styles.newChat}>
+        <span className={styles.newChatIcon}>
+          <SwordsIcon size={30} />
+        </span>
+        <h1>What do you want to battle today?</h1>
+        <p>Ask anything and watch two AI models compete while a judge picks the winner.</p>
+
+        <div className={styles.suggestions}>
+          {SUGGESTIONS.map((c) => (
+            <button key={c.id} type="button" className={styles.suggestion} onClick={() => navigate(`/chat/${c.id}`)}>
+              {c.prompt}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <Composer placeholder="Ask anything to start a battle..." />
+    </section>
+  )
+}
 
 const Dashboard = () => {
   const { chatId } = useParams()
+  const isNew = !!useMatch('/new')
   const chat = getConversation(chatId || DEFAULT_CHAT_ID)
 
+  if (isNew) return <NewChat />
   if (!chat) return <Navigate to="/" replace />
 
   return (

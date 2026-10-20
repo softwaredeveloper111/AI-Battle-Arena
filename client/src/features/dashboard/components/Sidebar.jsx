@@ -69,7 +69,8 @@ const Sidebar = () => {
   }
   const [searchOpen, setSearchOpen] = useState(false)
   const chatMatch = useMatch('/chat/:chatId')
-  const activeId = chatMatch ? chatMatch.params.chatId : DEFAULT_CHAT_ID
+  const isNewChat = !!useMatch('/new')
+  const activeId = chatMatch ? chatMatch.params.chatId : isNewChat ? null : DEFAULT_CHAT_ID
 
   const openChat = (id) => {
     setSearchOpen(false)
@@ -105,6 +106,7 @@ const Sidebar = () => {
         className={styles.newChat}
         title="New Chat"
         aria-label="New Chat"
+        onClick={() => navigate('/new')}
       >
         <PlusCircleIcon size={22} />
         <span>New Chat</span>

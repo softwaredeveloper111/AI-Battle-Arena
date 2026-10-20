@@ -174,6 +174,7 @@ export const ScanIcon = make(
   </>,
 )
 export const SendIcon = make(<path d="M21 3 3 10.5l7 2.5 2.5 7L21 3ZM10 13l4-4" />)
+export const ArrowUpIcon = make(<path d="M12 19V5M5 12l7-7 7 7" strokeWidth="2.2" />)
 export const ScaleIcon = make(
   <>
     <path d="M12 3v18M7 21h10M5 7h14M12 5V3" />

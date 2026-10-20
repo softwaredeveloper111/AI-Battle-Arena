@@ -1,4 +1,4 @@
-@use '../../../styles/variables' as *;
+@use "../../../styles/variables" as *;
 
 .sidebar {
   position: relative;
@@ -11,6 +11,9 @@
   background: $bg-sidebar;
   border-right: 1px solid $border-gold-faint;
   overflow: hidden;
+  transition:
+    width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   @include respond($bp-md) {
     display: none;
@@ -56,6 +59,42 @@
   justify-content: space-between;
   padding: 0 $sp-1 0 $sp-1;
   margin-bottom: $sp-4;
+  min-height: 32px;
+}
+
+.brandWrap {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  transition:
+    opacity 0.2s ease,
+    max-width 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  max-width: 220px;
+}
+
+/* labels fade out smoothly when collapsed */
+.newChat span,
+.search span,
+.item span {
+  transition: opacity 0.2s ease;
+}
+
+.newChat,
+.search,
+.item {
+  white-space: nowrap;
+  overflow: hidden;
+  cursor: pointer;
+}
+
+.newChat svg,
+.search svg {
+  flex-shrink: 0;
+}
+
+.iconBtn {
+  cursor: pointer;
+  flex-shrink: 0;
 }
 
 .iconBtn {
@@ -64,7 +103,9 @@
   height: 32px;
   color: $text-secondary;
   border-radius: $radius-sm;
-  transition: background $dur-fast $ease, color $dur-fast $ease;
+  transition:
+    background $dur-fast $ease,
+    color $dur-fast $ease;
 
   &:hover {
     background: $bg-elevated;
@@ -84,7 +125,11 @@
   color: $text-primary;
   border: 1px solid $border-gold;
   border-radius: $radius-md;
-  background: linear-gradient(180deg, rgba(245, 196, 0, 0.18), rgba(245, 196, 0, 0.06));
+  background: linear-gradient(
+    180deg,
+    rgba(245, 196, 0, 0.18),
+    rgba(245, 196, 0, 0.06)
+  );
   box-shadow: inset 0 0 18px rgba(245, 196, 0, 0.1);
   transition: box-shadow $dur $ease;
 
@@ -151,7 +196,9 @@
   text-align: left;
   border: 1px solid transparent;
   border-radius: $radius-md;
-  transition: background $dur-fast $ease, border-color $dur-fast $ease;
+  transition:
+    background $dur-fast $ease,
+    border-color $dur-fast $ease;
 
   svg {
     flex-shrink: 0;
@@ -172,14 +219,22 @@
 .active {
   @include gold-panel($radius-md);
   border-color: $border-gold;
-  background: linear-gradient(90deg, rgba(245, 196, 0, 0.22), rgba(245, 196, 0, 0.08));
+  background: linear-gradient(
+    90deg,
+    rgba(245, 196, 0, 0.22),
+    rgba(245, 196, 0, 0.08)
+  );
 
   svg {
     color: $primary;
   }
 
   &:hover {
-    background: linear-gradient(90deg, rgba(245, 196, 0, 0.26), rgba(245, 196, 0, 0.1));
+    background: linear-gradient(
+      90deg,
+      rgba(245, 196, 0, 0.26),
+      rgba(245, 196, 0, 0.1)
+    );
   }
 }
 
@@ -246,5 +301,75 @@
     &:hover {
       color: $primary;
     }
+  }
+}
+
+/* ---------- Collapsed (icon-only rail) ---------- */
+.collapsed {
+  width: 68px;
+  padding-left: $sp-2;
+  padding-right: $sp-2;
+
+  .dotsTop,
+  .dotsMid,
+  .pixels {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .footer {
+    display: none;
+  }
+
+  .top {
+    justify-content: center;
+    padding: 0;
+  }
+
+  .brandWrap {
+    max-width: 0;
+    opacity: 0;
+  }
+
+  .newChat,
+  .search,
+  .item {
+    width: 44px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+    justify-content: center;
+    gap: 0;
+
+    span {
+      opacity: 0;
+      width: 0;
+      flex: none;
+    }
+  }
+
+  .groupLabel {
+    height: 0;
+    padding: 0;
+    margin-bottom: $sp-2;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  .history {
+    display: none;
+  }
+
+  .account {
+    margin-top: auto;
+    justify-content: center;
+    padding-left: 0;
+    padding-right: 0;
+    gap: 0;
+  }
+
+  .userInfo,
+  .accountMenuBtn {
+    display: none;
   }
 }

@@ -1,97 +1,75 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { z } from 'zod'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
-import { CheckIcon, LockIcon, MailIcon, PillarLogo, UserIcon } from '../../../components/Icons'
 import {
-  AuthInput,
+  CheckIcon,
+  LockIcon,
+  MailIcon,
+  PillarLogo,
+  UserIcon,
+  EyeIcon,
+  EyeOffIcon,
+  ArrowRightIcon,
+} from '../../../components/Icons'
+import {
   GoogleButton,
   LanguageSelect,
   OrDivider,
-  SubmitButton,
   SwitchAuth,
 } from '../components/AuthElements'
 import arenaHero from '../../../assets/arena-hero.jpg'
-import styles from './SignupPage.module.scss';
-import spinnerLoader from "../../../components/SpinnerLoader";
-import useAuth from "../hooks/useAuth"
-
-
-
-/**
- * Register validation schema aligned with backend:
- * server/src/validations/auth.validator.ts & server/src/models/user.model.ts
- */
-const signupSchema = z.object({
-  username: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .min(3, 'Username must be at least 3 characters long')
-    .max(20, 'Username must be at most 20 characters long')
-    .regex(/^[a-z0-9_]{3,20}$/, 'Please provide a valid username (letters, numbers, underscore)'),
-
-  email: z
-    .string()
-    .trim()
-    .toLowerCase()
-    .min(1, 'Email is required')
-    .email('Please enter a valid email address'),
-
-  password: z
-    .string()
-    .min(6, 'Password must be at least 6 characters long')
-    .max(32, 'Password must be at most 32 characters long')
-    .regex(
-      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,32}$/,
-      'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
-    ),
-})
+import styles from './SignupPage.module.scss'
+import SpinnerLoader from '../../../components/SpinnerLoader'
+import useAuth from '../hooks/useAuth'
+import { signupSchema } from '../schemas/auth.schema'
 
 const PASSWORD_RULES = [
-  '6–32 characters',
+  '8–32 characters',
   '1 uppercase & 1 lowercase letter',
   '1 number & 1 special character (@, $, !, %, *, ?, &)',
   'Letters, numbers and underscores only for username',
 ]
 
 const SignupPage = () => {
- 
-  const {registerHandler,isLoading} = useAuth()
-
+  const { registerHandler, isLoading } = useAuth()
   const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(signupSchema),
+  })
 
-    const username = e.target.querySelector('#signup-username')?.value.trim() ?? ''
-    const email = e.target.querySelector('#signup-email')?.value.trim() ?? ''
-    const password = e.target.querySelector('#signup-password')?.value ?? ''
+  const onSubmit = async (data) => {
+    const { username, email, password } = data
 
-    const validation = signupSchema.safeParse({ username, email, password })
-
-    if (!validation.success) {
-      const firstIssue = validation.error.issues?.[0]
-      const errorMessage = firstIssue?.message || 'Invalid input'
-      toast.error(errorMessage)
-      return
-    }
-
-    // console.log({
-    //   username: validation.data.username,
-    //   email: validation.data.email,
-    //   password: validation.data.password,
-    // })
-    
-     const res = await registerHandler(username, email, password);
+    if (username && email && password) {
+      const res = await registerHandler(username, email, password)
       if (res) {
+        reset()
         navigate('/')
       }
-
+    }
   }
 
-  if(isLoading) return <spinnerLoader/>
+  const onError = (formErrors) => {
+    const firstError = Object.values(formErrors)[0]
+    if (firstError?.message) {
+      toast.error(firstError.message)
+    }
+  }
+
+  if (isLoading) {
+    return <SpinnerLoader />
+  }
 
   return (
     <main className={styles.page}>
@@ -143,17 +121,74 @@ const SignupPage = () => {
 
             <OrDivider />
 
-            <form className={styles.form} onSubmit={handleSubmit} noValidate>
-              <AuthInput id="signup-username" label="Username" placeholder="Choose a username" icon={UserIcon} />
-              <AuthInput id="signup-email" label="Email" type="email" placeholder="you@example.com" icon={MailIcon} />
-              <AuthInput
-                id="signup-password"
-                label="Password"
-                type="password"
-                placeholder="Create a password"
-                icon={LockIcon}
-                trailingEye
-              />
+            <form className={styles.form} onSubmit={handleSubmit(onSubmit, onError)} noValidate>
+              {/* Username field */}
+              <div className={styles.field}>
+                <label htmlFor="signup-username" className={styles.label}>
+                  Username
+                </label>
+                <div className={styles.inputWrap}>
+                  <UserIcon size={17} className={styles.leadIcon} />
+                  <input
+                    {...register('username')}
+                    id="signup-username"
+                    name="username"
+                    type="text"
+                    placeholder="Choose a username"
+                    className={styles.input}
+                    autoComplete="username"
+                  />
+                </div>
+                {errors.username && <span className={styles.errors}>{errors.username.message}</span>}
+              </div>
+
+              {/* Email field */}
+              <div className={styles.field}>
+                <label htmlFor="signup-email" className={styles.label}>
+                  Email
+                </label>
+                <div className={styles.inputWrap}>
+                  <MailIcon size={17} className={styles.leadIcon} />
+                  <input
+                    {...register('email')}
+                    id="signup-email"
+                    name="email"
+                    type="email"
+                    placeholder="you@example.com"
+                    className={styles.input}
+                    autoComplete="email"
+                  />
+                </div>
+                {errors.email && <span className={styles.errors}>{errors.email.message}</span>}
+              </div>
+
+              {/* Password field with eye toggle */}
+              <div className={styles.field}>
+                <label htmlFor="signup-password" className={styles.label}>
+                  Password
+                </label>
+                <div className={styles.inputWrap}>
+                  <LockIcon size={17} className={styles.leadIcon} />
+                  <input
+                    {...register('password')}
+                    id="signup-password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    placeholder="Create a password"
+                    className={styles.input}
+                    autoComplete="new-password"
+                  />
+                  <button
+                    type="button"
+                    className={styles.eye}
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    aria-label={showPassword ? 'Hide password' : 'Show password'}
+                  >
+                    {showPassword ? <EyeIcon size={17} /> : <EyeOffIcon size={17} />}
+                  </button>
+                </div>
+                {errors.password && <span className={styles.errors}>{errors.password.message}</span>}
+              </div>
 
               <div className={styles.rules}>
                 <p>Use a password that contains at least:</p>
@@ -168,7 +203,10 @@ const SignupPage = () => {
               </div>
 
               <div className={styles.submitWrap}>
-                <SubmitButton id="signup-submit-btn">Sign up</SubmitButton>
+                <button type="submit" id="signup-submit-btn" className={styles.submit}>
+                  <span>Sign up</span>
+                  <ArrowRightIcon size={18} className={styles.submitArrow} />
+                </button>
               </div>
             </form>
 

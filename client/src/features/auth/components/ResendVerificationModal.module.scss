@@ -1,0 +1,215 @@
+@use '../../../styles/variables' as *;
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  @include flex-center;
+  padding: $sp-4;
+  background: rgba(0, 0, 0, 0.78);
+  backdrop-filter: blur(8px);
+  animation: fadeIn 0.2s $ease;
+
+  @media (max-width: 480px) {
+    padding: $sp-3;
+    align-items: flex-end;
+  }
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 440px;
+  padding: $sp-8;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(245, 196, 0, 0.12), transparent 70%),
+    $bg-surface;
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-panel, $glow-gold-md;
+  animation: modalIn 0.22s $ease;
+
+  @media (max-width: 480px) {
+    padding: $sp-6 $sp-5;
+    border-radius: $radius-lg;
+  }
+}
+
+.closeButton {
+  position: absolute;
+  top: 18px;
+  right: 18px;
+  width: 32px;
+  height: 32px;
+  @include flex-center;
+  border-radius: $radius-sm;
+  background: transparent;
+  border: 1px solid transparent;
+  color: $text-muted;
+  cursor: pointer;
+  transition: all $dur-fast $ease;
+
+  &:hover {
+    background: $bg-elevated;
+    border-color: $border-default;
+    color: $text-primary;
+    transform: scale(1.05);
+  }
+}
+
+.header {
+  padding-right: 28px;
+  margin-bottom: $sp-6;
+
+  h2 {
+    font-size: $fs-xl;
+    font-weight: $fw-bold;
+    color: $text-primary;
+    margin-bottom: $sp-2;
+    letter-spacing: -0.01em;
+  }
+
+  p {
+    font-size: $fs-sm;
+    color: $text-secondary;
+    line-height: 1.5;
+  }
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: $sp-5;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+
+  label {
+    font-size: 0.78rem;
+    font-weight: $fw-medium;
+    color: $text-secondary;
+    letter-spacing: 0.02em;
+  }
+}
+
+.inputWrap {
+  position: relative;
+  width: 100%;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  background: $bg-input;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  transition: border-color $dur-fast $ease, box-shadow $dur-fast $ease;
+
+  &:focus-within {
+    border-color: $border-gold;
+    box-shadow: $glow-gold-sm;
+  }
+}
+
+.leadIcon {
+  position: absolute;
+  left: 14px;
+  color: $text-muted;
+  pointer-events: none;
+  transition: color $dur-fast $ease;
+
+  .inputWrap:focus-within & {
+    color: $gold-400;
+  }
+}
+
+.input {
+  width: 100%;
+  height: 100%;
+  padding: 0 14px 0 42px;
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: $font-sans;
+  font-size: $fs-sm;
+  color: $text-primary;
+
+  &::placeholder {
+    color: $text-faint;
+  }
+}
+
+.error {
+  display: block;
+  color: #ff5252;
+  font-size: 11.5px;
+  font-weight: $fw-regular;
+  margin-top: 4px;
+  line-height: 1.3;
+}
+
+.submitButton {
+  position: relative;
+  width: 100%;
+  min-height: 44px;
+  @include flex-center;
+  gap: 8px;
+  font-family: $font-sans;
+  font-size: $fs-sm;
+  font-weight: $fw-semibold;
+  letter-spacing: 0.02em;
+  color: $on-primary;
+  background: linear-gradient(180deg, $gold-400, $gold-500);
+  border: none;
+  border-radius: $radius-md;
+  box-shadow: 0 4px 18px rgba(245, 196, 0, 0.22);
+  cursor: pointer;
+  transition: transform $dur-fast $ease, box-shadow $dur $ease, filter $dur $ease;
+
+  &:hover:not(:disabled) {
+    filter: brightness(1.08);
+    box-shadow: 0 6px 26px rgba(245, 196, 0, 0.36);
+    transform: translateY(-1px);
+  }
+
+  &:active:not(:disabled) {
+    transform: translateY(1px);
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+    filter: grayscale(0.2);
+  }
+}
+
+.loader {
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

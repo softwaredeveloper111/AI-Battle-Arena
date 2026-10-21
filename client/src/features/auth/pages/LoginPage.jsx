@@ -27,7 +27,7 @@ import useAuth from '../hooks/useAuth'
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from '../schemas/auth.schema'
-
+import ResendVerificationModal from '../components/ResendVerificationModal'
 
 
 const FEATURES = [
@@ -41,6 +41,7 @@ const LoginPage = () => {
   const { isLoading, loginUserHandler } = useAuth()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
+  const [showResendModal, setShowResendModal] = useState(false);
    
    const {
     register,
@@ -164,9 +165,9 @@ const LoginPage = () => {
 
           <div className={styles.verificationWrap}>
             <p className={styles.verificationText}>Didn&apos;t receive verification email?</p>
-            <Link to="#" id="resend-verification-link" className={styles.verificationLink}>
+            <button type="button" onClick={() => setShowResendModal(true)}  className={styles.verificationLink}>
               Resend verification email
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -208,6 +209,11 @@ const LoginPage = () => {
           </ul>
         </div>
       </section>
+
+      
+      {showResendModal && (
+        <ResendVerificationModal onClose={() => setShowResendModal(false)} />
+      )}
     </main>
   )
 }

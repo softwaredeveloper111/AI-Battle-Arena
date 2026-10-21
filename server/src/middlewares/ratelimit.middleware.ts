@@ -37,7 +37,7 @@ export const globalRateLimit = rateLimit({
  */
 export const authRateLimit = rateLimit({
   windowMs:15*60*1000,
-  limit:10,
+  limit:20,
   store:createRedisStore("auth-rate-limit:"),
   message:{
     success:false,
@@ -54,7 +54,7 @@ export const authRateLimit = rateLimit({
  */
 export const resetPasswordRateLimit = rateLimit({
   windowMs:15*60*1000,
-  limit:5,
+  limit:15,
   store:createRedisStore("reset-password-rate-limit:"),
   message:{
     success:false,
@@ -73,7 +73,7 @@ export const resetPasswordRateLimit = rateLimit({
 
 export const resendEmailRateLimit = rateLimit({
   windowMs:15*60*1000,
-  limit:3,
+  limit:10,
   store:createRedisStore("resend-email-rate-limit:"),
   message:{
     success:false,
@@ -91,7 +91,7 @@ export const resendEmailRateLimit = rateLimit({
 
 export const emailRateLimit = rateLimit({
   windowMs: 15 * 60 * 1000,
-  limit: 3,
+  limit: 10,
 
   keyGenerator: (req: Request) => {
     return req.body?.email?.toLowerCase().trim() || "unknown";
@@ -105,3 +105,42 @@ export const emailRateLimit = rateLimit({
     message: "too many requests, please try again later",
   },
 });
+
+
+
+const userKey = (req: Request) => {
+  const userId = (req.user as any)?._id;
+  return userId ? userId.toString() : (req.ip || "unknown");
+};
+
+export const messageBurstLimit = rateLimit({
+  windowMs: 60 * 1000,
+  limit: 10,
+  keyGenerator: userKey,
+  skipFailedRequests: true,
+  passOnStoreError: true, // Redis down ho to request block na ho
+  store: createRedisStore("rl:msg:min:"),
+  message: {
+    success: false,
+    statusCode: 429,
+    message: "You're sending messages too fast. Please wait a moment.",
+  },
+});
+
+
+
+
+export const messageDailyLimit = rateLimit({
+  windowMs: 24 * 60 * 60 * 1000,
+  limit: 50,
+  keyGenerator: userKey,
+  skipFailedRequests: true,
+  passOnStoreError: true,
+  store: createRedisStore("rl:msg:day:"),
+  message: {
+    success: false,
+    statusCode: 429,
+    message: "You've reached today's message limit. Please come back tomorrow.",
+  },
+});
+

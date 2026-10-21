@@ -6,6 +6,10 @@ import {pinnedChatSessionController} from "../controllers/battle.controller.js";
 import {renameChatSessionController} from "../controllers/battle.controller.js";
 import {deleteChatSessionController} from "../controllers/battle.controller.js";
 
+import {
+  messageBurstLimit,
+  messageDailyLimit,
+} from "../middlewares/ratelimit.middleware.js";
 import identifyUser from "../middlewares/identifyUser.middleware.js";
 import {executeBattleSchema} from "../validations/battle.validator.js"
 import {getChatMessagesSchema} from "../validations/battle.validator.js"
@@ -37,6 +41,8 @@ battleRouter.post(
     "/execute-battle", 
     validate(executeBattleSchema), 
     identifyUser,  
+    messageBurstLimit,
+    messageDailyLimit,
     executeBattleController
 )
 

@@ -1,13 +1,16 @@
 @use '../../../styles/variables' as *;
 
 .page {
-  min-height: 100vh;
+  min-height: 100%;
+  min-height: 100dvh;
   display: grid;
   grid-template-columns: 51% 49%;
   background: $bg-app;
 
   @include respond($bp-md) {
     grid-template-columns: 1fr;
+    min-height: 100%;
+    min-height: 100dvh;
   }
 }
 
@@ -52,6 +55,12 @@
     radial-gradient(ellipse at 20% 0%, rgba(245, 196, 0, 0.04), transparent 50%),
     $bg-app;
   border-right: 1px solid $border-subtle;
+
+  @include respond($bp-md) {
+    padding: $sp-5 $sp-4 $sp-6;
+    border-right: none;
+    min-height: 100%;
+  }
 }
 
 .header {
@@ -59,6 +68,10 @@
   align-items: center;
   justify-content: space-between;
   padding-right: 6%;
+
+  @include respond($bp-md) {
+    padding-right: 0;
+  }
 }
 
 .formWrap {
@@ -67,7 +80,7 @@
   margin: 7vh auto 0;
 
   @include respond($bp-md) {
-    margin-top: $sp-12;
+    margin-top: $sp-4;
   }
 }
 

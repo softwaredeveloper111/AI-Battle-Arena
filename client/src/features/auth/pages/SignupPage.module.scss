@@ -15,9 +15,10 @@
   @include respond($bp-md) {
     grid-template-columns: 1fr;
     height: auto;
-    min-height: 100vh;
+    min-height: 100%;
+    min-height: 100dvh;
     max-height: none;
-    overflow-y: auto; // only on mobile where content can't fit
+    overflow: visible;
   }
 }
 
@@ -130,8 +131,9 @@
 
   @include respond($bp-md) {
     height: auto;
-    min-height: 100vh;
-    padding: 24px 16px;
+    min-height: 100%;
+    min-height: 100dvh;
+    padding: 16px 12px;
     justify-content: center;
   }
 }
@@ -186,6 +188,10 @@
   max-width: 480px;
   margin: 0 auto;
   padding: clamp(24px, 4vh, 40px) clamp(24px, 3vw, 40px);
+
+  @include respond($bp-md) {
+    padding: 20px 14px;
+  }
 }
 
 .cardHead {

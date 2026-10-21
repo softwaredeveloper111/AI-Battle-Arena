@@ -179,7 +179,7 @@ const LoginPage = () => {
         <p className={styles.legal}>
           By continuing, I agree to AI BATTLE ARENA&apos;s
           <br />
-          <Link to="#">Terms of Use</Link>, <Link to="#">Privacy Policy</Link>, and <Link to="#">Cookie Policy</Link>.
+          <Link to="/terms">Terms of Use</Link>, <Link to="/privacy">Privacy Policy</Link>, and <Link to="/cookie-policy">Cookie Policy</Link>.
         </p>
       </section>
 

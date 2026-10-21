@@ -61,14 +61,14 @@ const ResetPasswordPage = () => {
     }
 
     try {
-
-     
-      await resetPasswordHandler(
+      const res = await resetPasswordHandler(
         token,
         password,
       );
 
-      navigate("/login");
+      if (res) {
+        navigate("/login");
+      }
     } catch (error) {
       setTokenError(
         error?.message || "This password reset link is invalid or expired."

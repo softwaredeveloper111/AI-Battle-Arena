@@ -111,10 +111,13 @@ const authStore = (set) => ({
       status: "unauthenticated",
     }),
 
-    logoutFailure: (error) =>
+  logoutFailure: (error) =>
     set({
       isLoading: false,
-      error
+      user: null,
+      error,
+      isAuthenticated: false,
+      status: "unauthenticated",
     }),
 
 

@@ -109,56 +109,55 @@ const Sidebar = () => {
         </button>
       </div>
 
-      <div className={styles.actions}>
-        <button
-          type="button"
-          id="sidebar-new-chat-btn"
-          className={`${styles.actionBtn} ${isNewChat ? styles.active : ''}`}
-          onClick={() => navigate('/new')}
-          title="New Chat"
-        >
-          <PlusCircleIcon size={19} />
-          <span>New Chat</span>
-        </button>
-        <button
-          type="button"
-          id="sidebar-search-btn"
-          className={styles.actionBtn}
-          onClick={() => setSearchOpen(true)}
-          title="Search"
-        >
-          <SearchIcon size={19} />
-          <span>Search</span>
-        </button>
-      </div>
+      <button
+        type="button"
+        id="new-chat-btn"
+        className={`${styles.newChat} ${isNewChat ? styles.active : ''}`}
+        title="New Chat"
+        aria-label="New Chat"
+        onClick={() => navigate('/new')}
+      >
+        <PlusCircleIcon size={22} />
+        <span>New Chat</span>
+      </button>
 
-      <div className={styles.history}>
+      <button
+        type="button"
+        id="sidebar-search-btn"
+        className={styles.search}
+        title="Search"
+        aria-label="Search"
+        onClick={() => setSearchOpen(true)}
+      >
+        <SearchIcon size={18} />
+        <span>Search</span>
+      </button>
+
+      <nav className={styles.history} aria-label="Chat history">
         {HISTORY.map((group) => (
-          <section key={group.label} className={styles.group}>
-            <header className={styles.groupHeader}>{group.label}</header>
-            <ul className={styles.list}>
-              {group.items.map((item) => {
-                const isActive = activeId === item.id
-                return (
-                  <li key={item.id}>
-                    <button
-                      type="button"
-                      className={`${styles.chatItem} ${isActive ? styles.active : ''}`}
-                      onClick={() => openChat(item.id)}
-                      title={item.title}
-                    >
-                      <ChatIcon size={17} />
-                      <span className={styles.chatTitle}>{item.title}</span>
-                    </button>
-                  </li>
-                )
-              })}
+          <div key={group.label} className={styles.group}>
+            <h4 className={styles.groupLabel}>{group.label}</h4>
+            <ul>
+              {group.items.map((chat) => (
+                <li key={chat.id}>
+                  <button
+                    type="button"
+                    title={chat.title}
+                    aria-label={chat.title}
+                    onClick={() => openChat(chat.id)}
+                    className={`${styles.item} ${chat.id === activeId ? styles.active : ''}`}
+                  >
+                    <ChatIcon size={17} />
+                    <span>{chat.title}</span>
+                  </button>
+                </li>
+              ))}
             </ul>
-          </section>
+          </div>
         ))}
-      </div>
+      </nav>
 
-      <div className={styles.user}>
+      <div className={styles.account}>
         <button
           type="button"
           className={styles.avatar}

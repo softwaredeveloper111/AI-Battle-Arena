@@ -10,8 +10,41 @@
   border-bottom: 1px solid $border-gold-faint;
   background: linear-gradient(180deg, rgba(255, 255, 255, 0.01), transparent);
 
-  @include respond($bp-sm) {
-    grid-template-columns: 1fr auto;
+  @include respond($bp-md) {
+    display: flex;
+    justify-content: space-between;
+    padding: $sp-2 $sp-3;
+  }
+}
+
+.leftGroup {
+  display: flex;
+  align-items: center;
+  gap: $sp-2;
+  min-width: 0;
+}
+
+.mobileMenuBtn {
+  display: none;
+  @include flex-center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  padding: 0;
+  background: $bg-surface;
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-md;
+  color: $primary;
+  cursor: pointer;
+  transition: background $dur-fast $ease, border-color $dur-fast $ease, color $dur-fast $ease;
+
+  &:hover {
+    background: $bg-elevated;
+    border-color: $border-gold;
+  }
+
+  @include respond($bp-md) {
+    display: flex;
   }
 }
 
@@ -29,6 +62,18 @@
 .titleBlock {
   position: relative;
   min-width: 0;
+
+  @include respond($bp-md) {
+    max-width: 240px;
+  }
+
+  @include respond($bp-sm) {
+    max-width: 170px;
+  }
+
+  @include respond(380px) {
+    max-width: 130px;
+  }
 }
 
 .title {
@@ -38,6 +83,14 @@
   font-size: $fs-lg;
   font-weight: $fw-semibold;
   color: $text-primary;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  @include respond($bp-sm) {
+    font-size: $fs-md;
+  }
 
   span {
     overflow: hidden;
@@ -79,6 +132,14 @@
   color: $text-secondary;
   border-radius: $radius-pill;
   transition: background $dur $ease, color $dur $ease;
+
+  @include respond($bp-sm) {
+    min-width: 76px;
+    height: 28px;
+    padding: 0 $sp-3;
+    font-size: $fs-xs;
+    gap: $sp-1;
+  }
 
   &:hover {
     color: $text-primary;

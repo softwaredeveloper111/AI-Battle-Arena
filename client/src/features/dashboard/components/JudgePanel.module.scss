@@ -47,6 +47,15 @@
   padding: $sp-2 $sp-4 $sp-1;
   color: $primary;
 
+  @include respond($bp-sm) {
+    padding: $sp-2 $sp-3 $sp-1;
+    gap: $sp-2;
+
+    h4 {
+      font-size: $fs-md;
+    }
+  }
+
   h4 {
     font-size: $fs-xl;
     font-weight: $fw-bold;
@@ -61,6 +70,11 @@
 
   @include respond($bp-md) {
     grid-template-columns: 1fr;
+    gap: $sp-3;
+  }
+
+  @include respond($bp-sm) {
+    padding: $sp-2 $sp-3 $sp-3;
   }
 }
 

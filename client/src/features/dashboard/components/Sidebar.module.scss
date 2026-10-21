@@ -1,5 +1,26 @@
 @use "../../../styles/variables" as *;
 
+.backdrop {
+  display: none;
+
+  @include respond($bp-md) {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 998;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(4px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s $ease;
+
+    &.backdropOpen {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
 .sidebar {
   position: relative;
   width: $sidebar-width;
@@ -13,10 +34,23 @@
   overflow: hidden;
   transition:
     width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-    padding 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    padding 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 
   @include respond($bp-md) {
-    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    z-index: 999;
+    width: 280px;
+    max-width: 85vw;
+    box-shadow: 10px 0 30px rgba(0, 0, 0, 0.8), $glow-gold-sm;
+    transform: translateX(-100%);
+
+    &.mobileOpen {
+      transform: translateX(0);
+    }
   }
 }
 
@@ -92,9 +126,33 @@
   flex-shrink: 0;
 }
 
-.iconBtn {
+.topActions {
+  display: flex;
+  align-items: center;
+  gap: $sp-1;
+}
+
+.mobileCloseBtn {
+  display: none;
+  @include flex-center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: 1px solid $border-default;
+  border-radius: $radius-sm;
+  color: $text-secondary;
   cursor: pointer;
-  flex-shrink: 0;
+  transition: all $dur-fast $ease;
+
+  &:hover {
+    color: $primary;
+    border-color: $border-gold;
+    background: $bg-elevated;
+  }
+
+  @include respond($bp-md) {
+    display: flex;
+  }
 }
 
 .iconBtn {
@@ -103,6 +161,8 @@
   height: 32px;
   color: $text-secondary;
   border-radius: $radius-sm;
+  cursor: pointer;
+  flex-shrink: 0;
   transition:
     background $dur-fast $ease,
     color $dur-fast $ease;
@@ -110,6 +170,10 @@
   &:hover {
     background: $bg-elevated;
     color: $text-primary;
+  }
+
+  @include respond($bp-md) {
+    display: none;
   }
 }
 
@@ -356,11 +420,21 @@
     background: $bg-elevated;
     color: $primary;
   }
+
+  @include respond($bp-md) {
+    opacity: 0.75;
+    pointer-events: auto;
+  }
+
+  @media (hover: none) {
+    opacity: 0.75;
+    pointer-events: auto;
+  }
 }
 
 .chatActionsPopup {
   position: fixed;
-  z-index: 1000;
+  z-index: 1200;
   min-width: 160px;
   padding: $sp-1;
   background: $bg-elevated;
@@ -457,6 +531,27 @@
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+}
+
+.accountMenuBtn {
+  @include flex-center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: $radius-sm;
+  color: $text-secondary;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition:
+    background $dur-fast $ease,
+    color $dur-fast $ease;
+
+  &:hover {
+    background: $bg-elevated;
+    color: $primary;
   }
 }
 
@@ -560,7 +655,7 @@
 
 .accountPopup {
   position: fixed;
-  z-index: 1000;
+  z-index: 1200;
   min-width: 160px;
   padding: $sp-1;
   background: $bg-elevated;
@@ -582,12 +677,26 @@
   color: $text-primary;
   text-align: left;
   border-radius: $radius-sm;
+  background: transparent;
+  border: none;
   cursor: pointer;
-  transition: background $dur-fast $ease, color $dur-fast $ease;
+  transition:
+    background $dur-fast $ease,
+    color $dur-fast $ease;
+
+  svg {
+    flex-shrink: 0;
+    color: $text-secondary;
+    transition: color $dur-fast $ease;
+  }
 
   &:hover {
-    background: $bg-gold-tint;
-    color: $primary;
+    background: rgba(255, 82, 82, 0.14);
+    color: #ff5252;
+
+    svg {
+      color: #ff5252;
+    }
   }
 }
 

@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
+import { createPortal } from 'react-dom'
 import { useNavigate, useMatch, Link } from 'react-router-dom'
 import SearchModal from './SearchModal'
 import RenameModal from './RenameModal'
@@ -12,13 +13,13 @@ import {
   PlusCircleIcon,
   SearchIcon,
 } from '../../../components/Icons'
-import { LoaderCircle, Pin, Pencil, Trash2 } from 'lucide-react'
+import { LoaderCircle, Pin, Pencil, Trash2, X, LogOut } from 'lucide-react'
 import useAuth from '../../auth/hooks/useAuth'
 import useBattle from '../hooks/useBattle'
 import styles from './Sidebar.module.scss';
 import SpinnerLoader from "../../../components/SpinnerLoader";
 
-const Sidebar = () => {
+const Sidebar = ({ mobileOpen = false, onClose }) => {
   const { user, logoutHandler , isLoading } = useAuth()
   const {
     chatSessions,
@@ -79,27 +80,38 @@ const Sidebar = () => {
   const [renameModalChat, setRenameModalChat] = useState(null) // { id, title } | null
 
   const openMenu = (e) => {
+    e?.stopPropagation?.()
     if (menuPos) return setMenuPos(null)
-    const r = e.currentTarget.getBoundingClientRect()
-    setMenuPos({ left: r.right + 10, bottom: window.innerHeight - r.bottom })
+    const target = e?.currentTarget || document.getElementById('account-menu-btn')
+    if (!target) return
+    const r = target.getBoundingClientRect()
+    const popupWidth = 160
+
+    let left = r.right + 10
+    // On mobile screens or if opening to the right would overflow the screen
+    if (window.innerWidth <= 900 || left + popupWidth > window.innerWidth - 8) {
+      left = Math.max(8, r.right - popupWidth)
+    }
+
+    const bottom = Math.max(8, window.innerHeight - r.top + 6)
+    setMenuPos({ left, bottom })
   }
 
-  // close account menu on outside click / Escape
+  // close menus on outside click / touch tap / Escape
   useEffect(() => {
     if (!menuPos) return
     const onDown = (e) => {
       if (!e.target.closest('[data-account-menu]')) setMenuPos(null)
     }
     const onKey = (e) => e.key === 'Escape' && setMenuPos(null)
-    document.addEventListener('mousedown', onDown)
+    document.addEventListener('pointerdown', onDown)
     document.addEventListener('keydown', onKey)
     return () => {
-      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('pointerdown', onDown)
       document.removeEventListener('keydown', onKey)
     }
   }, [menuPos])
 
-  // close chat actions popup on outside click / Escape
   useEffect(() => {
     if (!chatMenuState) return
     const onDown = (e) => {
@@ -108,16 +120,34 @@ const Sidebar = () => {
       }
     }
     const onKey = (e) => e.key === 'Escape' && setChatMenuState(null)
-    document.addEventListener('mousedown', onDown)
+    document.addEventListener('pointerdown', onDown)
     document.addEventListener('keydown', onKey)
     return () => {
-      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('pointerdown', onDown)
       document.removeEventListener('keydown', onKey)
     }
   }, [chatMenuState])
 
+  // Clear open menus when mobile sidebar closes or window resizes
+  useEffect(() => {
+    if (!mobileOpen) {
+      setMenuPos(null)
+      setChatMenuState(null)
+    }
+  }, [mobileOpen])
+
+  useEffect(() => {
+    const onResize = () => {
+      setMenuPos(null)
+      setChatMenuState(null)
+    }
+    window.addEventListener('resize', onResize)
+    return () => window.removeEventListener('resize', onResize)
+  }, [])
+
   const handleSignOut = async () => {
     setMenuPos(null)
+    onClose?.()
     try {
       await logoutHandler()
     } catch (err) {
@@ -134,6 +164,7 @@ const Sidebar = () => {
   const openChat = (id) => {
     setSearchOpen(false)
     setChatMenuState(null)
+    onClose?.()
     navigate(`/chat/${id}`)
   }
 
@@ -145,12 +176,26 @@ const Sidebar = () => {
       return
     }
     const rect = e.currentTarget.getBoundingClientRect()
-    const top = rect.top + 130 > window.innerHeight ? rect.bottom - 130 : rect.top
+    const menuWidth = 165
+    const menuHeight = 135
+
+    let left = rect.right + 6
+    // If on mobile or opening right would exceed viewport, anchor inward to right edge of button
+    if (window.innerWidth <= 900 || left + menuWidth > window.innerWidth - 8) {
+      left = Math.max(8, rect.right - menuWidth)
+    }
+
+    // Vertical placement: default below button, flip above if overflowing bottom
+    let top = rect.bottom + 4
+    if (top + menuHeight > window.innerHeight - 8) {
+      top = Math.max(8, rect.top - menuHeight - 4)
+    }
+
     setChatMenuState({
       chatId: id,
       chatTitle: chat.title || 'Untitled Battle',
       isPinned: !!chat.isPinned,
-      left: rect.right + 6,
+      left,
       top,
     })
   }
@@ -179,56 +224,90 @@ const Sidebar = () => {
     }
   }
 
+  useEffect(() => {
+    if (!mobileOpen) return
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose?.()
+    }
+    document.addEventListener('keydown', onKey)
+    return () => document.removeEventListener('keydown', onKey)
+  }, [mobileOpen, onClose])
+
   const username = user?.username || user?.email?.split('@')[0] || 'User'
   const email = user?.email || ''
   const initial = username.charAt(0).toUpperCase()
 
   return (
     <>
-    <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
-      <span className={styles.dotsTop} aria-hidden />
-      <span className={styles.dotsMid} aria-hidden />
-      <PixelCluster variant="fade" cell={8} className={styles.pixels} />
+      <div
+        className={`${styles.backdrop} ${mobileOpen ? styles.backdropOpen : ''}`}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <aside
+        className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''} ${mobileOpen ? styles.mobileOpen : ''}`}
+      >
+        <span className={styles.dotsTop} aria-hidden />
+        <span className={styles.dotsMid} aria-hidden />
+        <PixelCluster variant="fade" cell={8} className={styles.pixels} />
 
-      <div className={styles.top}>
-        <div className={styles.brandWrap}>
-          <Brand size="sm" />
+        <div className={styles.top}>
+          <div className={styles.brandWrap}>
+            <Brand size="sm" />
+          </div>
+          <div className={styles.topActions}>
+            <button
+              type="button"
+              id="sidebar-apps-btn"
+              className={styles.iconBtn}
+              onClick={toggleSidebar}
+              aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            >
+              <GridIcon size={20} />
+            </button>
+            <button
+              type="button"
+              id="sidebar-close-mobile-btn"
+              className={styles.mobileCloseBtn}
+              onClick={onClose}
+              aria-label="Close sidebar"
+              title="Close sidebar"
+            >
+              <X size={18} />
+            </button>
+          </div>
         </div>
+
         <button
           type="button"
-          id="sidebar-apps-btn"
-          className={styles.iconBtn}
-          onClick={toggleSidebar}
-          aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-          title={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+          id="new-chat-btn"
+          className={`${styles.newChat} ${isNewChat ? styles.active : ''}`}
+          title="New Chat"
+          aria-label="New Chat"
+          onClick={() => {
+            onClose?.()
+            navigate('/new')
+          }}
         >
-          <GridIcon size={20} />
+          <PlusCircleIcon size={22} />
+          <span>New Chat</span>
         </button>
-      </div>
 
-      <button
-        type="button"
-        id="new-chat-btn"
-        className={`${styles.newChat} ${isNewChat ? styles.active : ''}`}
-        title="New Chat"
-        aria-label="New Chat"
-        onClick={() => navigate('/new')}
-      >
-        <PlusCircleIcon size={22} />
-        <span>New Chat</span>
-      </button>
-
-      <button
-        type="button"
-        id="sidebar-search-btn"
-        className={styles.search}
-        title="Search"
-        aria-label="Search"
-        onClick={() => setSearchOpen(true)}
-      >
-        <SearchIcon size={18} />
-        <span>Search</span>
-      </button>
+        <button
+          type="button"
+          id="sidebar-search-btn"
+          className={styles.search}
+          title="Search"
+          aria-label="Search"
+          onClick={() => {
+            onClose?.()
+            setSearchOpen(true)
+          }}
+        >
+          <SearchIcon size={18} />
+          <span>Search</span>
+        </button>
 
       <nav className={styles.history} aria-label="Chat history">
         {chatSessionsLoading ? (
@@ -301,14 +380,22 @@ const Sidebar = () => {
           type="button"
           className={styles.avatar}
           data-account-menu
-          onClick={collapsed ? openMenu : undefined}
-          title={`${username} (${email})`}
+          onClick={openMenu}
+          title={`${username} (${email}) - Account options`}
           aria-label="Account"
-          aria-haspopup={collapsed ? 'menu' : undefined}
+          aria-haspopup="menu"
         >
           {initial}
         </button>
-        <div className={styles.userInfo}>
+        <div
+          className={styles.userInfo}
+          data-account-menu
+          onClick={openMenu}
+          role="button"
+          tabIndex={0}
+          style={{ cursor: 'pointer' }}
+          title="Account menu / Sign out"
+        >
           <strong>{username}</strong>
           <span>{email}</span>
         </div>
@@ -316,73 +403,78 @@ const Sidebar = () => {
           type="button"
           id="account-menu-btn"
           data-account-menu
-          className={`${styles.iconBtn} ${styles.accountMenuBtn}`}
+          className={styles.accountMenuBtn}
           onClick={openMenu}
           aria-label="Account menu"
           aria-haspopup="menu"
           aria-expanded={!!menuPos}
-          title="Account menu"
+          title="Account menu / Sign out"
         >
           <MoreVerticalIcon size={18} />
         </button>
       </div>
 
       {/* Account Popup */}
-      {menuPos && (
-        <div
-          className={styles.accountPopup}
-          data-account-menu
-          role="menu"
-          style={{ left: menuPos.left, bottom: menuPos.bottom }}
-        >
-          <button type="button" role="menuitem" className={styles.signOut} onClick={handleSignOut}>
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden>
-              <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-              <polyline points="16 17 21 12 16 7" />
-              <line x1="21" y1="12" x2="9" y2="12" />
-            </svg>
-            <span>Sign out</span>
-          </button>
-        </div>
-      )}
+      {menuPos &&
+        createPortal(
+          <div
+            className={styles.accountPopup}
+            data-account-menu
+            role="menu"
+            style={{ left: menuPos.left, bottom: menuPos.bottom }}
+          >
+            <button
+              type="button"
+              role="menuitem"
+              className={styles.signOut}
+              onClick={handleSignOut}
+            >
+              <LogOut size={16} />
+              <span>Sign out</span>
+            </button>
+          </div>,
+          document.body
+        )}
 
       {/* Chat Actions Popup (Pinned, Rename, Delete) */}
-      {chatMenuState && (
-        <div
-          className={styles.chatActionsPopup}
-          data-chat-actions-menu
-          role="menu"
-          style={{ left: chatMenuState.left, top: chatMenuState.top }}
-        >
-          <button
-            type="button"
-            role="menuitem"
-            className={styles.chatActionItem}
-            onClick={handlePinClick}
+      {chatMenuState &&
+        createPortal(
+          <div
+            className={styles.chatActionsPopup}
+            data-chat-actions-menu
+            role="menu"
+            style={{ left: chatMenuState.left, top: chatMenuState.top }}
           >
-            <Pin size={14} />
-            <span>{chatMenuState.isPinned ? 'Unpin chat' : 'Pinned chat'}</span>
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className={styles.chatActionItem}
-            onClick={handleRenameClick}
-          >
-            <Pencil size={14} />
-            <span>Rename chat</span>
-          </button>
-          <button
-            type="button"
-            role="menuitem"
-            className={`${styles.chatActionItem} ${styles.deleteAction}`}
-            onClick={handleDeleteClick}
-          >
-            <Trash2 size={14} />
-            <span>Delete chat</span>
-          </button>
-        </div>
-      )}
+            <button
+              type="button"
+              role="menuitem"
+              className={styles.chatActionItem}
+              onClick={handlePinClick}
+            >
+              <Pin size={14} />
+              <span>{chatMenuState.isPinned ? 'Unpin chat' : 'Pinned chat'}</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className={styles.chatActionItem}
+              onClick={handleRenameClick}
+            >
+              <Pencil size={14} />
+              <span>Rename chat</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              className={`${styles.chatActionItem} ${styles.deleteAction}`}
+              onClick={handleDeleteClick}
+            >
+              <Trash2 size={14} />
+              <span>Delete chat</span>
+            </button>
+          </div>,
+          document.body
+        )}
 
       {/* Rename Modal */}
       <RenameModal

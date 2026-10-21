@@ -24,6 +24,7 @@ const Dashboard = () => {
   const isNew = !!useMatch('/new')
   const chatContainerRef = useRef(null)
   const [renameOpen, setRenameOpen] = useState(false)
+  const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
 
   const {
     messages,
@@ -66,6 +67,7 @@ const Dashboard = () => {
 
   const handleSend = async (problemText) => {
     if (!problemText?.trim() || isBattleRunning) return
+    setMobileSidebarOpen(false)
     const result = await executeBattleHandler(problemText.trim(), chatId || null)
     if (result?.data?.chatId && !chatId) {
       navigate(`/chat/${result.data.chatId}`, { replace: true })
@@ -79,12 +81,16 @@ const Dashboard = () => {
 
   return (
     <div className={styles.shell}>
-      <Sidebar />
+      <Sidebar
+        mobileOpen={mobileSidebarOpen}
+        onClose={() => setMobileSidebarOpen(false)}
+      />
       <main className={styles.main}>
         <section className={styles.dashboard}>
           <Topbar
             title={title}
             onRename={chatId && activeSession ? () => setRenameOpen(true) : undefined}
+            onToggleSidebar={() => setMobileSidebarOpen((prev) => !prev)}
           />
 
           {messagesLoading && messages.length === 0 && !isBattleRunning ? (

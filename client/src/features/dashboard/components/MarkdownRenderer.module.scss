@@ -98,12 +98,15 @@
 
   table {
     width: 100%;
+    max-width: 100%;
+    display: block;
+    overflow-x: auto;
     border-collapse: collapse;
     margin: $sp-3 0;
     font-size: $fs-xs;
     border: 1px solid $border-default;
     border-radius: $radius-sm;
-    overflow: hidden;
+    @include scrollbar;
   }
 
   th, td {

@@ -3,7 +3,7 @@
 .overlay {
   position: fixed;
   inset: 0;
-  z-index: 1100;
+  z-index: 1300;
   background: rgba(0, 0, 0, 0.72);
   backdrop-filter: blur(4px);
   @include flex-center;

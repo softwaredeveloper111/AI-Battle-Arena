@@ -7,6 +7,10 @@
   display: flex;
   justify-content: center;
   background: linear-gradient(180deg, transparent, rgba(5, 5, 5, 0.6) 20%, $bg-app 100%);
+
+  @include respond($bp-sm) {
+    padding: $sp-2 $sp-3 $sp-3;
+  }
 }
 
 .composer {
@@ -29,6 +33,12 @@
     box-shadow $dur $ease,
     border-radius 0.22s $ease,
     padding 0.2s $ease;
+
+  @include respond($bp-sm) {
+    min-height: 46px;
+    padding: 6px 8px 6px 14px;
+    border-radius: 24px;
+  }
 
   &:focus-within {
     border-color: $border-gold;

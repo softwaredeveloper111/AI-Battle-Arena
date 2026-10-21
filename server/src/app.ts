@@ -15,6 +15,19 @@ const app = express();
 
 
 /**
+ * application middlewares
+ */
+app.set("trust proxy", 1);
+app.use(express.static("public"));
+app.use(express.json({ limit: "50kb" })); //Maximum request body size 50 KB allowed hai
+app.use(express.urlencoded({ extended: true, limit: "10kb" })); //Maximum request body size 10 KB allowed hai.
+app.use(cookieParser());
+app.use(httpLogger);
+app.use(passport.initialize());
+
+
+
+/**
  * CORS configeration
  */
 const allowedOrigins = [
@@ -40,15 +53,6 @@ app.use(cors({
 }));
 
 
-/**
- * application middlewares
- */
-app.use(express.static("public"));
-app.use(express.json({ limit: "50kb" })); //Maximum request body size 50 KB allowed hai
-app.use(express.urlencoded({ extended: true, limit: "10kb" })); //Maximum request body size 10 KB allowed hai.
-app.use(cookieParser());
-app.use(httpLogger);
-app.use(passport.initialize());
 
 
 /**

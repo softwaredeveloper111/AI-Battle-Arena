@@ -4,6 +4,7 @@ import AppLayout from '../../layout/AppLayout'
 import LoginPage from '../../features/auth/pages/LoginPage'
 import SignupPage from '../../features/auth/pages/SignupPage'
 import Dashboard from '../../features/dashboard/pages/Dashboard'
+import ResetPasswordPage from "../../features/auth/pages/ResetPasswordPage"
 
 const router = createBrowserRouter([
   {
@@ -19,6 +20,7 @@ const router = createBrowserRouter([
     children: [
       { path: '/login', element: <LoginPage /> },
       { path: '/signup', element: <SignupPage /> },
+      {path:"/reset-password" , element:<ResetPasswordPage/>}
     ],
   },
   { path: '*', element: <Navigate to="/" replace /> },

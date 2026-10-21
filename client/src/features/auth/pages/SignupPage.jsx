@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import {useNavigate} from "react-router-dom"
+import { useState , useEffect } from 'react'
+import {useNavigate , useSearchParams} from "react-router-dom"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -34,12 +34,22 @@ const PASSWORD_RULES = [
   'Letters, numbers and underscores only for username',
 ]
 
+const GOOGLE_ERRORS = {
+  google_no_account: "No account found for this Google email. Please sign up first",
+  google_denied: "Google sign-in was cancelled",
+  google_unverified: "Your Google email is not verified",
+  google_unavailable: "Google sign-in is not available right now",
+  google_failed: "Google sign-in failed. Please try again",
+};
+
+
 const SignupPage = () => {
 
-  const { registerHandler, isLoading } = useAuth()
+  const { registerHandler, isLoading ,googleSignupUrl } = useAuth()
   const [showPassword, setShowPassword] = useState(false)
   const [showSuccessPopup, setShowSuccessPopup] = useState(false);
   const navigate = useNavigate()
+  const [searchParams, setSearchParams] = useSearchParams();
 
    const {
     register,
@@ -68,9 +78,14 @@ const SignupPage = () => {
     }
   };
 
-  if (isLoading) {
-    return <SpinnerLoader />
-  }
+    useEffect(() => {
+    const err = searchParams.get("error");
+    if (!err) return;
+    toast.error(GOOGLE_ERRORS[err] || GOOGLE_ERRORS.google_failed, { id: "google-error" });
+    setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
 
   return (
     <main className={styles.page}>
@@ -117,7 +132,7 @@ const SignupPage = () => {
             </div>
 
             <div className={styles.googleWrap}>
-              <GoogleButton id="signup-google-btn" />
+              <GoogleButton id="signup-google-btn" onClick={() => (window.location.href = googleSignupUrl)} />
             </div>
 
             <OrDivider />
@@ -241,6 +256,8 @@ const SignupPage = () => {
           </div>
         </div>
       )}
+
+       {isLoading && <SpinnerLoader fullscreen overlay />}
     </main>
   )
 }

@@ -88,6 +88,100 @@
   margin-bottom: $sp-5;
 }
 
+.field {
+  margin-bottom: $sp-5;
+}
+
+.label {
+  display: block;
+  font-size: $fs-sm;
+  font-weight: $fw-medium;
+  color: $text-primary;
+  margin-bottom: $sp-2;
+}
+
+.inputWrap {
+  position: relative;
+  display: flex;
+  align-items: center;
+  height: $control-h;
+  background: $bg-input;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  transition: border-color $dur-fast $ease, box-shadow $dur-fast $ease;
+
+  &:focus-within {
+    @include focus-ring;
+  }
+}
+
+.leadIcon {
+  margin-left: $sp-3;
+  color: $text-muted;
+  flex-shrink: 0;
+}
+
+.input {
+  flex: 1;
+  min-width: 0;
+  height: 100%;
+  padding: 0 $sp-3;
+  font-size: $fs-xs;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: $text-primary;
+}
+
+.eye {
+  margin-right: $sp-3;
+  color: $text-muted;
+  display: flex;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+
+  &:hover {
+    color: $text-secondary;
+  }
+}
+
+.submit {
+  position: relative;
+  width: 100%;
+  height: $control-h;
+  @include flex-center;
+  font-size: $fs-sm;
+  font-weight: $fw-semibold;
+  color: $on-primary;
+  background: linear-gradient(180deg, $gold-400, $gold-500);
+  border: none;
+  border-radius: $radius-md;
+  box-shadow: 0 6px 22px rgba(245, 196, 0, 0.18);
+  cursor: pointer;
+  transition: transform $dur-fast $ease, box-shadow $dur $ease, filter $dur $ease;
+
+  &:hover {
+    filter: brightness(1.06);
+    box-shadow: 0 8px 30px rgba(245, 196, 0, 0.32);
+  }
+
+  &:active {
+    transform: translateY(1px);
+  }
+}
+
+.submitArrow {
+  position: absolute;
+  right: $sp-4;
+  transition: transform $dur $ease;
+
+  .submit:hover & {
+    transform: translateX(3px);
+  }
+}
+
 .forgotRow {
   display: flex;
   justify-content: flex-end;
@@ -242,4 +336,16 @@
   border-radius: $radius-md;
   background: rgba(245, 196, 0, 0.05);
   box-shadow: inset 0 0 10px rgba(245, 196, 0, 0.1);
+}
+
+
+
+
+.errors {
+  display: block;
+  color: #ff5252;
+  font-size: 11.5px;
+  font-weight: $fw-regular;
+  margin-top: 5px;
+  line-height: 1.3;
 }

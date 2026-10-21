@@ -1,33 +1,34 @@
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { z } from 'zod'
 import { toast } from 'sonner'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
-import { PillarLogo, BoltIcon, BrainIcon, NodesIcon, MailIcon, LockIcon } from '../../../components/Icons'
 import {
-  AuthInput,
+  PillarLogo,
+  BoltIcon,
+  BrainIcon,
+  NodesIcon,
+  MailIcon,
+  LockIcon,
+  EyeIcon,
+  EyeOffIcon,
+  ArrowRightIcon,
+} from '../../../components/Icons'
+import {
   GoogleButton,
   LanguageSelect,
   OrDivider,
-  SubmitButton,
   SwitchAuth,
 } from '../components/AuthElements'
 import landscape from '../../../assets/login-landscape.jpg'
 import styles from './LoginPage.module.scss'
-import SpinnerLoader from '../../../components/SpinnerLoader';
-import useAuth  from '../hooks/useAuth';
+import SpinnerLoader from '../../../components/SpinnerLoader'
+import useAuth from '../hooks/useAuth'
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { loginSchema } from '../schemas/auth.schema'
 
 
-const loginSchema = z.object({
-  email: z
-    .string()
-    .trim()
-    .min(1, 'Email cannot be empty')
-    .email('Please enter a valid email address'),
-  password: z
-    .string()
-    .min(1, 'Password cannot be empty'),
-})
 
 const FEATURES = [
   { icon: BoltIcon, title: 'Multi-Agent Battles', text: 'Pit AI agents against each other' },
@@ -36,40 +37,42 @@ const FEATURES = [
 ]
 
 const LoginPage = () => {
-   
-  const {isLoading, loginUserHandler} = useAuth()
 
+  const { isLoading, loginUserHandler } = useAuth()
   const navigate = useNavigate()
+  const [showPassword, setShowPassword] = useState(false)
+   
+   const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+  });
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
+  const onSubmit = async (data) => {
+    const { email, password } = data;
 
-    const email = e.target.querySelector('#login-email')?.value.trim() ?? ''
-    const password = e.target.querySelector('#login-password')?.value.trim() ?? ''
+    if (email && password) {
+      const res = await loginUserHandler(email, password);
 
-    const validation = loginSchema.safeParse({ email, password })
-
-    if (!validation.success) {
-      const firstIssue = validation.error.issues?.[0]
-      const errorMessage = firstIssue?.message || 'Invalid input'
-      toast.error(errorMessage)
-      return
-    }
-
-    // console.log({
-    //   email: validation.data.email,
-    //   password: validation.data.password,
-    // })
-    console.log({email,password})
-    const res = await loginUserHandler(email, password);
-     if (res) {
-        e.target.querySelector('#login-email').value = ""
-        e.target.querySelector('#login-password').value = ""
+      if (res) {
+        reset();
         navigate("/", { replace: true });
       }
-  }
+    }
+  };
 
-  if(isLoading){
+  const onError = (errors) => {
+    const firstError = Object.values(errors)[0];
+
+    if (firstError?.message) {
+      toast.error(firstError.message);
+    }
+  };
+
+  if (isLoading) {
     return <SpinnerLoader />
   }
 
@@ -92,23 +95,68 @@ const LoginPage = () => {
           <GoogleButton id="login-google-btn" />
           <OrDivider />
 
-          <form className={styles.form} onSubmit={handleSubmit} noValidate>
-            <AuthInput id="login-email" label="Email" type="email" placeholder="you@example.com" icon={MailIcon} />
-            <AuthInput
-              id="login-password"
-              label="Password"
-              type="password"
-              placeholder="Enter your password"
-              icon={LockIcon}
-              trailingEye
-            />
+          <form className={styles.form} onSubmit={handleSubmit(onSubmit, onError)} noValidate>
+            {/* Email input field */}
+            <div className={styles.field}>
+              <label htmlFor="login-email" className={styles.label}>
+                Email
+              </label>
+              <div className={styles.inputWrap}>
+                <MailIcon size={17} className={styles.leadIcon} />
+                <input
+                  {...register("email")}
+                  id="login-email"
+                  name="email"
+                  type="email"
+                  placeholder="you@example.com"
+                  className={styles.input}
+                  autoComplete="email"
+                  required
+                />
+              </div>
+              {errors.email && <span className={styles.errors}>{errors.email.message}</span>}
+            </div>
+
+            {/* Password input field with eye toggle */}
+            <div className={styles.field}>
+              <label htmlFor="login-password" className={styles.label}>
+                Password
+              </label>
+              <div className={styles.inputWrap}>
+                <LockIcon size={17} className={styles.leadIcon} />
+                <input
+                  {...register("password")}
+                  id="login-password"
+                  name="password"
+                  type={showPassword ? 'text' : 'password'}
+                  placeholder="Enter your password"
+                  className={styles.input}
+                  autoComplete="current-password"
+                  required
+                />
+                <button
+                  type="button"
+                  className={styles.eye}
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  aria-label={showPassword ? 'Hide password' : 'Show password'}
+                >
+                  {showPassword ? <EyeIcon size={17} /> : <EyeOffIcon size={17} />}
+                </button>
+              </div>
+              {errors.password && <span className={styles.errors}>{errors.password.message}</span>}
+            </div>
+
             <div className={styles.forgotRow}>
               <Link to="#" id="forgot-password-link" className={styles.forgotLink}>
                 Forgot password?
               </Link>
             </div>
+
             <div className={styles.submitRow}>
-              <SubmitButton id="login-submit-btn">Sign in</SubmitButton>
+              <button type="submit" id="login-submit-btn" className={styles.submit}>
+                <span>Sign in</span>
+                <ArrowRightIcon size={18} className={styles.submitArrow} />
+              </button>
             </div>
           </form>
 

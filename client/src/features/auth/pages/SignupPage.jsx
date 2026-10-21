@@ -1,4 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
+import { z } from 'zod'
+import { toast } from 'sonner'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
 import { CheckIcon, LockIcon, MailIcon, PillarLogo, UserIcon } from '../../../components/Icons'
@@ -11,22 +13,86 @@ import {
   SwitchAuth,
 } from '../components/AuthElements'
 import arenaHero from '../../../assets/arena-hero.jpg'
-import styles from './SignupPage.module.scss'
+import styles from './SignupPage.module.scss';
+import spinnerLoader from "../../../components/SpinnerLoader";
+import useAuth from "../hooks/useAuth"
+
+
+
+/**
+ * Register validation schema aligned with backend:
+ * server/src/validations/auth.validator.ts & server/src/models/user.model.ts
+ */
+const signupSchema = z.object({
+  username: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(3, 'Username must be at least 3 characters long')
+    .max(20, 'Username must be at most 20 characters long')
+    .regex(/^[a-z0-9_]{3,20}$/, 'Please provide a valid username (letters, numbers, underscore)'),
+
+  email: z
+    .string()
+    .trim()
+    .toLowerCase()
+    .min(1, 'Email is required')
+    .email('Please enter a valid email address'),
+
+  password: z
+    .string()
+    .min(6, 'Password must be at least 6 characters long')
+    .max(32, 'Password must be at most 32 characters long')
+    .regex(
+      /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,32}$/,
+      'Password must contain at least one lowercase letter, one uppercase letter, one number, and one special character'
+    ),
+})
 
 const PASSWORD_RULES = [
-  '8 characters',
-  '1 special character (e.g. !, @, #, $)',
-  '1 number',
-  'No leading or trailing whitespace',
+  '6–32 characters',
+  '1 uppercase & 1 lowercase letter',
+  '1 number & 1 special character (@, $, !, %, *, ?, &)',
+  'Letters, numbers and underscores only for username',
 ]
 
 const SignupPage = () => {
+ 
+  const {registerHandler,isLoading} = useAuth()
+
   const navigate = useNavigate()
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault()
-    navigate('/')
+
+    const username = e.target.querySelector('#signup-username')?.value.trim() ?? ''
+    const email = e.target.querySelector('#signup-email')?.value.trim() ?? ''
+    const password = e.target.querySelector('#signup-password')?.value ?? ''
+
+    const validation = signupSchema.safeParse({ username, email, password })
+
+    if (!validation.success) {
+      const firstIssue = validation.error.issues?.[0]
+      const errorMessage = firstIssue?.message || 'Invalid input'
+      toast.error(errorMessage)
+      return
+    }
+
+    // console.log({
+    //   username: validation.data.username,
+    //   email: validation.data.email,
+    //   password: validation.data.password,
+    // })
+    
+     const res = await registerHandler(username, email, password);
+      if (res) {
+        navigate('/')
+      }
+
   }
+
+  if(isLoading) return <spinnerLoader/>
+
   return (
     <main className={styles.page}>
       <span className={styles.dotsLeft} aria-hidden />
@@ -77,7 +143,7 @@ const SignupPage = () => {
 
             <OrDivider />
 
-            <form className={styles.form} onSubmit={handleSubmit}>
+            <form className={styles.form} onSubmit={handleSubmit} noValidate>
               <AuthInput id="signup-username" label="Username" placeholder="Choose a username" icon={UserIcon} />
               <AuthInput id="signup-email" label="Email" type="email" placeholder="you@example.com" icon={MailIcon} />
               <AuthInput

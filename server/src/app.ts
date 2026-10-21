@@ -74,6 +74,10 @@ app.get("/api/health", (req, res) => {
   });
 });
 
+app.get("/", (req, res) => {
+  res.status(200).json({ message: "AI Battle Arena API is running" });
+});
+
 /**
  * global error handler
  */

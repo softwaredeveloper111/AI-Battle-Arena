@@ -5,13 +5,20 @@ import styles from './Topbar.module.scss'
 /**
  * Top bar with chat title and Battle mode badge.
  */
-const Topbar = ({ title, subtitle }) => {
+const Topbar = ({ title, subtitle, onRename }) => {
   return (
     <header className={styles.topbar}>
       <span className={styles.dots} aria-hidden />
 
       <div className={styles.titleBlock}>
-        <button type="button" id="chat-title-btn" className={styles.title}>
+        <button
+          type="button"
+          id="chat-title-btn"
+          className={styles.title}
+          onClick={onRename}
+          disabled={!onRename}
+          title={onRename ? 'Click to rename chat' : undefined}
+        >
           <span>{title}</span>
           <ChevronDownIcon size={18} />
         </button>

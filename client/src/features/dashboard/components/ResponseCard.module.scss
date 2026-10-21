@@ -53,4 +53,10 @@
     color: $text-muted;
     font-style: italic;
   }
+
+  .errorText {
+    color: #ff6b6b;
+    font-size: $fs-sm;
+    font-style: italic;
+  }
 }

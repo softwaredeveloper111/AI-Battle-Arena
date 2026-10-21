@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useMatch, Link } from 'react-router-dom'
 import SearchModal from './SearchModal'
+import RenameModal from './RenameModal'
 import { groupChatSessionsByDate } from '../data/conversations'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
@@ -11,14 +12,21 @@ import {
   PlusCircleIcon,
   SearchIcon,
 } from '../../../components/Icons'
-import { LoaderCircle } from 'lucide-react'
+import { LoaderCircle, Pin, Pencil, Trash2 } from 'lucide-react'
 import useAuth from '../../auth/hooks/useAuth'
 import useBattle from '../hooks/useBattle'
 import styles from './Sidebar.module.scss'
 
 const Sidebar = () => {
   const { user, logoutHandler } = useAuth()
-  const { chatSessions, chatSessionsLoading, fetchChatSessionsHandler } = useBattle()
+  const {
+    chatSessions,
+    chatSessionsLoading,
+    fetchChatSessionsHandler,
+    pinChatHandler,
+    renameChatHandler,
+    deleteChatHandler,
+  } = useBattle()
 
   useEffect(() => {
     fetchChatSessionsHandler()
@@ -38,6 +46,7 @@ const Sidebar = () => {
 
   const toggleSidebar = () => {
     setMenuPos(null)
+    setChatMenuState(null)
     setCollapsed((prev) => {
       const next = !prev
       try {
@@ -51,6 +60,8 @@ const Sidebar = () => {
 
   const navigate = useNavigate()
   const [menuPos, setMenuPos] = useState(null) // { left, bottom } | null
+  const [chatMenuState, setChatMenuState] = useState(null) // { chatId, chatTitle, isPinned, left, top } | null
+  const [renameModalChat, setRenameModalChat] = useState(null) // { id, title } | null
 
   const openMenu = (e) => {
     if (menuPos) return setMenuPos(null)
@@ -58,7 +69,7 @@ const Sidebar = () => {
     setMenuPos({ left: r.right + 10, bottom: window.innerHeight - r.bottom })
   }
 
-  // close on outside click / Escape
+  // close account menu on outside click / Escape
   useEffect(() => {
     if (!menuPos) return
     const onDown = (e) => {
@@ -72,6 +83,23 @@ const Sidebar = () => {
       document.removeEventListener('keydown', onKey)
     }
   }, [menuPos])
+
+  // close chat actions popup on outside click / Escape
+  useEffect(() => {
+    if (!chatMenuState) return
+    const onDown = (e) => {
+      if (!e.target.closest('[data-chat-actions-menu]')) {
+        setChatMenuState(null)
+      }
+    }
+    const onKey = (e) => e.key === 'Escape' && setChatMenuState(null)
+    document.addEventListener('mousedown', onDown)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('mousedown', onDown)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [chatMenuState])
 
   const handleSignOut = async () => {
     setMenuPos(null)
@@ -90,7 +118,50 @@ const Sidebar = () => {
 
   const openChat = (id) => {
     setSearchOpen(false)
+    setChatMenuState(null)
     navigate(`/chat/${id}`)
+  }
+
+  const handleOpenChatMenu = (e, chat) => {
+    e.stopPropagation()
+    const id = chat._id || chat.id
+    if (chatMenuState?.chatId === id) {
+      setChatMenuState(null)
+      return
+    }
+    const rect = e.currentTarget.getBoundingClientRect()
+    const top = rect.top + 130 > window.innerHeight ? rect.bottom - 130 : rect.top
+    setChatMenuState({
+      chatId: id,
+      chatTitle: chat.title || 'Untitled Battle',
+      isPinned: !!chat.isPinned,
+      left: rect.right + 6,
+      top,
+    })
+  }
+
+  const handlePinClick = async () => {
+    if (!chatMenuState) return
+    const id = chatMenuState.chatId
+    setChatMenuState(null)
+    await pinChatHandler(id)
+  }
+
+  const handleRenameClick = () => {
+    if (!chatMenuState) return
+    const { chatId, chatTitle } = chatMenuState
+    setChatMenuState(null)
+    setRenameModalChat({ id: chatId, title: chatTitle })
+  }
+
+  const handleDeleteClick = async () => {
+    if (!chatMenuState) return
+    const id = chatMenuState.chatId
+    setChatMenuState(null)
+    await deleteChatHandler(id)
+    if (activeId === id) {
+      navigate('/new')
+    }
   }
 
   const username = user?.username || user?.email?.split('@')[0] || 'User'
@@ -162,19 +233,33 @@ const Sidebar = () => {
                   const id = chat._id || chat.id
                   const title = chat.title || 'Untitled Battle'
                   const isActive = id === activeId
+                  const isMenuOpen = chatMenuState?.chatId === id
 
                   return (
                     <li key={id}>
-                      <button
-                        type="button"
-                        title={title}
-                        aria-label={title}
-                        onClick={() => openChat(id)}
-                        className={`${styles.item} ${isActive ? styles.active : ''}`}
-                      >
-                        <ChatIcon size={17} />
-                        <span>{title}</span>
-                      </button>
+                      <div className={`${styles.item} ${isActive ? styles.active : ''}`}>
+                        <button
+                          type="button"
+                          title={title}
+                          aria-label={title}
+                          onClick={() => openChat(id)}
+                          className={styles.itemMain}
+                        >
+                          <ChatIcon size={17} className={styles.chatIcon} />
+                          <span>{title}</span>
+                          {chat.isPinned && <Pin size={12} className={styles.pinIcon} />}
+                        </button>
+                        <button
+                          type="button"
+                          data-chat-actions-menu
+                          aria-label="Chat options"
+                          title="Chat options"
+                          onClick={(e) => handleOpenChatMenu(e, chat)}
+                          className={`${styles.chatMenuBtn} ${isMenuOpen ? styles.menuOpen : ''}`}
+                        >
+                          <MoreVerticalIcon size={16} />
+                        </button>
+                      </div>
                     </li>
                   )
                 })}
@@ -215,6 +300,7 @@ const Sidebar = () => {
         </button>
       </div>
 
+      {/* Account Popup */}
       {menuPos && (
         <div
           className={styles.accountPopup}
@@ -232,6 +318,57 @@ const Sidebar = () => {
           </button>
         </div>
       )}
+
+      {/* Chat Actions Popup (Pinned, Rename, Delete) */}
+      {chatMenuState && (
+        <div
+          className={styles.chatActionsPopup}
+          data-chat-actions-menu
+          role="menu"
+          style={{ left: chatMenuState.left, top: chatMenuState.top }}
+        >
+          <button
+            type="button"
+            role="menuitem"
+            className={styles.chatActionItem}
+            onClick={handlePinClick}
+          >
+            <Pin size={14} />
+            <span>{chatMenuState.isPinned ? 'Unpin chat' : 'Pinned chat'}</span>
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className={styles.chatActionItem}
+            onClick={handleRenameClick}
+          >
+            <Pencil size={14} />
+            <span>Rename chat</span>
+          </button>
+          <button
+            type="button"
+            role="menuitem"
+            className={`${styles.chatActionItem} ${styles.deleteAction}`}
+            onClick={handleDeleteClick}
+          >
+            <Trash2 size={14} />
+            <span>Delete chat</span>
+          </button>
+        </div>
+      )}
+
+      {/* Rename Modal */}
+      <RenameModal
+        open={!!renameModalChat}
+        title={renameModalChat?.title}
+        onClose={() => setRenameModalChat(null)}
+        onSave={async (newTitle) => {
+          if (renameModalChat?.id) {
+            await renameChatHandler(renameModalChat.id, newTitle)
+          }
+          setRenameModalChat(null)
+        }}
+      />
 
       <footer className={styles.footer}>
         <Link to="/terms">Terms of Use</Link>

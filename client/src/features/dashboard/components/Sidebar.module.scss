@@ -216,12 +216,12 @@
 }
 
 .item {
+  position: relative;
   width: 100%;
   display: flex;
   align-items: center;
-  gap: $sp-3;
   height: 38px;
-  padding: 0 $sp-3;
+  padding: 0 $sp-1 0 $sp-3;
   margin-bottom: 2px;
   font-size: $fs-xs;
   color: $text-primary;
@@ -232,41 +232,163 @@
     background $dur-fast $ease,
     border-color $dur-fast $ease;
 
-  svg {
-    flex-shrink: 0;
-    color: $text-secondary;
+  &:hover {
+    background: $bg-surface-2;
+
+    .chatMenuBtn {
+      opacity: 1;
+      pointer-events: auto;
+    }
   }
+
+  &.active {
+    @include gold-panel($radius-md);
+    border-color: $border-gold;
+    background: linear-gradient(
+      90deg,
+      rgba(245, 196, 0, 0.22),
+      rgba(245, 196, 0, 0.08)
+    );
+
+    .chatIcon {
+      color: $primary;
+    }
+
+    .chatMenuBtn {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    &:hover {
+      background: linear-gradient(
+        90deg,
+        rgba(245, 196, 0, 0.26),
+        rgba(245, 196, 0, 0.1)
+      );
+    }
+  }
+}
+
+.itemMain {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: $sp-3;
+  height: 100%;
+  padding: 0;
+  background: none;
+  border: none;
+  font-size: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
 
   span {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-
-  &:hover {
-    background: $bg-surface-2;
-  }
 }
 
-.active {
-  @include gold-panel($radius-md);
-  border-color: $border-gold;
-  background: linear-gradient(
-    90deg,
-    rgba(245, 196, 0, 0.22),
-    rgba(245, 196, 0, 0.08)
-  );
+.chatIcon {
+  flex-shrink: 0;
+  color: $text-secondary;
+}
 
-  svg {
+.pinIcon {
+  flex-shrink: 0;
+  color: $primary;
+  margin-left: auto;
+  margin-right: $sp-1;
+}
+
+.chatMenuBtn {
+  @include flex-center;
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  margin-left: auto;
+  background: none;
+  border: none;
+  border-radius: $radius-sm;
+  color: $text-secondary;
+  cursor: pointer;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    opacity $dur-fast $ease,
+    background $dur-fast $ease,
+    color $dur-fast $ease;
+
+  &:hover {
+    background: $bg-elevated;
     color: $primary;
   }
 
+  &.menuOpen {
+    opacity: 1 !important;
+    pointer-events: auto !important;
+    background: $bg-elevated;
+    color: $primary;
+  }
+}
+
+.chatActionsPopup {
+  position: fixed;
+  z-index: 1000;
+  min-width: 160px;
+  padding: $sp-1;
+  background: $bg-elevated;
+  border: 1px solid $border-gold-soft;
+  border-radius: $radius-md;
+  box-shadow: $shadow-panel, $glow-gold-sm;
+  animation: popIn 0.15s $ease;
+  transform-origin: top left;
+}
+
+.chatActionItem {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: $sp-2;
+  height: 36px;
+  padding: 0 $sp-3;
+  font-size: $fs-xs;
+  color: $text-primary;
+  text-align: left;
+  background: none;
+  border: none;
+  border-radius: $radius-sm;
+  cursor: pointer;
+  transition:
+    background $dur-fast $ease,
+    color $dur-fast $ease;
+
+  svg {
+    flex-shrink: 0;
+    color: $text-secondary;
+  }
+
   &:hover {
-    background: linear-gradient(
-      90deg,
-      rgba(245, 196, 0, 0.26),
-      rgba(245, 196, 0, 0.1)
-    );
+    background: $bg-gold-tint;
+    color: $primary;
+
+    svg {
+      color: $primary;
+    }
+  }
+
+  &.deleteAction {
+    &:hover {
+      background: rgba(255, 82, 82, 0.12);
+      color: #ff5252;
+
+      svg {
+        color: #ff5252;
+      }
+    }
   }
 }
 

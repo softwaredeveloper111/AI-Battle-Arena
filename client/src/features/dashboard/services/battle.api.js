@@ -5,10 +5,16 @@ import axiosInstance from "../../../services/api/axios";
 const battleService = {
 
 
-   executeBattleApi: async(problem, chatId, socketId)=>{
-    const res = await axiosInstance.post(`/api/battle/execute-battle`, {problem, chatId, socketId});
+  executeBattleApi: async (problem, chatId, socketId) => {
+    const payload = { problem }
+    if (chatId) payload.chatId = chatId
+    if (socketId) payload.socketId = socketId
+
+    const res = await axiosInstance.post('/api/battle/execute-battle', payload, {
+      timeout: 120000,
+    })
     return res.data
-   },
+  },
 
    getAllChatSessionsApi: async()=>{
     const res = await axiosInstance.get(`/api/battle/chat/history`);

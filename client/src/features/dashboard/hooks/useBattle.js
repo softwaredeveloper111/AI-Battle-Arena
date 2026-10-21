@@ -91,7 +91,7 @@ const useBattle = () => {
 
     const onStream = (data) => {
       if (data?.type === "token") {
-        tokenBuffer[data.model] += data.token;
+        tokenBuffer[data.model] = (tokenBuffer[data.model] || "") + data.token;
         if (!frameId) frameId = requestAnimationFrame(flushTokens);
       } else if (data?.type === "status") {
         battleStatusReceived(data.message);
@@ -100,24 +100,34 @@ const useBattle = () => {
       }
     };
 
-    if (socket.connected) setSocketId(socket.id);
+    const onError = (data) => {
+      resetTokenBuffer();
+      const message = data?.message || "Battle encountered an error";
+      executeBattleFailure(message);
+      toast.error(message);
+    };
+
+    if (socket.connected && socket.id) setSocketId(socket.id);
 
     socket.on("connect", onConnect);
     socket.on("disconnect", onDisconnect);
     socket.on("battle:stream", onStream);
+    socket.on("battle:error", onError);
 
     return () => {
       socket.off("connect", onConnect);
       socket.off("disconnect", onDisconnect);
       socket.off("battle:stream", onStream);
+      socket.off("battle:error", onError);
       resetTokenBuffer();
     };
-  }, [setSocketId, battleStatusReceived, battleModelError]);
+  }, [setSocketId, battleStatusReceived, battleModelError, executeBattleFailure]);
 
   const executeBattleHandler = useCallback(
     async (problem, chatId = null) => {
-      // latest value from store (avoids stale socketId)
-      const currentSocketId = useBattleStore.getState().socketId;
+      // latest value from store or connected socket instance (avoids null socketId)
+      const currentSocketId =
+        useBattleStore.getState().socketId || initializeSocketConnection()?.id;
 
       resetTokenBuffer();
       executeBattleStart(problem);
@@ -132,11 +142,9 @@ const useBattle = () => {
         resetTokenBuffer();
         executeBattleSuccess(result?.data);
 
-        // new chat created -> refresh sidebar history
-        if (!chatId) {
-          const history = await battleService.getAllChatSessionsApi();
-          fetchChatSessionsSuccess(history?.data);
-        }
+        // refresh sidebar chat sessions
+        const history = await battleService.getAllChatSessionsApi();
+        fetchChatSessionsSuccess(history?.data);
         return result;
       } catch (err) {
         resetTokenBuffer();

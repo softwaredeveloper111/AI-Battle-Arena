@@ -3,7 +3,7 @@ import { CopyIcon, CheckIcon } from '../../../components/Icons'
 import MarkdownRenderer from './MarkdownRenderer'
 import styles from './ResponseCard.module.scss'
 
-const ResponseCard = ({ label, content, paragraphs, isStreaming = false }) => {
+const ResponseCard = ({ label, content, paragraphs, isStreaming = false, error = null }) => {
   const [copied, setCopied] = useState(false)
 
   const text = typeof content === 'string'
@@ -37,6 +37,8 @@ const ResponseCard = ({ label, content, paragraphs, isStreaming = false }) => {
       <div className={styles.body}>
         {text ? (
           <MarkdownRenderer content={text} />
+        ) : error ? (
+          <p className={styles.errorText}>{error}</p>
         ) : isStreaming ? (
           <p className={styles.thinking}>Thinking...</p>
         ) : null}

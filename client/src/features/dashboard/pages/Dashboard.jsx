@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, useNavigate, useMatch } from 'react-router-dom'
 import { LoaderCircle } from 'lucide-react'
 import Sidebar from '../components/Sidebar'
@@ -6,6 +6,7 @@ import Topbar from '../components/Topbar'
 import Composer from '../components/Composer'
 import ResponseCard from '../components/ResponseCard'
 import JudgePanel from '../components/JudgePanel'
+import RenameModal from '../components/RenameModal'
 import { SwordsIcon } from '../../../components/Icons'
 import useBattle from '../hooks/useBattle'
 import styles from './Dashboard.module.scss'
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const navigate = useNavigate()
   const isNew = !!useMatch('/new')
   const chatContainerRef = useRef(null)
+  const [renameOpen, setRenameOpen] = useState(false)
 
   const {
     messages,
@@ -32,9 +34,11 @@ const Dashboard = () => {
     streamingProblem,
     streamingSolution1,
     streamingSolution2,
+    modelErrors,
     connectBattleSocket,
     executeBattleHandler,
     fetchMessagesHandler,
+    renameChatHandler,
     clearMessages,
   } = useBattle()
 
@@ -78,7 +82,10 @@ const Dashboard = () => {
       <Sidebar />
       <main className={styles.main}>
         <section className={styles.dashboard}>
-          <Topbar title={title} />
+          <Topbar
+            title={title}
+            onRename={chatId && activeSession ? () => setRenameOpen(true) : undefined}
+          />
 
           {messagesLoading && messages.length === 0 && !isBattleRunning ? (
             <div className={styles.centerLoading}>
@@ -136,11 +143,13 @@ const Dashboard = () => {
                       label="Assistant A"
                       content={streamingSolution1}
                       isStreaming={!streamingSolution1}
+                      error={modelErrors?.solution_1}
                     />
                     <ResponseCard
                       label="Assistant B"
                       content={streamingSolution2}
                       isStreaming={!streamingSolution2}
+                      error={modelErrors?.solution_2}
                     />
                   </div>
 
@@ -165,6 +174,18 @@ const Dashboard = () => {
             }
             onSend={handleSend}
             disabled={isBattleRunning}
+          />
+
+          <RenameModal
+            open={renameOpen}
+            title={activeSession?.title}
+            onClose={() => setRenameOpen(false)}
+            onSave={async (newTitle) => {
+              if (chatId) {
+                await renameChatHandler(chatId, newTitle)
+              }
+              setRenameOpen(false)
+            }}
           />
         </section>
       </main>

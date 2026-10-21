@@ -511,6 +511,7 @@ export const ContinueWithGoogleController = asyncWrapper(
 
     // Send the token to the client
     res.cookie("token", token, cookieOptions);
-    return ApiResponse(res, 200, "user get successfully", req.user);
+     return res.redirect(`${config.FRONTEND_URL}/`);
+  
   },
 );

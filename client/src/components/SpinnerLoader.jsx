@@ -11,16 +11,17 @@ const SpinnerLoader = () => {
 };
 
 const StyledWrapper = styled.div`
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
   display: flex;
   justify-content: center;
   align-items: center;
-  width: 100vw;
-  height: 100vh;
-  min-height: 100vh;
-  position: fixed;
-  inset: 0;
-  z-index: 9999;
-  background-color: #080808;
+  background-color: rgba(8, 8, 8, 0.8);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
   overflow: hidden;
 
   .spinner {

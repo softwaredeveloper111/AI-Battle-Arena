@@ -20,8 +20,8 @@ export const LanguageSelect = ({ className = '' }) => (
 )
 
 /* "Continue with Google" gold-outlined button */
-export const GoogleButton = ({ id = 'google-auth-btn' }) => (
-  <button type="button" id={id} className={styles.google}>
+export const GoogleButton = ({ id = 'google-auth-btn' , onClick  }) => (
+  <button type="button" id={id} className={styles.google} onClick={onClick}>
     <GoogleIcon size={22} />
     <span>Continue with Google</span>
   </button>

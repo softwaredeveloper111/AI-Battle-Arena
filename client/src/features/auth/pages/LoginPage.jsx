@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useState , useEffect } from 'react'
+import { Link, useNavigate , useSearchParams  } from 'react-router-dom'
 import { toast } from 'sonner'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
@@ -39,15 +39,25 @@ const FEATURES = [
 ]
 
 
+const GOOGLE_ERRORS = {
+  google_denied: "Google sign-in was cancelled",
+  google_unverified: "Your Google email is not verified",
+  google_unavailable: "Google sign-in is not available right now",
+  google_failed: "Google sign-in failed. Please try again",
+};
+
+
 
 const LoginPage = () => {
 
-  const { isLoading, loginUserHandler } = useAuth()
+  const { isLoading, loginUserHandler , googleLoginUrl } = useAuth()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [showResendModal, setShowResendModal] = useState(false);
   const [showResetPasswordModal, setshowResetPasswordModal] = useState(false);
+  const [searchParams, setSearchParams] = useSearchParams();
    
+
    const {
     register,
     handleSubmit,
@@ -78,9 +88,17 @@ const LoginPage = () => {
     }
   };
 
-  if (isLoading) {
-    return <SpinnerLoader />
-  }
+  useEffect(() => {
+    const err = searchParams.get("error");
+    if (!err) return;
+    toast.error(GOOGLE_ERRORS[err] || GOOGLE_ERRORS.google_failed, {
+      id: "google-error",
+    });
+    setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+ 
 
   return (
     <main className={styles.page}>
@@ -98,7 +116,7 @@ const LoginPage = () => {
           <h1 className={styles.title}>Welcome back</h1>
           <p className={styles.subtitle}>Sign in to continue your AI journey</p>
 
-          <GoogleButton id="login-google-btn" />
+          <GoogleButton id="login-google-btn" onClick={()=> window.location.href = googleLoginUrl}/>
           <OrDivider />
 
           <form className={styles.form} onSubmit={handleSubmit(onSubmit, onError)} noValidate>
@@ -223,6 +241,8 @@ const LoginPage = () => {
       {showResetPasswordModal && (
         <ResetPasswordModal onClose={() => setshowResetPasswordModal(false)} />
       )}
+
+      {isLoading && <SpinnerLoader/>}
     </main>
   )
 }

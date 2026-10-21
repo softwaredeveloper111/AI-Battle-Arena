@@ -15,10 +15,11 @@ import {
 import { LoaderCircle, Pin, Pencil, Trash2 } from 'lucide-react'
 import useAuth from '../../auth/hooks/useAuth'
 import useBattle from '../hooks/useBattle'
-import styles from './Sidebar.module.scss'
+import styles from './Sidebar.module.scss';
+import SpinnerLoader from "../../../components/SpinnerLoader";
 
 const Sidebar = () => {
-  const { user, logoutHandler } = useAuth()
+  const { user, logoutHandler , isLoading } = useAuth()
   const {
     chatSessions,
     chatSessionsLoading,
@@ -169,6 +170,7 @@ const Sidebar = () => {
   const initial = username.charAt(0).toUpperCase()
 
   return (
+    <>
     <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
       <span className={styles.dotsTop} aria-hidden />
       <span className={styles.dotsMid} aria-hidden />
@@ -383,6 +385,8 @@ const Sidebar = () => {
         sessions={chatSessions}
       />
     </aside>
+    {isLoading && <SpinnerLoader />}
+  </>
   )
 }
 

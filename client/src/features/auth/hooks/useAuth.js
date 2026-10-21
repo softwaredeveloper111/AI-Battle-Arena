@@ -102,7 +102,7 @@ const useAuth = () => {
       signupStart();
       try {
         const result = await authService.registerApi(username, email, password);
-        signupSuccess(result?.data);
+        signupSuccess();
         toast.success(result?.message || "Registration successful");
         return result;
       } catch (err) {

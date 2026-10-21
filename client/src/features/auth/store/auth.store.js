@@ -53,11 +53,12 @@ const authStore = (set) => ({
       error: null,
     }),
 
-  signupSuccess: (user = null) =>
+  signupSuccess: () =>
     set({
       isLoading: false,
       error: null,
-      ...(user ? { user, isAuthenticated: true, status: "authenticated" } : {}),
+      isAuthenticated: false,
+      status: "unauthenticated",
     }),
 
   signupFailure: (error) =>

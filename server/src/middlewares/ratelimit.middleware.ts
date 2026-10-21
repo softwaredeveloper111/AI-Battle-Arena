@@ -1,4 +1,4 @@
-import {rateLimit} from "express-rate-limit";
+import {rateLimit, ipKeyGenerator} from "express-rate-limit";
 import {RedisStore , type RedisReply} from "rate-limit-redis";
 import redisClient from "../config/cache.js";
 import config from "../config/config.js";
@@ -110,13 +110,15 @@ export const emailRateLimit = rateLimit({
 
 const userKey = (req: Request) => {
   const userId = (req.user as any)?._id;
-  return userId ? userId.toString() : (req.ip || "unknown");
+  if (userId) return userId.toString();
+  return req.ip ? ipKeyGenerator(req.ip) : "unknown";
 };
 
 export const messageBurstLimit = rateLimit({
   windowMs: 60 * 1000,
   limit: 10,
   keyGenerator: userKey,
+  validate: { keyGeneratorIpFallback: false },
   skipFailedRequests: true,
   passOnStoreError: true, // Redis down ho to request block na ho
   store: createRedisStore("rl:msg:min:"),
@@ -134,6 +136,7 @@ export const messageDailyLimit = rateLimit({
   windowMs: 24 * 60 * 60 * 1000,
   limit: 50,
   keyGenerator: userKey,
+  validate: { keyGeneratorIpFallback: false },
   skipFailedRequests: true,
   passOnStoreError: true,
   store: createRedisStore("rl:msg:day:"),

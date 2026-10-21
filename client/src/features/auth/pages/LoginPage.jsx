@@ -28,6 +28,8 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema } from '../schemas/auth.schema'
 import ResendVerificationModal from '../components/ResendVerificationModal'
+import ResetPasswordModal from '../components/ResetPasswordModal'
+
 
 
 const FEATURES = [
@@ -36,12 +38,15 @@ const FEATURES = [
   { icon: NodesIcon, title: 'Build & Explore', text: 'Discover, experiment, and create' },
 ]
 
+
+
 const LoginPage = () => {
 
   const { isLoading, loginUserHandler } = useAuth()
   const navigate = useNavigate()
   const [showPassword, setShowPassword] = useState(false)
   const [showResendModal, setShowResendModal] = useState(false);
+  const [showResetPasswordModal, setshowResetPasswordModal] = useState(false);
    
    const {
     register,
@@ -148,9 +153,9 @@ const LoginPage = () => {
             </div>
 
             <div className={styles.forgotRow}>
-              <Link to="#" id="forgot-password-link" className={styles.forgotLink}>
+              <button type="button" onClick={() => setshowResetPasswordModal(true)}   className={styles.forgotLink}>
                 Forgot password?
-              </Link>
+              </button>
             </div>
 
             <div className={styles.submitRow}>
@@ -213,6 +218,10 @@ const LoginPage = () => {
       
       {showResendModal && (
         <ResendVerificationModal onClose={() => setShowResendModal(false)} />
+      )}
+
+      {showResetPasswordModal && (
+        <ResetPasswordModal onClose={() => setshowResetPasswordModal(false)} />
       )}
     </main>
   )

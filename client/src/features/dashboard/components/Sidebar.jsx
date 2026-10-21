@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { useNavigate, useMatch } from 'react-router-dom'
+import { useNavigate, useMatch, Link } from 'react-router-dom'
 import SearchModal from './SearchModal'
 import { DEFAULT_CHAT_ID, groupConversations } from '../data/conversations'
 import Brand from '../../../components/Brand'
@@ -11,11 +11,13 @@ import {
   PlusCircleIcon,
   SearchIcon,
 } from '../../../components/Icons'
+import useAuth from '../../auth/hooks/useAuth'
 import styles from './Sidebar.module.scss'
 
 const HISTORY = groupConversations()
 
 const Sidebar = () => {
+  const { user, logoutHandler } = useAuth()
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sidebar_collapsed') === 'true'
@@ -30,7 +32,7 @@ const Sidebar = () => {
       const next = !prev
       try {
         localStorage.setItem('sidebar_collapsed', String(next))
-      } catch(err) {
+      } catch (err) {
         console.log(err)
       }
       return next
@@ -61,10 +63,16 @@ const Sidebar = () => {
     }
   }, [menuPos])
 
-  const handleSignOut = () => {
+  const handleSignOut = async () => {
     setMenuPos(null)
+    try {
+      await logoutHandler()
+    } catch (err) {
+      console.error(err)
+    }
     navigate('/login')
   }
+
   const [searchOpen, setSearchOpen] = useState(false)
   const chatMatch = useMatch('/chat/:chatId')
   const isNewChat = !!useMatch('/new')
@@ -75,6 +83,9 @@ const Sidebar = () => {
     navigate(`/chat/${id}`)
   }
 
+  const username = user?.username || user?.email?.split('@')[0] || 'User'
+  const email = user?.email || ''
+  const initial = username.charAt(0).toUpperCase()
 
   return (
     <aside className={`${styles.sidebar} ${collapsed ? styles.collapsed : ''}`}>
@@ -98,69 +109,70 @@ const Sidebar = () => {
         </button>
       </div>
 
-      <button
-        type="button"
-        id="new-chat-btn"
-        className={styles.newChat}
-        title="New Chat"
-        aria-label="New Chat"
-        onClick={() => navigate('/new')}
-      >
-        <PlusCircleIcon size={22} />
-        <span>New Chat</span>
-      </button>
+      <div className={styles.actions}>
+        <button
+          type="button"
+          id="sidebar-new-chat-btn"
+          className={`${styles.actionBtn} ${isNewChat ? styles.active : ''}`}
+          onClick={() => navigate('/new')}
+          title="New Chat"
+        >
+          <PlusCircleIcon size={19} />
+          <span>New Chat</span>
+        </button>
+        <button
+          type="button"
+          id="sidebar-search-btn"
+          className={styles.actionBtn}
+          onClick={() => setSearchOpen(true)}
+          title="Search"
+        >
+          <SearchIcon size={19} />
+          <span>Search</span>
+        </button>
+      </div>
 
-      <button
-        type="button"
-        id="sidebar-search-btn"
-        className={styles.search}
-        title="Search"
-        aria-label="Search"
-        onClick={() => setSearchOpen(true)}
-      >
-        <SearchIcon size={18} />
-        <span>Search</span>
-      </button>
-
-      <nav className={styles.history} aria-label="Chat history">
+      <div className={styles.history}>
         {HISTORY.map((group) => (
-          <div key={group.label} className={styles.group}>
-            <h4 className={styles.groupLabel}>{group.label}</h4>
-            <ul>
-              {group.items.map((chat) => (
-                <li key={chat.id}>
-                  <button
-                    type="button"
-                    title={chat.title}
-                    aria-label={chat.title}
-                    onClick={() => openChat(chat.id)}
-                    className={`${styles.item} ${chat.id === activeId ? styles.active : ''}`}
-                  >
-                    <ChatIcon size={17} />
-                    <span>{chat.title}</span>
-                  </button>
-                </li>
-              ))}
+          <section key={group.label} className={styles.group}>
+            <header className={styles.groupHeader}>{group.label}</header>
+            <ul className={styles.list}>
+              {group.items.map((item) => {
+                const isActive = activeId === item.id
+                return (
+                  <li key={item.id}>
+                    <button
+                      type="button"
+                      className={`${styles.chatItem} ${isActive ? styles.active : ''}`}
+                      onClick={() => openChat(item.id)}
+                      title={item.title}
+                    >
+                      <ChatIcon size={17} />
+                      <span className={styles.chatTitle}>{item.title}</span>
+                    </button>
+                  </li>
+                )
+              })}
             </ul>
-          </div>
+          </section>
         ))}
-      </nav>
+      </div>
 
-      <div className={styles.account}>
+      <div className={styles.user}>
         <button
           type="button"
           className={styles.avatar}
           data-account-menu
           onClick={collapsed ? openMenu : undefined}
-          title="Sourav Giri (girisourav702939@gmail.com)"
+          title={`${username} (${email})`}
           aria-label="Account"
           aria-haspopup={collapsed ? 'menu' : undefined}
         >
-          S
+          {initial}
         </button>
         <div className={styles.userInfo}>
-          <strong>Sourav Giri</strong>
-          <span>girisourav702939@gmail.com</span>
+          <strong>{username}</strong>
+          <span>{email}</span>
         </div>
         <button
           type="button"
@@ -196,9 +208,9 @@ const Sidebar = () => {
       )}
 
       <footer className={styles.footer}>
-        <a href="#">Terms of Use</a>
-        <a href="#">Privacy Policy</a>
-        <a href="#">Cookies</a>
+        <Link to="/terms">Terms of Use</Link>
+        <Link to="/privacy">Privacy Policy</Link>
+        <Link to="/cookie-policy">Cookies</Link>
       </footer>
       <SearchModal
         open={searchOpen}
@@ -211,4 +223,3 @@ const Sidebar = () => {
 }
 
 export default Sidebar
-

@@ -1,5 +1,5 @@
-import Topbar from '../../dashboard/components/Topbar'
-import Composer from '../../dashboard/components/Composer'
+import Topbar from '../components/Topbar'
+import Composer from '../components/Composer'
 import ResponseCard from '../components/ResponseCard'
 import JudgePanel from '../components/JudgePanel'
 import styles from './BattlePage.module.scss'

@@ -1,9 +1,28 @@
 @use '../../../styles/variables' as *;
 
+.shell {
+  display: flex;
+  height: 100vh;
+  overflow: hidden;
+  background: $bg-app;
+}
+
+.main {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background:
+    radial-gradient(ellipse at 70% 0%, rgba(245, 196, 0, 0.025), transparent 50%),
+    $bg-app;
+}
+
 .dashboard {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100%;
   min-width: 0;
 }
 
@@ -41,8 +60,6 @@
     grid-template-columns: 1fr;
   }
 }
-
-
 
 /* ---------- New Chat (empty state) ---------- */
 .newChat {
@@ -99,15 +116,19 @@
   font-size: $fs-sm;
   color: $text-primary;
   text-align: left;
-  border: 1px solid $border-gold-faint;
+  border: 1px solid $border-default;
   border-radius: $radius-md;
   background: $bg-surface;
   cursor: pointer;
-  transition: border-color $dur-fast $ease, background $dur-fast $ease;
+  transition:
+    border-color $dur-fast $ease,
+    background $dur-fast $ease,
+    transform $dur-fast $ease;
 
   &:hover {
     border-color: $border-gold-soft;
-    background: $bg-gold-tint;
+    background: $bg-elevated;
+    transform: translateY(-1px);
   }
 }
 
@@ -118,6 +139,6 @@
   }
   to {
     opacity: 1;
-    transform: none;
+    transform: translateY(0);
   }
 }

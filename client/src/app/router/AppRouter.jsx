@@ -15,12 +15,18 @@ import CookiePolicyPage from "../../features/user's concern/pages/CookiePolicyPa
 
 import NotFound from "../../components/NotFound"
 
+
+
+
+
+
+
 const router = createBrowserRouter([
   {
-    element: <AppLayout />,
+    element: <ProtectedRoute />,
     children: [
       {
-        element:<ProtectedRoute/>,
+        element: <AppLayout />,
         children: [
           { path: '/', element: <Dashboard /> },
           { path: '/chat/:chatId', element: <Dashboard /> },
@@ -30,10 +36,10 @@ const router = createBrowserRouter([
     ],
   },
   {
-    element: <AuthLayout />,
+    element: <PublicRoute />,
     children: [
       {
-        element:<PublicRoute/>,
+        element:<AuthLayout/>,
         children:[
           { path: '/login', element: <LoginPage /> },
           { path: '/signup', element: <SignupPage /> },

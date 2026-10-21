@@ -47,6 +47,7 @@ const useBattle = () => {
 
   const socketId = useBattleStore((state) => state.socketId);
   const isBattleRunning = useBattleStore((state) => state.isBattleRunning);
+  const isCreatingNewChat = useBattleStore((state) => state.isCreatingNewChat);
   const battleError = useBattleStore((state) => state.battleError);
   const streamStatus = useBattleStore((state) => state.streamStatus);
   const streamingProblem = useBattleStore((state) => state.streamingProblem);
@@ -129,8 +130,10 @@ const useBattle = () => {
       const currentSocketId =
         useBattleStore.getState().socketId || initializeSocketConnection()?.id;
 
+      const isNewChat = !chatId;
+
       resetTokenBuffer();
-      executeBattleStart(problem);
+      executeBattleStart(problem, isNewChat);
       try {
         const result = await battleService.executeBattleApi(
           problem,
@@ -254,6 +257,7 @@ const useBattle = () => {
 
     socketId,
     isBattleRunning,
+    isCreatingNewChat,
     battleError,
     streamStatus,
     streamingProblem,

@@ -23,6 +23,7 @@ const Sidebar = () => {
   const {
     chatSessions,
     chatSessionsLoading,
+    isCreatingNewChat,
     fetchChatSessionsHandler,
     pinChatHandler,
     renameChatHandler,
@@ -34,8 +35,21 @@ const Sidebar = () => {
   }, [fetchChatSessionsHandler])
 
   const groupedSessions = useMemo(() => {
-    return groupChatSessionsByDate(chatSessions)
-  }, [chatSessions])
+    const groups = groupChatSessionsByDate(chatSessions)
+    if (isCreatingNewChat) {
+      const todayGroup = groups.find((g) => g.label === 'Today')
+      if (!todayGroup) {
+        const pinnedIndex = groups.findIndex((g) => g.label === 'Pinned')
+        const newToday = { label: 'Today', items: [] }
+        if (pinnedIndex !== -1) {
+          groups.splice(pinnedIndex + 1, 0, newToday)
+        } else {
+          groups.unshift(newToday)
+        }
+      }
+    }
+    return groups
+  }, [chatSessions, isCreatingNewChat])
   
   const [collapsed, setCollapsed] = useState(() => {
     try {
@@ -231,6 +245,17 @@ const Sidebar = () => {
             <div key={group.label} className={styles.group}>
               <h4 className={styles.groupLabel}>{group.label}</h4>
               <ul>
+                {group.label === 'Today' && isCreatingNewChat && (
+                  <li key="loading-new-chat-title">
+                    <div className={`${styles.item} ${styles.active} ${styles.titleLoadingItem}`}>
+                      <div className={styles.itemMain}>
+                        <ChatIcon size={17} className={styles.chatIcon} />
+                        <span className={styles.titleLoadingText}>Generating title...</span>
+                        <LoaderCircle size={14} className={styles.titleLoader} />
+                      </div>
+                    </div>
+                  </li>
+                )}
                 {group.items.map((chat) => {
                   const id = chat._id || chat.id
                   const title = chat.title || 'Untitled Battle'

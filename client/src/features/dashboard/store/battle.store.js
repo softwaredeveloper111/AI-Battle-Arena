@@ -19,6 +19,7 @@ const battleStore = (set) => ({
   // Live battle (socket.io streaming)
   socketId: null,
   isBattleRunning: false,
+  isCreatingNewChat: false,
   battleError: null,
   streamStatus: "",
   streamingProblem: "",
@@ -69,7 +70,7 @@ const battleStore = (set) => ({
       messagesError: null,
     }),
 
-  fetchMessagesSuccess: ({ session = null, messages = [] }) =>
+  fetchMessagesSuccess: ({ session = null, messages = [] } = {}) =>
     set({
       messagesLoading: false,
       messagesError: null,
@@ -89,13 +90,15 @@ const battleStore = (set) => ({
       activeSession: null,
       messages: [],
       messagesError: null,
+      isCreatingNewChat: false,
     }),
 
 
   // Execute battle
-  executeBattleStart: (problem) =>
+  executeBattleStart: (problem, isNewChat = false) =>
     set({
       isBattleRunning: true,
+      isCreatingNewChat: isNewChat,
       battleError: null,
       streamStatus: "",
       streamingProblem: problem,
@@ -126,6 +129,7 @@ const battleStore = (set) => ({
   executeBattleSuccess: ({ chatId, turn }) =>
     set((state) => ({
       isBattleRunning: false,
+      isCreatingNewChat: false,
       battleError: null,
       streamStatus: "",
       streamingProblem: "",
@@ -139,6 +143,7 @@ const battleStore = (set) => ({
   executeBattleFailure: (error) =>
     set({
       isBattleRunning: false,
+      isCreatingNewChat: false,
       battleError: error,
       streamStatus: "",
       streamingProblem: "",

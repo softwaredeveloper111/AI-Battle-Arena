@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import {useNavigate} from "react-router-dom"
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { toast } from 'sonner'
@@ -25,7 +25,7 @@ import arenaHero from '../../../assets/arena-hero.jpg'
 import styles from './SignupPage.module.scss'
 import SpinnerLoader from '../../../components/SpinnerLoader'
 import useAuth from '../hooks/useAuth'
-import { signupSchema } from '../schemas/auth.schema'
+import { signupSchema } from "../schemas/auth.schema";
 
 const PASSWORD_RULES = [
   '8–32 characters',
@@ -35,37 +35,38 @@ const PASSWORD_RULES = [
 ]
 
 const SignupPage = () => {
-  const { registerHandler, isLoading } = useAuth()
-  const navigate = useNavigate()
-  const [showPassword, setShowPassword] = useState(false)
 
-  const {
+  const { registerHandler, isLoading } = useAuth()
+  const [showPassword, setShowPassword] = useState(false)
+  const [showSuccessPopup, setShowSuccessPopup] = useState(false);
+  const navigate = useNavigate()
+
+   const {
     register,
     handleSubmit,
     formState: { errors },
     reset,
   } = useForm({
     resolver: zodResolver(signupSchema),
-  })
+  });
 
   const onSubmit = async (data) => {
-    const { username, email, password } = data
-
+    const { username, email, password } = data;
     if (username && email && password) {
-      const res = await registerHandler(username, email, password)
+      const res = await registerHandler(username, email, password);
       if (res) {
-        reset()
-        navigate('/')
+        reset();
+        setShowSuccessPopup(true);
       }
     }
-  }
+  };
 
-  const onError = (formErrors) => {
-    const firstError = Object.values(formErrors)[0]
+  const onError = (errors) => {
+    const firstError = Object.values(errors)[0];
     if (firstError?.message) {
-      toast.error(firstError.message)
+      toast.error(firstError.message);
     }
-  }
+  };
 
   if (isLoading) {
     return <SpinnerLoader />
@@ -216,6 +217,30 @@ const SignupPage = () => {
           </div>
         </div>
       </section>
+
+       {showSuccessPopup && (
+        <div className={styles.popupOverlay}>
+          <div
+            className={styles.successPopup}
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="signup-success-title"
+          >
+            <p id="signup-success-title">
+              Verification email sent to your email.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                setShowSuccessPopup(false);
+                navigate("/login", { replace: true });
+              }}
+            >
+              OK
+            </button>
+          </div>
+        </div>
+      )}
     </main>
   )
 }

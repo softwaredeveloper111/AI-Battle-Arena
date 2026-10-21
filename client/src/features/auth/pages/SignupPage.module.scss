@@ -409,3 +409,100 @@
     gap: 3px 10px;
   }
 }
+
+/* ---------- Success Popup Modal ---------- */
+.popupOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 2000;
+  @include flex-center;
+  background: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(6px);
+  padding: $sp-4;
+  animation: fadeIn 0.2s $ease;
+}
+
+.successPopup {
+  position: relative;
+  width: 100%;
+  max-width: 380px;
+  padding: $sp-8 $sp-6 $sp-6;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  background:
+    radial-gradient(ellipse at 50% 0%, rgba(245, 196, 0, 0.14), transparent 70%),
+    $bg-surface;
+  border: 1px solid $border-gold;
+  border-radius: $radius-xl;
+  box-shadow: $shadow-panel, $glow-gold-md;
+  animation: popIn 0.22s $ease;
+
+  &::before {
+    content: '';
+    display: block;
+    width: 48px;
+    height: 48px;
+    margin-bottom: $sp-4;
+    border-radius: 50%;
+    background: rgba(245, 196, 0, 0.1) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='22' height='22' viewBox='0 0 24 24' fill='none' stroke='%23f5c400' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='20 6 9 17 4 12'%3E%3C/polyline%3E%3C/svg%3E") no-repeat center;
+    border: 1px solid rgba(245, 196, 0, 0.35);
+    box-shadow: 0 0 16px rgba(245, 196, 0, 0.18);
+  }
+
+  p {
+    font-size: 0.95rem;
+    font-weight: $fw-medium;
+    color: $text-primary;
+    line-height: 1.5;
+    margin: 0 0 $sp-6;
+  }
+
+  button {
+    min-width: 120px;
+    height: 40px;
+    padding: 0 $sp-6;
+    @include flex-center;
+    font-size: $fs-sm;
+    font-weight: $fw-semibold;
+    letter-spacing: 0.04em;
+    color: $on-primary;
+    background: linear-gradient(180deg, $gold-400, $gold-500);
+    border: none;
+    border-radius: $radius-md;
+    box-shadow: 0 4px 18px rgba(245, 196, 0, 0.25);
+    cursor: pointer;
+    transition: transform $dur-fast $ease, box-shadow $dur $ease, filter $dur $ease;
+
+    &:hover {
+      filter: brightness(1.08);
+      box-shadow: 0 6px 24px rgba(245, 196, 0, 0.38);
+      transform: translateY(-1px);
+    }
+
+    &:active {
+      transform: translateY(1px);
+    }
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}

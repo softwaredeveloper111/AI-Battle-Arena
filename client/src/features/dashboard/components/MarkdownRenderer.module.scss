@@ -1,0 +1,223 @@
+@use '../../../styles/variables' as *;
+
+.markdownContainer {
+  font-size: $fs-sm;
+  line-height: 1.65;
+  color: $text-primary;
+  word-break: break-word;
+
+  p {
+    margin: 0 0 $sp-3;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    margin-top: $sp-4;
+    margin-bottom: $sp-2;
+    font-weight: $fw-semibold;
+    color: $text-primary;
+    line-height: 1.35;
+
+    &:first-child {
+      margin-top: 0;
+    }
+  }
+
+  h1 {
+    font-size: $fs-xl;
+    color: $primary;
+    border-bottom: 1px solid $border-gold-faint;
+    padding-bottom: $sp-1;
+  }
+
+  h2 {
+    font-size: $fs-lg;
+    color: $primary;
+  }
+
+  h3 {
+    font-size: $fs-md;
+    color: $gold-300;
+  }
+
+  h4 {
+    font-size: $fs-sm;
+  }
+
+  strong, b {
+    font-weight: $fw-bold;
+    color: $gold-300;
+  }
+
+  em, i {
+    font-style: italic;
+    color: $text-secondary;
+  }
+
+  ul, ol {
+    margin: 0 0 $sp-3;
+    padding-left: 1.35rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  li {
+    margin-bottom: $sp-1;
+    line-height: 1.6;
+
+    &::marker {
+      color: $primary;
+    }
+
+    p {
+      margin-bottom: $sp-1;
+    }
+  }
+
+  ul ul, ol ol, ul ol, ol ul {
+    margin: $sp-1 0;
+  }
+
+  blockquote {
+    border-left: 3px solid $primary;
+    padding: $sp-2 $sp-3;
+    margin: $sp-3 0;
+    background: rgba(245, 196, 0, 0.05);
+    border-radius: 0 $radius-sm $radius-sm 0;
+    color: $text-secondary;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: $sp-3 0;
+    font-size: $fs-xs;
+    border: 1px solid $border-default;
+    border-radius: $radius-sm;
+    overflow: hidden;
+  }
+
+  th, td {
+    padding: $sp-2 $sp-3;
+    border: 1px solid $border-default;
+    text-align: left;
+  }
+
+  th {
+    background: rgba(245, 196, 0, 0.12);
+    color: $primary;
+    font-weight: $fw-semibold;
+  }
+
+  tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  hr {
+    border: none;
+    border-top: 1px solid $border-gold-soft;
+    margin: $sp-4 0;
+  }
+
+  a {
+    color: $primary;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color $dur-fast $ease;
+
+    &:hover {
+      color: $gold-300;
+    }
+  }
+}
+
+.inlineCode {
+  font-family: 'Fira Code', Consolas, Monaco, monospace;
+  font-size: 0.85em;
+  padding: 2px 6px;
+  border-radius: $radius-sm;
+  background: rgba(245, 196, 0, 0.08);
+  border: 1px solid $border-gold-faint;
+  color: $gold-300;
+}
+
+.codeBlock {
+  margin: $sp-3 0;
+  border: 1px solid $border-default;
+  border-radius: $radius-md;
+  overflow: hidden;
+  background: #141414;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+
+  &:hover {
+    border-color: $border-gold-soft;
+  }
+}
+
+.codeHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $sp-2 $sp-3;
+  background: #1c1c1c;
+  border-bottom: 1px solid $border-default;
+  font-size: $fs-2xs;
+  font-family: monospace;
+  color: $text-secondary;
+}
+
+.languageBadge {
+  text-transform: lowercase;
+  font-weight: $fw-medium;
+  letter-spacing: 0.5px;
+  color: $primary;
+}
+
+.copyBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: $sp-1;
+  padding: 3px 8px;
+  font-size: $fs-2xs;
+  border-radius: $radius-sm;
+  border: 1px solid transparent;
+  background: transparent;
+  color: $text-secondary;
+  cursor: pointer;
+  transition: all $dur-fast $ease;
+
+  &:hover {
+    background: rgba(245, 196, 0, 0.12);
+    border-color: $border-gold-soft;
+    color: $primary;
+  }
+
+  svg {
+    flex-shrink: 0;
+  }
+}
+
+.pre {
+  margin: 0;
+  padding: $sp-3 $sp-4;
+  overflow-x: auto;
+  background: transparent !important;
+  font-family: 'Fira Code', Consolas, Monaco, 'Courier New', monospace;
+  font-size: 0.825rem;
+  line-height: 1.55;
+
+  code {
+    font-family: inherit;
+    background: transparent !important;
+    padding: 0 !important;
+  }
+}

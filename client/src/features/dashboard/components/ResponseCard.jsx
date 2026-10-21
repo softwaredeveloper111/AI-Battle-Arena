@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { CopyIcon, CheckIcon } from '../../../components/Icons'
+import MarkdownRenderer from './MarkdownRenderer'
 import styles from './ResponseCard.module.scss'
 
 const ResponseCard = ({ label, content, paragraphs, isStreaming = false }) => {
@@ -35,9 +36,7 @@ const ResponseCard = ({ label, content, paragraphs, isStreaming = false }) => {
       </header>
       <div className={styles.body}>
         {text ? (
-          text.split('\n\n').map((p, i) => (
-            <p key={i} style={{ whiteSpace: 'pre-wrap' }}>{p}</p>
-          ))
+          <MarkdownRenderer content={text} />
         ) : isStreaming ? (
           <p className={styles.thinking}>Thinking...</p>
         ) : null}

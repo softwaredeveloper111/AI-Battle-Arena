@@ -44,17 +44,10 @@
 }
 
 .body {
+  flex: 1;
+  min-width: 0;
   padding: $sp-3 $sp-4 $sp-4;
-
-  p {
-    font-size: $fs-sm;
-    line-height: 1.55;
-    color: $text-primary;
-
-    & + p {
-      margin-top: $sp-3;
-    }
-  }
+  overflow-x: auto;
 
   .thinking {
     color: $text-muted;

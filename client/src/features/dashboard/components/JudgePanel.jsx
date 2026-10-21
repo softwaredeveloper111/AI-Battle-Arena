@@ -1,4 +1,5 @@
 import { ScaleIcon, TrophyIcon } from '../../../components/Icons'
+import MarkdownRenderer from './MarkdownRenderer'
 import styles from './JudgePanel.module.scss'
 
 /**
@@ -39,7 +40,9 @@ const JudgePanel = ({ judge }) => {
               </span>
             </div>
             <h5>Reasoning</h5>
-            <p>{reasoning}</p>
+            <div className={styles.reasoningBody}>
+              <MarkdownRenderer content={reasoning} />
+            </div>
           </div>
         ))}
       </div>

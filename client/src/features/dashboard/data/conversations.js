@@ -203,3 +203,49 @@ export const groupConversations = (list = CONVERSATIONS) => {
   })
   return groups
 }
+
+/**
+ * Group real chat sessions from backend into Today, Yesterday, and Older.
+ * Handles pinned chats and timestamps gracefully.
+ */
+export const groupChatSessionsByDate = (sessions = []) => {
+  if (!Array.isArray(sessions) || sessions.length === 0) return []
+
+  const now = new Date()
+  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime()
+  const startOfYesterday = startOfToday - 24 * 60 * 60 * 1000
+
+  const pinned = []
+  const today = []
+  const yesterday = []
+  const older = []
+
+  sessions.forEach((chat) => {
+    if (!chat) return
+
+    if (chat.isPinned) {
+      pinned.push(chat)
+      return
+    }
+
+    const timestamp = chat.updatedAt || chat.createdAt
+    const time = timestamp ? new Date(timestamp).getTime() : 0
+
+    if (time >= startOfToday) {
+      today.push(chat)
+    } else if (time >= startOfYesterday) {
+      yesterday.push(chat)
+    } else {
+      older.push(chat)
+    }
+  })
+
+  const groups = []
+  if (pinned.length > 0) groups.push({ label: 'Pinned', items: pinned })
+  if (today.length > 0) groups.push({ label: 'Today', items: today })
+  if (yesterday.length > 0) groups.push({ label: 'Yesterday', items: yesterday })
+  if (older.length > 0) groups.push({ label: 'Older', items: older })
+
+  return groups
+}
+

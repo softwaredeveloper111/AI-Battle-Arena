@@ -172,6 +172,15 @@
   padding: 0 $sp-1 $sp-4;
 }
 
+.emptyState,
+.loadingState {
+  padding: $sp-5 $sp-2;
+  font-size: $fs-xs;
+  color: $text-muted;
+  text-align: center;
+  user-select: none;
+}
+
 .group {
   margin-bottom: $sp-4;
 }

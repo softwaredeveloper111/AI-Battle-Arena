@@ -1,24 +1,24 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { ChatIcon, SearchIcon } from '../../../components/Icons'
-import { CONVERSATIONS, groupConversations } from '../data/conversations'
+import { groupChatSessionsByDate } from '../data/conversations'
 import styles from './SearchModal.module.scss'
 
 /**
  * Centered chat-history search popup.
  * Fixed size; the results list scrolls when there are many chats.
  */
-const SearchModal = ({ open, onClose, onSelect, activeId }) => {
+const SearchModal = ({ open, onClose, onSelect, activeId, sessions = [] }) => {
   const [query, setQuery] = useState('')
   const inputRef = useRef(null)
 
   const groups = useMemo(() => {
     const q = query.trim().toLowerCase()
     const list = q
-      ? CONVERSATIONS.filter((c) => c.title.toLowerCase().includes(q) || c.prompt.toLowerCase().includes(q))
-      : CONVERSATIONS
-    return groupConversations(list)
-  }, [query])
+      ? sessions.filter((c) => (c?.title || '').toLowerCase().includes(q))
+      : sessions
+    return groupChatSessionsByDate(list)
+  }, [query, sessions])
 
   const total = groups.reduce((n, g) => n + g.items.length, 0)
 
@@ -39,7 +39,10 @@ const SearchModal = ({ open, onClose, onSelect, activeId }) => {
   if (!open) return null
 
   const onInputKey = (e) => {
-    if (e.key === 'Enter' && total > 0) onSelect(groups[0].items[0].id)
+    if (e.key === 'Enter' && total > 0) {
+      const first = groups[0].items[0]
+      onSelect(first._id || first.id)
+    }
   }
 
   return createPortal(
@@ -71,22 +74,27 @@ const SearchModal = ({ open, onClose, onSelect, activeId }) => {
 
         <div className={styles.results}>
           {total === 0 ? (
-            <p className={styles.empty}>No chats found for “{query}”</p>
+            <p className={styles.empty}>
+              {sessions.length === 0 ? 'No previous chats' : `No chats found for “${query}”`}
+            </p>
           ) : (
             groups.map((g) => (
               <div key={g.label} className={styles.group}>
                 <h4 className={styles.groupLabel}>{g.label}</h4>
-                {g.items.map((c) => (
-                  <button
-                    key={c.id}
-                    type="button"
-                    className={`${styles.result} ${c.id === activeId ? styles.activeResult : ''}`}
-                    onClick={() => onSelect(c.id)}
-                  >
-                    <ChatIcon size={17} />
-                    <span>{c.title}</span>
-                  </button>
-                ))}
+                {g.items.map((c) => {
+                  const id = c._id || c.id
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      className={`${styles.result} ${id === activeId ? styles.activeResult : ''}`}
+                      onClick={() => onSelect(id)}
+                    >
+                      <ChatIcon size={17} />
+                      <span>{c.title}</span>
+                    </button>
+                  )
+                })}
               </div>
             ))
           )}

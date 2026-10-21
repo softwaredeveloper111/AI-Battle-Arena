@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { useNavigate, useMatch, Link } from 'react-router-dom'
 import SearchModal from './SearchModal'
-import { DEFAULT_CHAT_ID, groupConversations } from '../data/conversations'
+import { groupChatSessionsByDate } from '../data/conversations'
 import Brand from '../../../components/Brand'
 import PixelCluster from '../../../components/PixelCluster'
 import {
@@ -12,12 +12,21 @@ import {
   SearchIcon,
 } from '../../../components/Icons'
 import useAuth from '../../auth/hooks/useAuth'
+import useBattle from '../hooks/useBattle'
 import styles from './Sidebar.module.scss'
-
-const HISTORY = groupConversations()
 
 const Sidebar = () => {
   const { user, logoutHandler } = useAuth()
+  const { chatSessions, chatSessionsLoading, fetchChatSessionsHandler } = useBattle()
+
+  useEffect(() => {
+    fetchChatSessionsHandler()
+  }, [fetchChatSessionsHandler])
+
+  const groupedSessions = useMemo(() => {
+    return groupChatSessionsByDate(chatSessions)
+  }, [chatSessions])
+  
   const [collapsed, setCollapsed] = useState(() => {
     try {
       return localStorage.getItem('sidebar_collapsed') === 'true'
@@ -76,7 +85,7 @@ const Sidebar = () => {
   const [searchOpen, setSearchOpen] = useState(false)
   const chatMatch = useMatch('/chat/:chatId')
   const isNewChat = !!useMatch('/new')
-  const activeId = chatMatch ? chatMatch.params.chatId : isNewChat ? null : DEFAULT_CHAT_ID
+  const activeId = chatMatch ? chatMatch.params.chatId : null
 
   const openChat = (id) => {
     setSearchOpen(false)
@@ -134,27 +143,43 @@ const Sidebar = () => {
       </button>
 
       <nav className={styles.history} aria-label="Chat history">
-        {HISTORY.map((group) => (
-          <div key={group.label} className={styles.group}>
-            <h4 className={styles.groupLabel}>{group.label}</h4>
-            <ul>
-              {group.items.map((chat) => (
-                <li key={chat.id}>
-                  <button
-                    type="button"
-                    title={chat.title}
-                    aria-label={chat.title}
-                    onClick={() => openChat(chat.id)}
-                    className={`${styles.item} ${chat.id === activeId ? styles.active : ''}`}
-                  >
-                    <ChatIcon size={17} />
-                    <span>{chat.title}</span>
-                  </button>
-                </li>
-              ))}
-            </ul>
+        {chatSessionsLoading && (!chatSessions || chatSessions.length === 0) ? (
+          <div className={styles.loadingState}>
+            <span>Loading history...</span>
           </div>
-        ))}
+        ) : groupedSessions.length === 0 ? (
+          <div className={styles.emptyState}>
+            <span>No previous chats</span>
+          </div>
+        ) : (
+          groupedSessions.map((group) => (
+            <div key={group.label} className={styles.group}>
+              <h4 className={styles.groupLabel}>{group.label}</h4>
+              <ul>
+                {group.items.map((chat) => {
+                  const id = chat._id || chat.id
+                  const title = chat.title || 'Untitled Battle'
+                  const isActive = id === activeId
+
+                  return (
+                    <li key={id}>
+                      <button
+                        type="button"
+                        title={title}
+                        aria-label={title}
+                        onClick={() => openChat(id)}
+                        className={`${styles.item} ${isActive ? styles.active : ''}`}
+                      >
+                        <ChatIcon size={17} />
+                        <span>{title}</span>
+                      </button>
+                    </li>
+                  )
+                })}
+              </ul>
+            </div>
+          ))
+        )}
       </nav>
 
       <div className={styles.account}>
@@ -216,6 +241,7 @@ const Sidebar = () => {
         onClose={() => setSearchOpen(false)}
         onSelect={openChat}
         activeId={activeId}
+        sessions={chatSessions}
       />
     </aside>
   )

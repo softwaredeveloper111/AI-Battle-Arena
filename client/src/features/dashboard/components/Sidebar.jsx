@@ -11,6 +11,7 @@ import {
   PlusCircleIcon,
   SearchIcon,
 } from '../../../components/Icons'
+import { LoaderCircle } from 'lucide-react'
 import useAuth from '../../auth/hooks/useAuth'
 import useBattle from '../hooks/useBattle'
 import styles from './Sidebar.module.scss'
@@ -143,8 +144,9 @@ const Sidebar = () => {
       </button>
 
       <nav className={styles.history} aria-label="Chat history">
-        {chatSessionsLoading && (!chatSessions || chatSessions.length === 0) ? (
+        {chatSessionsLoading ? (
           <div className={styles.loadingState}>
+            <LoaderCircle size={20} strokeWidth={2.2} />
             <span>Loading history...</span>
           </div>
         ) : groupedSessions.length === 0 ? (

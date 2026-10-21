@@ -8,12 +8,12 @@ import styles from './Composer.module.scss'
  * - Automatically expands to a card layout with scrollbar on multiline / long text.
  * - Send button activates (glowing gold theme) once user types any letter.
  */
-const Composer = ({ placeholder = 'Ask a follow-up...', onSend }) => {
+const Composer = ({ placeholder = 'Ask a follow-up...', onSend, disabled = false }) => {
   const [value, setValue] = useState('')
   const [isMultiline, setIsMultiline] = useState(false)
   const textareaRef = useRef(null)
 
-  const canSend = value.trim().length > 0
+  const canSend = value.trim().length > 0 && !disabled
 
   const adjustHeight = () => {
     const el = textareaRef.current
@@ -70,6 +70,7 @@ const Composer = ({ placeholder = 'Ask a follow-up...', onSend }) => {
             placeholder={placeholder}
             rows={1}
             value={value}
+            disabled={disabled}
             onChange={(e) => setValue(e.target.value)}
             onKeyDown={handleKeyDown}
           />
@@ -82,7 +83,7 @@ const Composer = ({ placeholder = 'Ask a follow-up...', onSend }) => {
             className={`${styles.sendBtn} ${canSend ? styles.active : ''}`}
             disabled={!canSend}
             aria-label="Send message"
-            title={canSend ? 'Send message' : 'Type a message to send'}
+            title={disabled ? 'Battle in progress...' : canSend ? 'Send message' : 'Type a message to send'}
           >
             <ArrowUpIcon size={18} />
           </button>

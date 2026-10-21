@@ -6,13 +6,14 @@ import styles from './JudgePanel.module.scss'
  * solution_1_score, solution_2_score, solution_1_reasoning, solution_2_reasoning
  */
 const JudgePanel = ({ judge }) => {
-  const { solution_1_score: s1, solution_2_score: s2 } = judge
+  if (!judge) return null
+  const { solution_1_score: s1 = 0, solution_2_score: s2 = 0 } = judge
   const winner = s1 === s2 ? null : s1 > s2 ? 1 : 2
-  const verdict = winner ? `Response ${winner === 1 ? 'A' : 'B'} is winner` : "It's a tie"
+  const verdict = winner ? `Assistant ${winner === 1 ? 'A' : 'B'} is winner` : "It's a tie"
 
   const solutions = [
-    { n: 1, score: s1, reasoning: judge.solution_1_reasoning },
-    { n: 2, score: s2, reasoning: judge.solution_2_reasoning },
+    { label: 'Assistant A', score: s1, reasoning: judge.solution_1_reasoning, isWinner: winner === 1 },
+    { label: 'Assistant B', score: s2, reasoning: judge.solution_2_reasoning, isWinner: winner === 2 },
   ]
 
   return (
@@ -28,11 +29,11 @@ const JudgePanel = ({ judge }) => {
       </div>
 
       <div className={styles.grid}>
-        {solutions.map(({ n, score, reasoning }) => (
-          <div key={n} className={`${styles.score} ${winner === n ? styles.winner : ''}`}>
+        {solutions.map(({ label, score, reasoning, isWinner }) => (
+          <div key={label} className={`${styles.score} ${isWinner ? styles.winner : ''}`}>
             <div className={styles.scoreHead}>
               <span className={styles.ring} />
-              <span className={styles.scoreLabel}>Solution {n} Score</span>
+              <span className={styles.scoreLabel}>{label} Score</span>
               <span className={styles.scoreValue}>
                 <strong>{score}</strong> / 10
               </span>
